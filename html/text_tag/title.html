@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제목 태그 (h1~h4) 예제</title>
+
+    <!--
+        [title.html]
+        학습 목표: 제목 태그(Heading Tags) h1 ~ h6의 계층 구조 이해
+
+        제목 태그 규칙:
+        - h1: 문서 전체의 대제목. 페이지당 한 번만 사용 (SEO 핵심 요소)
+        - h2: 주요 섹션의 제목 (h1의 하위)
+        - h3: 세부 항목의 제목 (h2의 하위)
+        - h4: 더 세부적인 항목의 제목 (h3의 하위)
+        - h5, h6: 거의 사용되지 않으나, 필요 시 h4의 하위로 사용
+
+        ⚠️  계층을 건너뛰지 말 것: h1 → h3 (X) / h1 → h2 → h3 (O)
+        ⚠️  글자 크기 조절 목적으로 h 태그를 사용하지 말 것 → CSS 사용
+    -->
+
+    <style>
+        /* ── 기본 페이지 스타일 ────────────────────────────────── */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            color: #222;
+            max-width: 760px;
+            margin: 48px auto;
+            padding: 0 24px;
+            line-height: 1.7;
+        }
+
+        /* ── 공통 제목 스타일 ──────────────────────────────────── */
+        h1, h2, h3, h4 {
+            margin: 0;
+            padding: 14px 20px;
+            border-radius: 6px;
+        }
+
+        /* ── h1: 문서 대제목 ────────────────────────────────────
+           가장 큰 글씨, 강렬한 배경으로 최상위 계층 표현
+        ──────────────────────────────────────────────────────── */
+        h1 {
+            font-size: 1.9rem;
+            background-color: #1a1a2e;
+            color: #fff;
+            border-left: 6px solid #5b8dee;
+            margin-bottom: 4px;
+        }
+
+        /* ── h2: 주요 섹션 제목 ─────────────────────────────────
+           h1보다 한 단계 아래 — 색상을 낮춰 계층감 표현
+        ──────────────────────────────────────────────────────── */
+        h2 {
+            font-size: 1.4rem;
+            background-color: #2e3f6e;
+            color: #e8eef8;
+            border-left: 5px solid #7da4f0;
+            margin-left: 16px;
+            margin-bottom: 4px;
+        }
+
+        /* ── h3: 세부 항목 제목 ─────────────────────────────────
+           h2보다 한 단계 아래 — 배경을 더 밝게
+        ──────────────────────────────────────────────────────── */
+        h3 {
+            font-size: 1.1rem;
+            background-color: #d6e4ff;
+            color: #1a3a7e;
+            border-left: 4px solid #5b8dee;
+            margin-left: 32px;
+            margin-bottom: 4px;
+        }
+
+        /* ── h4: 소제목 ─────────────────────────────────────────
+           가장 작은 계층 — 배경 없이 텍스트 색상과 밑줄로 구분
+        ──────────────────────────────────────────────────────── */
+        h4 {
+            font-size: 0.95rem;
+            background-color: #eef3ff;
+            color: #3a5bb5;
+            border-left: 3px solid #aac0f5;
+            margin-left: 48px;
+        }
+
+        /* ── 계층 구조 시각화를 위한 들여쓰기 설명 레이블 ───── */
+        h1::before { content: "H1 ▸ "; font-size: 0.7em; opacity: 0.6; }
+        h2::before { content: "H2 ▸ "; font-size: 0.7em; opacity: 0.6; }
+        h3::before { content: "H3 ▸ "; font-size: 0.7em; opacity: 0.6; }
+        h4::before { content: "H4 ▸ "; font-size: 0.7em; opacity: 0.6; }
+    </style>
+</head>
+<body>
+
+    <!-- h1: 문서 전체를 아우르는 대제목 — 페이지당 1개 -->
+    <h1>2026년 웹 개발 트렌드 리포트</h1>
+
+    <!-- h2: h1의 첫 번째 하위 섹션 -->
+    <h2>1. 프론트엔드 기술의 진화</h2>
+
+    <!-- h3: h2의 세부 항목 — 프레임워크 변화 -->
+    <h3>1.1 프레임워크의 변화</h3>
+
+    <!-- h4: h3의 더 구체적인 소제목 -->
+    <h4>1.1.1 리액트(React)의 새로운 기능</h4>
+
+</body>
+</html>

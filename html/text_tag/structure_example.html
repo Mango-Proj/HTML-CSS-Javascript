@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML 구조화 예제 — 학습 일지</title>
+
+    <!--
+        [structure_example.html]
+        학습 목표: 제목 태그(h1~h6)와 문단 태그(p), 줄 바꿈 태그(br)를 함께 사용한
+                  실전 문서 구조화 예제
+
+        핵심 규칙:
+        1. <section> — 주제가 같은 콘텐츠를 묶는 구획(Sectioning) 요소
+        2. <h1>      — 문서 전체의 대제목 (페이지당 1개 권장)
+        3. <h2>      — 주요 섹션의 소제목
+        4. <h3>      — 세부 항목의 소제목
+        5. <p>       — 본문 문단
+        6. <br>      — 문단 내 줄 바꿈
+
+        ⚠️  h 태그는 계층 구조에 따라 순서대로 사용해야 합니다.
+            디자인(글자 크기)을 위해 임의로 단계를 건너뛰지 마세요.
+    -->
+
+    <style>
+        /* ── 리셋 & 기본 설정 ──────────────────────────────────── */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 760px;
+            margin: 48px auto;
+            padding: 0 24px;
+            line-height: 1.8;
+        }
+
+        /* ── 섹션 컨테이너 ─────────────────────────────────────── */
+        section {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 32px 36px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ── 제목 태그 스타일 ──────────────────────────────────── */
+
+        /* h1: 문서 대제목 — 가장 눈에 띄게 */
+        h1 {
+            font-size: 1.8rem;
+            color: #1a1a2e;
+            border-bottom: 3px solid #5b8dee;
+            padding-bottom: 10px;
+            margin-bottom: 24px;
+        }
+
+        /* h2: 주요 섹션 제목 — 색상 포인트 */
+        h2 {
+            font-size: 1.2rem;
+            color: #5b8dee;
+            margin-top: 28px;
+            margin-bottom: 8px;
+        }
+
+        /* h3: 세부 항목 제목 — 경고/주의 느낌으로 */
+        h3 {
+            font-size: 1rem;
+            color: #e87d5b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 20px;
+            margin-bottom: 6px;
+        }
+
+        h3::before {
+            content: "⚠️";
+            font-size: 0.9em;
+        }
+
+        /* ── 문단 스타일 ───────────────────────────────────────── */
+        p {
+            background-color: #f8f9fc;
+            border-left: 4px solid #c9d6f0;
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        /* 주의사항 문단 — 배경색 변경으로 차별화 */
+        .caution {
+            border-left-color: #f5c6b4;
+            background-color: #fff8f6;
+            color: #7a4030;
+        }
+    </style>
+</head>
+<body>
+
+    <!--
+        <section>: 학습 일지라는 하나의 주제를 묶는 구획 요소.
+        role="article" 같은 역할 대신 section을 사용해 의미를 부여합니다.
+    -->
+    <section>
+
+        <!-- h1: 이 문서 전체를 대표하는 제목 (페이지에 하나만 사용) -->
+        <h1>나의 학습 일지</h1>
+
+        <!-- h2: h1 아래의 주요 섹션 제목 — 오늘 날짜/주제 -->
+        <h2>오늘 배운 내용: HTML 기초</h2>
+
+        <!--
+            <p> + <br>:
+            - 오늘 배운 내용을 하나의 문단으로 묶고,
+            - 두 개의 문장이 각각 별개의 줄에 표시되도록 <br>을 사용했습니다.
+        -->
+        <p>
+            오늘은 HTML의 텍스트 구조화 태그들을 배웠습니다.<br>
+            제목 태그와 문단 태그의 차이점을 확실히 알게 되었습니다.
+        </p>
+
+        <!-- h3: h2의 하위 항목 — 주의할 점 -->
+        <h3>주의할 점</h3>
+
+        <!-- 주의사항 문단 — .caution 클래스로 시각적 구분 -->
+        <p class="caution">
+            디자인을 위해서 h 태그를 마음대로 골라 쓰면 안 됩니다.<br>
+            구조에 맞는 태그 선택이 무엇보다 중요합니다.
+        </p>
+
+    </section>
+
+</body>
+</html>

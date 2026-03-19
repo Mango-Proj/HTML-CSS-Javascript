@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>줄 바꿈 태그 (br) 예제</title>
+
+    <!--
+        [linebreak.html]
+        학습 목표: <br> 태그의 올바른 사용법 이해
+        - <br>은 Line Break의 약자로, 문단 내에서 강제로 줄을 바꿀 때 사용합니다.
+        - 종료 태그가 없는 빈 태그(Empty tag / Void element)입니다.
+        - 문단(단락) 구분이 아닌, 같은 문단 안에서 줄만 바꿀 때 사용합니다.
+        - 예: 시(詩) 구절, 우편 주소처럼 단락은 같지만 줄이 나뉘어야 하는 경우
+    -->
+
+    <style>
+        /* 전체 페이지 기본 스타일 */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.8;
+        }
+
+        /* 섹션 구분용 제목 */
+        h2 {
+            font-size: 1rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 6px;
+            margin-top: 36px;
+        }
+
+        /* <p> 태그 기본 스타일 — 카드 형태로 표현 */
+        p {
+            background-color: #fff;
+            border-left: 4px solid #5b8dee;
+            border-radius: 4px;
+            padding: 16px 20px;
+            margin: 12px 0;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        /* 주소 예시 — 모노스페이스 계열 폰트로 강조 */
+        .address {
+            border-left-color: #f5a623;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        /* 시 예시 — 이탤릭체로 감성 표현 */
+        .poem {
+            border-left-color: #7ed6a4;
+            font-style: italic;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── 예시 1: 주소 ────────────────────────────────────────────
+         주소는 한 문단이지만 번지수/괄호 정보를 각 줄로 구분해야 합니다.
+         <br>을 사용해 같은 <p> 안에서 줄을 나눕니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <h2>예시 1 — 주소 (Address)</h2>
+    <p class="address">
+        서울특별시 중구 세종대로 110<br>
+        (태평로1가 31)
+    </p>
+
+    <!-- ── 예시 2: 시 구절 ──────────────────────────────────────────
+         시는 행(行)이 의미 단위이므로, 각 행이 끊어져야 합니다.
+         <br>을 사용해 행 바꿈을 표현합니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <h2>예시 2 — 시 구절 (Poem)</h2>
+    <p class="poem">
+        나 보기가 역겨워<br>
+        가실 때에는<br>
+        말없이 고이 보내 드리오리다.
+    </p>
+
+</body>
+</html>

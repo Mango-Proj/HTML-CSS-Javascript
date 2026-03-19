@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문단 태그 (p) 예제</title>
+
+    <!--
+        [paragraph.html]
+        학습 목표: <p> 태그의 역할과 의미론적(Semantic) 사용법 이해
+        - <p>는 Paragraph의 약자로, 하나의 문단(단락)을 나타냅니다.
+        - 브라우저는 <p> 태그 앞뒤에 자동으로 위·아래 여백(Margin)을 부여합니다.
+        - 단순히 줄을 바꾸기 위해 <p>를 남용하면 안 됩니다.
+        - 내용이 하나의 주제·맥락으로 묶인 경우에만 하나의 <p>로 감쌉니다.
+        - SEO(검색 엔진 최적화) 측면에서도 문단을 올바르게 나누는 것이 중요합니다.
+    -->
+
+    <style>
+        /* 전체 페이지 기본 스타일 */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #fafafa;
+            color: #2c2c2c;
+            max-width: 720px;
+            margin: 48px auto;
+            padding: 0 24px;
+            line-height: 1.9;
+        }
+
+        /* 섹션 레이블 */
+        h2 {
+            font-size: 0.85rem;
+            color: #999;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 6px;
+            margin-top: 40px;
+        }
+
+        /* 문단 공통 스타일 */
+        p {
+            background-color: #ffffff;
+            border-radius: 6px;
+            padding: 18px 22px;
+            margin: 14px 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+            font-size: 0.97rem;
+        }
+
+        /* 첫 번째 문단 — SEO 관련 내용 강조 */
+        .para-seo {
+            border-left: 4px solid #5b8dee;
+        }
+
+        /* 두 번째 문단 — 접근성 관련 내용 강조 */
+        .para-a11y {
+            border-left: 4px solid #e87d5b;
+        }
+
+        /* 문단 첫 글자 강조 (Drop Cap 효과) */
+        p::first-letter {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #5b8dee;
+            float: left;
+            margin-right: 4px;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── 문단 1: HTML 구조화와 SEO ──────────────────────────────
+         HTML의 의미론적 구조화가 단순 텍스트 표시와 다른 이유를 설명합니다.
+         검색 엔진은 <p> 태그 내 텍스트를 본문 내용으로 인식합니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <h2>문단 1 — HTML 구조화와 SEO</h2>
+    <p class="para-seo">
+        HTML 구조화는 단순히 글자를 화면에 뿌리는 것이 아니라,
+        데이터에 의미를 부여하는 작업입니다. 이를 통해 검색 엔진 최적화(SEO)가 가능해집니다.
+    </p>
+
+    <!-- ── 문단 2: 사용자 경험과 접근성(a11y) ───────────────────────
+         문단을 올바르게 나누면 스크린 리더(Screen Reader) 사용자에게도
+         올바른 정보 흐름을 전달할 수 있습니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <h2>문단 2 — 사용자 경험 & 접근성</h2>
+    <p class="para-a11y">
+        사용자들은 잘 나누어진 문단을 통해 정보를 더 빠르게 습득할 수 있으며,
+        스크린 리더를 사용하는 사용자에게도 정확한 맥락을 전달할 수 있습니다.
+    </p>
+
+</body>
+</html>
