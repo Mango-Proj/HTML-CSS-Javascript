@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 자기소개 페이지</title>
+
+    <!--
+        [self_introdution.html]
+        학습 목표: 지금까지 배운 텍스트 구조화 태그를 종합적으로 활용한 자기소개 페이지
+
+        사용 태그 목록:
+        - <h1>, <h2>, <h3> : 제목 계층 구조
+        - <p>              : 문단 구분
+        - <br>             : 문단 내 줄 바꿈
+        - <hr>             : 주제 구분선 (Horizontal Rule)
+        - <strong>         : 의미적으로 중요한 내용 강조
+        - <b>              : 시각적 굵게 표시
+        - <em>             : 의미적 기울임 강조
+        - <i>              : 시각적 기울임 표시
+        - <q>              : 짧은 인용구
+        - <blockquote>     : 긴 인용문
+        - <del>            : 삭제된 내용 (취소선)
+        - <ins>            : 추가된 내용 (밑줄)
+    -->
+
+    <style>
+        /* ── 리셋 & 기본 설정 ──────────────────────────────────── */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            color: #2c2c2c;
+            max-width: 760px;
+            margin: 48px auto;
+            padding: 0 24px;
+            line-height: 1.9;
+        }
+
+        /* ── 페이지 전체를 감싸는 카드 ────────────────────────── */
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 40px 44px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+        }
+
+        /* ── 제목 태그 ─────────────────────────────────────────── */
+
+        /* h1: 이름·인사말 — 페이지의 핵심 대제목 */
+        h1 {
+            font-size: 1.8rem;
+            color: #1a1a2e;
+            border-left: 6px solid #5b8dee;
+            padding-left: 14px;
+            margin-bottom: 6px;
+        }
+
+        /* h2: 주요 섹션 제목 */
+        h2 {
+            font-size: 1.15rem;
+            color: #5b8dee;
+            margin-top: 8px;
+            margin-bottom: 10px;
+        }
+
+        /* h3: 세부 항목 제목 */
+        h3 {
+            font-size: 1rem;
+            color: #7d5a9e;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+
+        /* ── 문단 ──────────────────────────────────────────────── */
+        p {
+            margin: 8px 0;
+            font-size: 0.97rem;
+        }
+
+        /* ── <hr>: 구분선 — 기본 스타일 재정의 ────────────────── */
+        hr {
+            border: none;
+            border-top: 1px solid #e8ecf0;
+            margin: 24px 0;
+        }
+
+        /* ── <strong>: 의미적 강조 — 빨간 계열로 중요도 표현 ─── */
+        strong {
+            color: #c0392b;
+            background-color: #fdecea;
+            padding: 0 3px;
+            border-radius: 3px;
+        }
+
+        /* ── <b>: 시각적 굵게 — 중립 색상 ─────────────────────── */
+        b {
+            color: #444;
+        }
+
+        /* ── <em>: 의미적 기울임 강조 — 파란 계열 ─────────────── */
+        em {
+            color: #2980b9;
+            font-style: italic;
+        }
+
+        /* ── <i>: 시각적 기울임 — 중립 색상 ───────────────────── */
+        i {
+            color: #666;
+            font-style: italic;
+        }
+
+        /* ── <q>: 짧은 인용구 ──────────────────────────────────── */
+        q {
+            color: #6c3483;
+            font-style: italic;
+        }
+
+        /* ── <blockquote>: 긴 인용문 ───────────────────────────── */
+        blockquote {
+            background-color: #f4ecf7;
+            border-left: 5px solid #9b59b6;
+            border-radius: 0 6px 6px 0;
+            margin: 12px 0;
+            padding: 14px 20px;
+        }
+
+        blockquote p {
+            margin: 3px 0;
+            color: #5b2c6f;
+            font-style: italic;
+        }
+
+        /* ── <del>: 삭제된 텍스트 ──────────────────────────────── */
+        del {
+            color: #aaa;
+            text-decoration: line-through;
+        }
+
+        /* ── <ins>: 추가된 텍스트 ──────────────────────────────── */
+        ins {
+            color: #1e8449;
+            text-decoration: underline;
+            font-weight: bold;
+            text-decoration-color: #1e8449;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+
+    <!-- ── h1: 문서 대제목 — 이름과 인사말 ────────────────────────
+         페이지 전체를 대표하는 한 줄 소개. 페이지당 h1은 한 번만 사용합니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <h1>안녕하세요! 신입 개발자 홍길동입니다.</h1>
+
+    <!-- <p> + <br>: 소개 문단. 두 문장이 같은 맥락이므로 하나의 <p>로 묶고,
+         줄 바꿈은 <br>로 처리합니다. -->
+    <p>
+        저는 배움을 즐기며 끊임없이 성장하는 것을 목표로 합니다.<br>
+        현재는 HTML과 CSS를 공부하며 나만의 웹사이트를 만들고 있습니다.
+    </p>
+
+    <!-- <hr>: 주제가 바뀌는 구간을 시각적으로 구분 -->
+    <hr>
+
+    <!-- ── h2: 주요 섹션 제목 ──────────────────────────────────────
+         h1의 하위 섹션. '기술 스택'이라는 새로운 주제를 소개합니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <h2>나의 기술 스택 및 학습 현황</h2>
+
+    <!-- <strong>: "HTML5의 시맨틱 태그"는 현재 가장 중점적으로 공부 중인
+         핵심 내용이므로 <strong>으로 의미적 강조합니다.
+         <b>: "의미가 명확한 구조"는 시각적으로 굵게 표시하지만,
+         의미적 중요도가 <strong>보다 낮을 때 사용합니다. -->
+    <p>
+        최근에는 <strong>HTML5의 시맨틱 태그</strong>를 집중적으로 공부하고 있습니다.<br>
+        단순히 예쁜 페이지보다는 <b>의미가 명확한 구조</b>를 짜는 것이 중요하다고 생각하기 때문입니다.
+    </p>
+
+    <!-- <em>: "웹 접근성"이라는 단어를 문장 안에서 의미적으로 강조.
+         <i>: 인용 느낌의 문구 "IT 기술의 진정한 가치"를 이탤릭 스타일로 처리. -->
+    <p>
+        공부하면서 가장 흥미로웠던 점은 <em>웹 접근성</em>의 중요성이었습니다.<br>
+        모두를 위한 웹을 만드는 것은 <i>"IT 기술의 진정한 가치"</i>라고 생각합니다.
+    </p>
+
+    <hr>
+
+    <!-- ── h3: 세부 항목 제목 ──────────────────────────────────────
+         h2의 하위 항목. 더 구체적인 소주제를 소개합니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <h3>내가 좋아하는 명언</h3>
+
+    <!-- <q>: 문장 안에 짧은 인용구 삽입.
+         브라우저가 앞뒤에 따옴표를 자동으로 붙여줍니다. -->
+    <p>항상 가슴속에 새기고 있는 말은 <q>천재는 노력하는 자를 이길 수 없다</q>는 말입니다.</p>
+
+    <!-- <blockquote>: 출처가 있는 긴 인용문.
+         블록 요소이므로 새 줄에서 시작하고, 기본적으로 들여쓰기가 적용됩니다. -->
+    <blockquote>
+        <p>기회는 준비된 자에게만 찾아온다.</p>
+        <p>— 루이 파스퇴르</p>
+    </blockquote>
+
+    <hr>
+
+    <h3>나의 목표</h3>
+
+    <!-- <del> + <ins>: 목표가 변경된 이력을 표시.
+         <del>: 이전 목표 (삭제된 내용 — 취소선)
+         <ins>: 새로운 목표 (추가된 내용 — 밑줄) -->
+    <p>
+        올해 목표는 <del>영어 회화 마스터하기</del>에서<br>
+        <ins>프론트엔드 포트폴리오 3개 완성하기</ins>로 변경되었습니다!
+    </p>
+
+</div>
+
+</body>
+</html>

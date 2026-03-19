@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인용 및 편집 태그 (q, blockquote, ins, del) 예제</title>
+
+    <!--
+        [quote_edit.html]
+        학습 목표: 인용 태그와 편집 태그의 의미 및 올바른 사용법 이해
+
+        인용 태그:
+        - <q>          : Quote — 짧은 인용구. 브라우저가 자동으로 따옴표("") 삽입
+        - <blockquote> : Block Quote — 긴 문단 단위 인용문. 블록 요소로 들여쓰기 적용
+
+        편집 태그:
+        - <ins> : Insert — 새롭게 추가된 텍스트. 기본 표시: 밑줄
+        - <del> : Delete — 삭제된 텍스트. 기본 표시: 취소선
+
+        활용 예시: 가격 변경, 문서 수정 이력, 정정 내용 표시 등
+    -->
+
+    <style>
+        /* ── 기본 페이지 스타일 ────────────────────────────────── */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 680px;
+            margin: 48px auto;
+            padding: 0 24px;
+            line-height: 1.9;
+        }
+
+        /* ── 섹션 레이블 ───────────────────────────────────────── */
+        h2 {
+            font-size: 0.85rem;
+            color: #999;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 6px;
+            margin-top: 40px;
+        }
+
+        /* ── 문단 카드 ─────────────────────────────────────────── */
+        p {
+            background-color: #fff;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+            font-size: 0.97rem;
+        }
+
+        /* ── <q>: 짧은 인용구 — 따옴표 색상 강조 ─────────────── */
+        q {
+            color: #6c3483;
+            font-style: italic;
+        }
+
+        /* ── <blockquote>: 긴 인용문 — 카드 형태로 스타일링 ───── */
+        blockquote {
+            background-color: #f4ecf7;
+            border-left: 5px solid #9b59b6;
+            border-radius: 0 6px 6px 0;
+            margin: 12px 0;
+            padding: 16px 20px;
+        }
+
+        blockquote p {
+            background: none;
+            box-shadow: none;
+            padding: 0;
+            margin: 4px 0;
+            color: #5b2c6f;
+            font-style: italic;
+        }
+
+        /* ── <del>: 삭제된 텍스트 — 취소선 + 흐린 색 ──────────── */
+        del {
+            color: #aaa;
+            text-decoration: line-through;
+        }
+
+        /* ── <ins>: 추가된 텍스트 — 밑줄 + 강조 색 ────────────── */
+        ins {
+            color: #1e8449;
+            text-decoration: underline;
+            font-weight: bold;
+            text-decoration-color: #1e8449;
+        }
+
+        /* ── 편집 예시 카드 ────────────────────────────────────── */
+        .edit-card {
+            background-color: #fff;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+            font-size: 0.97rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── 짧은 인용구: <q> ─────────────────────────────────────────
+         <q>는 문장 안에 짧은 인용구를 넣을 때 사용합니다.
+         브라우저가 앞뒤에 따옴표("")를 자동으로 붙여주므로,
+         직접 따옴표를 입력할 필요가 없습니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <h2>짧은 인용구 — &lt;q&gt;</h2>
+
+    <!-- <q>: 인라인 인용. 브라우저가 자동으로 "시작이 반이다" 형태로 렌더링 -->
+    <p>마음에 드는 속담: <q>시작이 반이다</q></p>
+
+
+    <!-- ── 긴 인용문: <blockquote> ──────────────────────────────────
+         <blockquote>는 긴 문단 단위의 인용문에 사용합니다.
+         블록 레벨 요소로, 기본적으로 좌우에 들여쓰기(margin)가 적용됩니다.
+         출처가 있는 명언, 문서 발췌 등에 적합합니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <h2>긴 인용문 — &lt;blockquote&gt;</h2>
+
+    <!-- <blockquote>: 블록 단위 인용. 내부에 <p> 태그를 사용해 문단 구분 -->
+    <blockquote>
+        <p>This is for everyone.</p>
+        <p>— Tim Berners-Lee</p>
+    </blockquote>
+
+
+    <!-- ── 편집 태그: <del> / <ins> ────────────────────────────────
+         문서에서 내용이 변경되었을 때 변경 이력을 표시합니다.
+         - <del>: 삭제된 내용 (취소선으로 표시)
+         - <ins>: 새로 추가된 내용 (밑줄로 표시)
+         가격 변동, 공지 수정, 계획 변경 등에 자주 활용됩니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <h2>편집 태그 — &lt;del&gt; / &lt;ins&gt;</h2>
+
+    <div class="edit-card">
+        <!-- <del>: 이전에 있었으나 삭제된 내용 — 취소선으로 표시 -->
+        <p>원래 가격은 <del>10,000원</del>이었으나,</p>
+
+        <!-- <ins>: 새롭게 추가·변경된 내용 — 밑줄로 표시 -->
+        <p>할인하여 <ins>7,000원</ins>에 판매합니다.</p>
+    </div>
+
+</body>
+</html>
