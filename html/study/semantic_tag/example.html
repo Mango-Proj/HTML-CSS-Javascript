@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시맨틱 태그 예제</title>
+
+    <!--
+        [example.html]
+        학습 목표: 시맨틱 태그(Semantic Tags)를 사용한 표준 웹 페이지 구조 이해
+
+        사용 태그와 역할:
+        ┌─────────────────────────────────────────────────────┐
+        │  <header>  로고, 제목, 내비게이션                    │
+        │    └── <nav>  메뉴 링크 모음                         │
+        ├─────────────────────────────────────────────────────┤
+        │  <main>    페이지 핵심 콘텐츠 (페이지당 1개)         │
+        │    ├── <section>  주제별 콘텐츠 구역                 │
+        │    │     └── <article>  독립적 재사용 가능한 콘텐츠  │
+        │    └── <aside>  사이드바, 부가 정보                  │
+        ├─────────────────────────────────────────────────────┤
+        │  <footer>  저작권, 연락처, 이용약관                  │
+        └─────────────────────────────────────────────────────┘
+
+        시맨틱 태그를 사용하면:
+        1. 검색 엔진(SEO)이 페이지 구조를 정확히 파악합니다.
+        2. 스크린 리더가 장애인에게 올바른 문서 흐름을 전달합니다.
+        3. 코드만 봐도 각 영역의 역할을 바로 알 수 있습니다.
+    -->
+
+    <style>
+        /* ── 리셋 & 기본 설정 ──────────────────────────────────── */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* ── <header>: 페이지 상단 ─────────────────────────────────
+           로고, 사이트 제목, 내비게이션을 포함하는 영역입니다.
+           배경을 진하게 설정해 다른 영역과 명확히 구분합니다.
+        ──────────────────────────────────────────────────────────── */
+        header {
+            background-color: #1a1a2e;
+            color: #fff;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            /* position: sticky로 스크롤 시 상단 고정 */
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* h1: 사이트 대제목 — header 안에서는 크기를 줄여 로고처럼 표현 */
+        header h1 {
+            font-size: 1.15rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            color: #fff;
+            border-left: 4px solid #5b8dee;
+            padding-left: 10px;
+        }
+
+        /* ── <nav>: 내비게이션 ─────────────────────────────────────
+           사이트의 주요 메뉴 링크 모음입니다.
+           스크린 리더는 <nav> 안의 링크를 "내비게이션"으로 인식합니다.
+        ──────────────────────────────────────────────────────────── */
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 4px;
+        }
+
+        nav ul li a {
+            display: block;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #c8d6f0;
+            transition: background-color 0.15s, color 0.15s;
+        }
+
+        /* 내비게이션 링크 — 같은 페이지 내 앵커(#html 등)로 이동 */
+        nav ul li a:hover {
+            background-color: #2e3f6e;
+            color: #fff;
+        }
+
+        /* ── <main>: 핵심 본문 영역 ────────────────────────────────
+           페이지의 핵심 콘텐츠를 담습니다.
+           페이지당 단 하나만 사용해야 합니다.
+           flex로 section과 aside를 나란히 배치합니다.
+        ──────────────────────────────────────────────────────────── */
+        main {
+            flex: 1;                    /* body의 남은 세로 공간 채우기 */
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 36px 32px;
+        }
+
+        /* ── <section>: 주제별 콘텐츠 구역 ────────────────────────
+           연관된 콘텐츠를 주제 단위로 묶습니다.
+           id 속성으로 내비게이션의 앵커 링크(#html) 대상이 됩니다.
+        ──────────────────────────────────────────────────────────── */
+        section {
+            flex: 1;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 28px 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            /* scroll-margin-top: header가 sticky이므로 앵커 이동 시 여백 확보 */
+            scroll-margin-top: 80px;
+        }
+
+        section h2 {
+            font-size: 1.2rem;
+            color: #1a3a7e;
+            border-left: 4px solid #5b8dee;
+            padding-left: 10px;
+            margin-bottom: 12px;
+        }
+
+        section > p {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        /* ── <article>: 독립적 콘텐츠 ─────────────────────────────
+           블로그 포스트, 뉴스 기사처럼 단독으로 배포·재사용 가능한
+           콘텐츠를 담습니다. section 안에 포함될 수 있습니다.
+        ──────────────────────────────────────────────────────────── */
+        article {
+            background-color: #f8f9fc;
+            border: 1px solid #e0e8f8;
+            border-left: 4px solid #aac0f5;
+            border-radius: 6px;
+            padding: 18px 20px;
+        }
+
+        article h3 {
+            font-size: 1rem;
+            color: #2e4a9e;
+            margin-bottom: 8px;
+        }
+
+        article p {
+            font-size: 0.93rem;
+            color: #555;
+        }
+
+        /* ── <aside>: 사이드바 / 보조 정보 ────────────────────────
+           메인 콘텐츠와 간접적으로 관련된 부가 정보를 담습니다.
+           광고, 추천 링크, 관련 글 등이 일반적입니다.
+        ──────────────────────────────────────────────────────────── */
+        aside {
+            width: 220px;
+            flex-shrink: 0;
+            background-color: #fff8ec;
+            border: 1px solid #f0d880;
+            border-left: 4px solid #f5a623;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            /* aside는 메인 흐름 밖의 보조 정보 영역 */
+        }
+
+        aside h4 {
+            font-size: 0.88rem;
+            color: #b7770d;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        aside p {
+            font-size: 0.88rem;
+            color: #7a5c10;
+            line-height: 1.6;
+        }
+
+        /* ── <footer>: 페이지 하단 ─────────────────────────────────
+           저작권 정보, 연락처, 이용약관 링크 등을 담습니다.
+           검색 엔진은 <footer> 안의 콘텐츠를 부가 정보로 처리합니다.
+        ──────────────────────────────────────────────────────────── */
+        footer {
+            background-color: #1a1a2e;
+            color: #8899bb;
+            text-align: center;
+            padding: 24px 32px;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        footer a {
+            color: #aac0f5;
+            text-decoration: underline;
+        }
+
+        footer a:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!--
+        ┌──────────────────────────────────────────────────────────┐
+        │ <header>                                                 │
+        │   역할: 페이지 상단 — 로고, 제목, 내비게이션              │
+        │   특징: 페이지 전체 또는 <section> 단위로 사용 가능       │
+        └──────────────────────────────────────────────────────────┘
+    -->
+    <header>
+
+        <!-- h1: 사이트 전체의 대제목. 페이지당 하나만 사용 -->
+        <h1>코딩 학습 로드맵</h1>
+
+        <!--
+            <nav>: 내비게이션 링크 모음.
+            href="#html"처럼 # + id로 같은 페이지 내 특정 섹션으로 이동합니다.
+            (앵커 링크 / 해시 링크)
+        -->
+        <nav>
+            <ul>
+                <!-- 각 <a>의 href가 아래 <section id="...">와 연결됩니다 -->
+                <li><a href="#html">HTML</a></li>
+                <li><a href="#css">CSS</a></li>
+                <li><a href="#js">JavaScript</a></li>
+            </ul>
+        </nav>
+
+    </header>
+
+
+    <!--
+        ┌──────────────────────────────────────────────────────────┐
+        │ <main>                                                   │
+        │   역할: 페이지의 핵심 본문 콘텐츠                         │
+        │   ⚠️  페이지 전체에서 단 하나만 사용해야 합니다.           │
+        │   내부 구성: <section> + <aside> 나란히 배치             │
+        └──────────────────────────────────────────────────────────┘
+    -->
+    <main>
+
+        <!--
+            <section id="html">:
+            - 주제별로 연관된 콘텐츠를 묶는 구역입니다.
+            - id="html"은 <nav>의 <a href="#html">과 연결되는 앵커입니다.
+            - 반드시 제목 태그(h2~h6)를 포함하는 것이 권장됩니다.
+        -->
+        <section id="html">
+
+            <h2>HTML 기초</h2>
+            <p>웹 페이지의 뼈대를 만드는 언어입니다.</p>
+
+            <!--
+                <article>:
+                - 이 콘텐츠 블록 자체가 독립적으로 의미를 가질 때 사용합니다.
+                - 블로그 글, 뉴스 기사, 포럼 게시물 등에 적합합니다.
+                - <section> 안에 포함되거나 단독으로 사용될 수 있습니다.
+            -->
+            <article>
+                <h3>시맨틱 태그란 무엇인가?</h3>
+                <p>태그 자체가 의미를 가지는 요소를 말합니다...</p>
+            </article>
+
+        </section>
+
+
+        <!--
+            <aside>:
+            - 메인 콘텐츠와 간접적으로 연관된 보조 정보 영역입니다.
+            - 광고, 사이드바, 관련 링크, 추천 글 등에 사용됩니다.
+            - <main> 안에 위치하지만, 핵심 흐름에서는 벗어난 부가 요소입니다.
+        -->
+        <aside>
+            <h4>관련 광고</h4>
+            <p>지금 바로 코딩 강의를 신청하세요!</p>
+        </aside>
+
+    </main>
+
+
+    <!--
+        ┌──────────────────────────────────────────────────────────┐
+        │ <footer>                                                 │
+        │   역할: 페이지 하단 — 저작권, 연락처, 이용약관 등         │
+        │   특징: <header>와 마찬가지로 페이지 또는 섹션 단위 사용  │
+        └──────────────────────────────────────────────────────────┘
+    -->
+    <footer>
+        <!-- &copy; : 저작권 기호(©)를 나타내는 HTML 특수문자 엔티티 -->
+        <p>&copy; 2026 Coding Valley. All rights reserved.</p>
+        <p>연락처: info@example.com | <a href="#">이용약관</a></p>
+    </footer>
+
+</body>
+</html>
