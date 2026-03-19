@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>블록 요소 (Block Elements) 예제</title>
+
+    <!--
+        [block.html]
+        학습 목표: 블록 요소(Block Element)의 배치 특성 이해
+
+        블록 요소의 핵심 특성:
+        1. 항상 새로운 줄(Line)에서 시작합니다.
+        2. 부모 요소의 가로 너비(width) 전체를 차지합니다.
+        3. width, height, margin, padding 모두 지정 가능합니다.
+
+        대표 태그: <h1>~<h6>, <p>, <div>, <ul>, <li>, <section> 등
+    -->
+
+    <style>
+        /* ── 기본 페이지 스타일 ────────────────────────────────── */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            max-width: 680px;
+            margin: 48px auto;
+            padding: 0 24px;
+            line-height: 1.8;
+        }
+
+        /* ── 블록 요소 공통 스타일 ─────────────────────────────────
+           배경색과 테두리로 각 블록이 가로 전체를 차지함을 시각화합니다.
+        ──────────────────────────────────────────────────────────── */
+        h1, h2, div, p {
+            padding: 12px 16px;
+            margin: 6px 0;
+            border-radius: 6px;
+            /* 블록 요소임을 명확히 선언 (기본값이지만 학습용으로 명시) */
+            display: block;
+        }
+
+        /* h1: 가장 중요한 제목 — 가장 진한 배경 */
+        h1 {
+            background-color: #1a1a2e;
+            color: #fff;
+            font-size: 1.5rem;
+            border-left: 6px solid #5b8dee;
+        }
+
+        /* h2: 두 번째 제목 — 한 단계 밝은 배경 */
+        h2 {
+            background-color: #2e3f6e;
+            color: #e8eef8;
+            font-size: 1.2rem;
+            border-left: 5px solid #7da4f0;
+        }
+
+        /* div: 범용 블록 컨테이너 — 중간 밝기 */
+        div {
+            background-color: #d6e4ff;
+            color: #1a3a7e;
+            font-size: 1rem;
+            border-left: 4px solid #5b8dee;
+        }
+
+        /* p: 문단 태그 — 가장 밝은 배경 */
+        p {
+            background-color: #eef3ff;
+            color: #3a5bb5;
+            font-size: 1rem;
+            border-left: 3px solid #aac0f5;
+        }
+
+        /* ── 태그 레이블 ───────────────────────────────────────────
+           ::before 가상 요소로 어떤 태그인지 표시합니다.
+        ──────────────────────────────────────────────────────────── */
+        h1::before { content: "<h1> "; font-size: 0.65em; opacity: 0.6; font-weight: normal; }
+        h2::before { content: "<h2> "; font-size: 0.65em; opacity: 0.6; font-weight: normal; }
+        div::before { content: "<div> "; font-size: 0.65em; opacity: 0.6; }
+        p::before  { content: "<p> ";  font-size: 0.65em; opacity: 0.6; }
+    </style>
+</head>
+<body>
+
+    <!--
+        아래 4개 태그는 모두 블록 요소입니다.
+        배경색이 화면 가로 끝까지 펼쳐지는 것을 확인하세요.
+        각 요소는 이전 요소 아래에서 새 줄로 시작합니다.
+    -->
+
+    <!-- h1: 블록 요소 — 페이지 대제목, 가장 높은 계층 -->
+    <h1>Hello HTML! (h1)</h1>
+
+    <!-- h2: 블록 요소 — 섹션 제목, h1 다음 계층 -->
+    <h2>Hello HTML! (h2)</h2>
+
+    <!-- div: 블록 요소 — 자체 의미 없는 범용 컨테이너.
+         레이아웃을 구성하거나 요소를 묶을 때 사용합니다. -->
+    <div>Hello HTML! (div)</div>
+
+    <!-- p: 블록 요소 — 하나의 문단(단락)을 나타냅니다. -->
+    <p>Hello HTML! (p)</p>
+
+</body>
+</html>

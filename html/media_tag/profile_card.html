@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 카드 실습</title>
+
+    <!--
+        [profile_card.html]
+        학습 목표: <img>, <a> 태그를 활용한 프로필 카드 실습
+
+        사용 태그 및 속성:
+        - <img>  : src, alt, width, height — 프로필 사진 삽입
+        - <a>    : href, target — 외부 링크(GitHub, LinkedIn), mailto, tel
+        - <h2>   : 이름 표시 (섹션 제목)
+        - <h3>   : 하위 항목 제목
+        - <p>    : 소개 문단
+        - <hr>   : 구분선
+        - <strong>: 중요 텍스트 강조
+
+        개선 사항:
+        - 기존 인라인 스타일(style="") 전부 외부 CSS 클래스로 분리
+        - 링크 종류(외부/메일/전화)별 색상 구분
+    -->
+
+    <style>
+        /* ── 기본 페이지 스타일 ────────────────────────────────── */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 48px 24px;
+            box-sizing: border-box;
+        }
+
+        /* ── 프로필 카드 컨테이너 ──────────────────────────────────
+           기존: style="border: 1px solid #ccc; width: 300px; padding: 20px; ..."
+           개선: .profile-card 클래스로 분리
+        ──────────────────────────────────────────────────────────── */
+        .profile-card {
+            background-color: #fff;
+            border: 1px solid #dde3f0;
+            border-radius: 16px;
+            width: 300px;
+            padding: 32px 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ── 프로필 이미지 ─────────────────────────────────────────
+           기존: style="border-radius: 50%;"
+           개선: .profile-img 클래스로 분리
+           - border-radius: 50% → 원형 이미지
+           - object-fit: cover  → 비율 유지하며 꽉 채우기
+           - border             → 파란 테두리 추가
+        ──────────────────────────────────────────────────────────── */
+        .profile-img {
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #5b8dee;
+            display: block;
+            margin: 0 auto 16px;
+        }
+
+        /* ── 이름 제목 ─────────────────────────────────────────── */
+        h2 {
+            font-size: 1.2rem;
+            color: #1a1a2e;
+            margin: 0 0 8px 0;
+        }
+
+        /* ── 소개 문단 ─────────────────────────────────────────── */
+        p {
+            font-size: 0.9rem;
+            color: #555;
+            margin: 6px 0;
+            line-height: 1.6;
+        }
+
+        /* ── 구분선 ────────────────────────────────────────────────
+           기존: style="border: 0; border-top: 1px solid #eee; margin: 20px 0;"
+           개선: CSS로 분리
+        ──────────────────────────────────────────────────────────── */
+        hr {
+            border: none;
+            border-top: 1px solid #e8ecf0;
+            margin: 20px 0;
+        }
+
+        /* ── Contact 소제목 ────────────────────────────────────── */
+        h3 {
+            font-size: 0.85rem;
+            color: #999;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 0 0 12px 0;
+        }
+
+        /* ── SNS 링크 (GitHub, LinkedIn) ──────────────────────────
+           target="_blank" 외부 링크 — 파란 계열
+        ──────────────────────────────────────────────────────────── */
+        .link-sns {
+            display: inline-block;
+            padding: 5px 12px;
+            background-color: #eef3ff;
+            color: #2c5fcc;
+            border: 1px solid #aac0f5;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            margin: 0 4px;
+            transition: background-color 0.15s;
+        }
+
+        .link-sns:hover {
+            background-color: #d6e4ff;
+        }
+
+        /* ── 메일 / 전화 링크 래퍼 ────────────────────────────── */
+        .contact-list {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* 메일 링크 — 주황 계열 */
+        .link-mail {
+            display: inline-block;
+            padding: 5px 12px;
+            background-color: #fef9e7;
+            color: #b7770d;
+            border: 1px solid #f0d080;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: background-color 0.15s;
+        }
+
+        .link-mail:hover {
+            background-color: #fdeeb0;
+        }
+
+        /* 전화 링크 — 초록 계열 */
+        .link-tel {
+            display: inline-block;
+            padding: 5px 12px;
+            background-color: #eafaf1;
+            color: #1e8449;
+            border: 1px solid #7dcea0;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: background-color 0.15s;
+        }
+
+        .link-tel:hover {
+            background-color: #c8f0d8;
+        }
+    </style>
+</head>
+<body>
+
+    <!--
+        .profile-card: 기존 인라인 스타일을 외부 CSS 클래스로 분리한 카드 컨테이너.
+        내부에 <img>, <h2>, <p>, <hr>, <h3>, <a> 태그가 모두 포함된 종합 실습입니다.
+    -->
+    <div class="profile-card">
+
+        <!-- <img>: 프로필 사진
+             - src="https://via.placeholder.com/150" : 플레이스홀더 이미지 (실습용)
+             - alt="김철수 프로필 사진" : 이미지 로드 실패 시 표시할 대체 텍스트 (접근성 필수)
+             - width / height : 150x150 정사각형으로 크기 고정
+             - class="profile-img" : CSS로 원형(border-radius: 50%) 처리 -->
+        <img
+            src="https://via.placeholder.com/150"
+            alt="김철수 프로필 사진"
+            width="150"
+            height="150"
+            class="profile-img"
+        >
+
+        <!-- <h2>: 이름 — 카드에서 가장 중요한 제목 -->
+        <h2>김철수 (Chulsoo Kim)</h2>
+
+        <!-- <p> + <strong>: 직군 소개
+             <strong>으로 "프론트엔드 개발자"를 의미적으로 강조합니다. -->
+        <p><strong>프론트엔드 개발자</strong>를 꿈꾸는 열정 가득한 신입입니다.</p>
+        <p>HTML과 CSS를 공부하며 나만의 웹사이트를 만드는 것이 즐겁습니다.</p>
+
+        <!-- <hr>: 소개와 연락처 영역을 시각적으로 구분하는 수평선 -->
+        <hr>
+
+        <!-- <h3>: Contact 소제목 -->
+        <h3>Contact & Social</h3>
+
+        <!-- SNS 링크: target="_blank"로 새 탭에서 열기 -->
+        <p>
+            <a href="https://github.com/" target="_blank" class="link-sns">GitHub</a>
+            <a href="https://linkedin.com/" target="_blank" class="link-sns">LinkedIn</a>
+        </p>
+
+        <!-- 메일 / 전화 링크 -->
+        <div class="contact-list">
+
+            <!-- mailto: 이메일 클라이언트(Gmail 등) 실행 -->
+            <a href="mailto:chulsoo.dev@email.com" class="link-mail">
+                ✉ 이메일 보내기
+            </a>
+
+            <!-- tel: 모바일에서 전화 앱 실행 -->
+            <a href="tel:010-1234-5678" class="link-tel">
+                📞 전화 걸기
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

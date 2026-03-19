@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인라인 요소 (Inline Elements) 예제</title>
+
+    <!--
+        [inline.html]
+        학습 목표: 인라인 요소(Inline Element)의 배치 특성 이해
+
+        인라인 요소의 핵심 특성:
+        1. 줄 바꿈 없이 옆으로 나란히(In-line) 배치됩니다.
+        2. 콘텐츠(내용물) 크기만큼만 너비를 차지합니다.
+        3. width, height를 직접 지정할 수 없습니다.
+        4. 상하 margin은 적용되지 않습니다.
+        5. ⚠️ 인라인 요소 안에 블록 요소를 넣을 수 없습니다.
+
+        대표 태그: <span>, <a>, <img>, <strong>, <em>, <b>, <i> 등
+    -->
+
+    <style>
+        /* ── 기본 페이지 스타일 ────────────────────────────────── */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            max-width: 680px;
+            margin: 48px auto;
+            padding: 0 24px;
+            line-height: 2.2;
+        }
+
+        /* ── 인라인 요소 시각화 ────────────────────────────────────
+           배경색으로 각 인라인 요소가 콘텐츠 크기만큼만 차지함을 표현합니다.
+           블록 요소(block.html)와 비교해 보세요.
+        ──────────────────────────────────────────────────────────── */
+
+        /* span: 인라인 요소 — 내용 너비만큼만 색이 칠해집니다. */
+        span {
+            background-color: #d6e4ff;
+            color: #1a3a7e;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #aac0f5;
+            font-size: 0.97rem;
+        }
+
+        /* a: 인라인 요소 — 링크 태그도 텍스트 너비만큼만 차지합니다. */
+        a {
+            background-color: #d5f5e3;
+            color: #1e8449;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #7dcea0;
+            text-decoration: none;
+            font-size: 0.97rem;
+        }
+
+        a:hover {
+            background-color: #a9dfbf;
+            text-decoration: underline;
+        }
+
+        /* ── 안내 문구 래퍼 ────────────────────────────────────── */
+        .wrapper {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            margin-bottom: 16px;
+        }
+
+        /* ── 비교 안내 박스 ────────────────────────────────────── */
+        .note {
+            background-color: #fffbea;
+            border-left: 4px solid #f1c40f;
+            border-radius: 4px;
+            padding: 12px 16px;
+            font-size: 0.88rem;
+            color: #7d6608;
+        }
+    </style>
+</head>
+<body>
+
+    <!--
+        아래 3개 요소(<span> 2개, <a> 1개)는 모두 인라인 요소입니다.
+        블록 요소와 달리 줄 바꿈 없이 나란히 배치되는 것을 확인하세요.
+        배경색이 텍스트 길이만큼만 채워집니다.
+    -->
+    <div class="wrapper">
+
+        <!-- span: 인라인 요소 — 텍스트 너비만큼만 차지하고, span2와 나란히 배치됩니다. -->
+        <span>Hello HTML! (span1)</span>
+
+        <!-- span: 인라인 요소 — span1 바로 옆에 이어서 배치됩니다. -->
+        <span>Hello HTML! (span2)</span>
+
+        <!-- a: 인라인 요소 — 하이퍼링크. href="#"는 현재 페이지를 가리킵니다.
+             span과 마찬가지로 텍스트 너비만큼만 차지합니다. -->
+        <a href="#">Hello HTML! (link)</a>
+
+    </div>
+
+    <!-- 블록 요소와의 차이를 강조하는 안내 메시지 -->
+    <p class="note">
+        💡 위 세 요소는 모두 <strong>같은 줄에 나란히</strong> 배치됩니다.<br>
+        block.html의 블록 요소와 비교해 차이를 확인해 보세요.
+    </p>
+
+</body>
+</html>

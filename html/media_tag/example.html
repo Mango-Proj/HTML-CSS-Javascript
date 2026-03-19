@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미디어 & 링크 태그 예제</title>
+
+    <!--
+        [example.html]
+        학습 목표: 미디어 태그와 링크 태그의 속성 및 사용법 이해
+
+        다루는 태그:
+        - <img>        : 이미지 삽입 (빈 태그 / src, alt, width 속성)
+        - <audio>      : 오디오 재생 (controls, loop, <source>)
+        - <video>      : 비디오 재생 (controls, muted, autoplay, <source>)
+        - <a>          : 하이퍼링크 (href, target / 외부·내부·메일·전화)
+        - <hr>         : 주제 구분선
+    -->
+
+    <style>
+        /* ── 기본 페이지 스타일 ────────────────────────────────── */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            max-width: 740px;
+            margin: 48px auto;
+            padding: 0 24px;
+            line-height: 1.8;
+        }
+
+        /* ── 섹션 카드 ─────────────────────────────────────────────
+           각 주제를 카드 형태로 감싸 시각적으로 구분합니다.
+        ──────────────────────────────────────────────────────────── */
+        .section-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+        }
+
+        /* ── 섹션 제목 ─────────────────────────────────────────── */
+        h3 {
+            font-size: 1rem;
+            color: #1a3a7e;
+            border-left: 4px solid #5b8dee;
+            padding-left: 10px;
+            margin: 0 0 16px 0;
+        }
+
+        /* ── <hr> 구분선 — 기본 스타일 재정의 ─────────────────── */
+        hr {
+            display: none; /* 카드 레이아웃으로 구분하므로 hr 숨김 */
+        }
+
+        /* ── 이미지 섹션 ───────────────────────────────────────── */
+        .img-wrapper {
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .img-wrapper figure {
+            margin: 0;
+            text-align: center;
+        }
+
+        .img-wrapper figcaption {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 6px;
+        }
+
+        /* img: 인라인 요소 — 테두리와 둥근 모서리로 스타일 추가 */
+        img {
+            display: block;
+            border-radius: 6px;
+            border: 2px solid #c9d6f0;
+        }
+
+        /* ── 오디오 섹션 ───────────────────────────────────────── */
+        audio {
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        /* ── 비디오 섹션 ───────────────────────────────────────── */
+        video {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 2px solid #c9d6f0;
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* ── 링크 목록 ─────────────────────────────────────────── */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        ul li a {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.93rem;
+            text-decoration: none;
+            transition: opacity 0.15s;
+        }
+
+        ul li a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        /* 외부 링크 (새 탭) — 파란 계열 */
+        .link-external {
+            background-color: #eef3ff;
+            color: #2c5fcc;
+            border: 1px solid #aac0f5;
+        }
+
+        /* 내부 링크 (현재 탭) — 초록 계열 */
+        .link-internal {
+            background-color: #eafaf1;
+            color: #1e8449;
+            border: 1px solid #7dcea0;
+        }
+
+        /* 메일 링크 — 주황 계열 */
+        .link-mail {
+            background-color: #fef9e7;
+            color: #b7770d;
+            border: 1px solid #f0d080;
+        }
+
+        /* 전화 링크 — 보라 계열 */
+        .link-tel {
+            background-color: #f5eef8;
+            color: #6c3483;
+            border: 1px solid #c39bd3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── 이미지 삽입 ──────────────────────────────────────────────
+         <img>는 닫는 태그가 없는 빈 태그(Void element)입니다.
+         핵심 속성:
+         - src  : 이미지 파일 경로 (URL 또는 상대 경로)
+         - alt  : 이미지 로드 실패 시 표시할 대체 텍스트 (접근성 필수)
+         - width: 표시 너비 (px 단위, 생략 가능)
+    ──────────────────────────────────────────────────────────────── -->
+    <div class="section-card">
+        <h3>이미지 삽입</h3>
+
+        <div class="img-wrapper">
+
+            <!-- 절대 경로(URL)로 외부 이미지를 불러오는 예시 -->
+            <figure>
+                <img src="https://via.placeholder.com/150" alt="샘플 이미지" width="150">
+                <figcaption>절대 경로 (외부 URL)</figcaption>
+            </figure>
+
+            <!-- 상대 경로로 로컬 이미지를 불러오는 예시
+                 ./images/photo.jpg → 현재 파일 기준 images 폴더 안의 photo.jpg -->
+            <figure>
+                <img src="./images/photo.jpg" alt="내 사진" width="200">
+                <figcaption>상대 경로 (./images/photo.jpg)</figcaption>
+            </figure>
+
+        </div>
+    </div>
+
+    <!-- ── 오디오 재생 ──────────────────────────────────────────────
+         <audio>는 브라우저 내장 플레이어로 음악을 재생합니다.
+         속성:
+         - controls : 재생/정지/볼륨 컨트롤러 표시
+         - loop     : 반복 재생
+
+         <source>를 여러 개 나열하면 브라우저가 지원하는 포맷을 자동 선택합니다.
+         (mp3 → ogg 순으로 시도)
+
+         fallback 텍스트: <source> 태그를 모두 지원하지 않는 구형 브라우저에
+         표시할 안내 문구입니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <div class="section-card">
+        <h3>오디오 재생</h3>
+
+        <audio controls loop>
+            <!-- 브라우저가 mp3를 지원하면 이 파일을 재생 -->
+            <source src="music.mp3" type="audio/mpeg">
+            <!-- mp3 미지원 시 ogg로 fallback -->
+            <source src="music.ogg" type="audio/ogg">
+            <!-- 두 포맷 모두 미지원 시 이 텍스트를 표시 -->
+            브라우저가 오디오 태그를 지원하지 않습니다.
+        </audio>
+    </div>
+
+    <!-- ── 비디오 재생 ──────────────────────────────────────────────
+         <video>는 브라우저 내장 플레이어로 동영상을 재생합니다.
+         속성:
+         - width    : 플레이어 너비 (px)
+         - controls : 재생/정지/볼륨/전체화면 컨트롤러 표시
+         - muted    : 음소거 상태로 시작
+         - autoplay : 페이지 로드 시 자동 재생
+                      ⚠️ 대부분 브라우저는 muted 없이 autoplay를 차단합니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <div class="section-card">
+        <h3>비디오 재생</h3>
+
+        <!-- muted + autoplay 조합 → 대부분의 브라우저에서 자동 재생 허용 -->
+        <video width="400" controls muted autoplay>
+            <source src="movie.mp4" type="video/mp4">
+            브라우저가 비디오 태그를 지원하지 않습니다.
+        </video>
+    </div>
+
+    <!-- ── 다양한 링크 ──────────────────────────────────────────────
+         <a> (Anchor) 태그의 href 속성으로 다양한 목적지를 연결합니다.
+         - 외부 URL      : https://... → target="_blank"로 새 탭에서 열기
+         - 내부 페이지   : ./about.html → 현재 탭에서 열기 (target 생략 = _self)
+         - 메일 클라이언트: mailto:주소 → 이메일 앱 실행
+         - 전화 앱       : tel:번호 → 모바일에서 전화 앱 실행
+    ──────────────────────────────────────────────────────────────── -->
+    <div class="section-card">
+        <h3>다양한 링크</h3>
+
+        <ul>
+            <!-- target="_blank": 새 탭에서 열기 -->
+            <li>
+                <a href="https://www.google.com" target="_blank" class="link-external">
+                    구글 (새 탭)
+                </a>
+            </li>
+
+            <!-- target 생략 = "_self": 현재 탭에서 열기 (기본값) -->
+            <li>
+                <a href="./about.html" class="link-internal">
+                    회사 소개 (현재 탭)
+                </a>
+            </li>
+
+            <!-- mailto: 이메일 클라이언트(Gmail 등) 실행 -->
+            <li>
+                <a href="mailto:help@example.com" class="link-mail">
+                    문의 메일 보내기
+                </a>
+            </li>
+
+            <!-- tel: 모바일에서 전화 앱 실행, PC에서는 Skype 등 실행 -->
+            <li>
+                <a href="tel:010-1234-5678" class="link-tel">
+                    고객센터 전화하기
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>
