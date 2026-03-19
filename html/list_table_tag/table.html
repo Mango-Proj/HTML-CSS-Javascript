@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>표 태그 (table) 예제</title>
+
+    <!--
+        [table.html]
+        학습 목표: 표(Table) 구성 태그와 구조화 태그의 역할 이해
+
+        표 구성 태그:
+        - <table>   : 표 전체를 감싸는 컨테이너
+        - <caption> : 표의 제목 (<table> 바로 아래에 위치)
+        - <tr>      : 행 (Table Row) — 가로 한 줄
+        - <th>      : 제목 셀 (Table Header) — 굵게 + 가운데 정렬 (기본)
+        - <td>      : 데이터 셀 (Table Data) — 일반 내용
+
+        구조화 태그 (의미론적 영역 구분):
+        - <thead>   : 머리글 영역 (컬럼 제목 행)
+        - <tbody>   : 본문 데이터 영역
+        - <tfoot>   : 바닥글 영역 (합계, 요약 등)
+
+        셀 병합 속성:
+        - colspan="n" : n개의 열(Column)을 하나로 병합
+        - rowspan="n" : n개의 행(Row)을 하나로 병합
+
+        ⚠️  기존 border="1" 속성은 HTML4 방식입니다.
+            스타일은 CSS border로 처리하는 것이 권장됩니다.
+    -->
+
+    <style>
+        /* ── 기본 페이지 스타일 ────────────────────────────────── */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            max-width: 680px;
+            margin: 48px auto;
+            padding: 0 24px;
+            line-height: 1.8;
+        }
+
+        /* ── 표 래퍼 카드 ──────────────────────────────────────── */
+        .table-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 28px 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            overflow-x: auto;   /* 좁은 화면에서 가로 스크롤 허용 */
+        }
+
+        /* ── <table> ────────────────────────────────────────────────
+           border-collapse: separate(기본) → collapse로 변경하면
+           셀 사이의 이중 테두리가 하나로 합쳐집니다.
+        ──────────────────────────────────────────────────────────── */
+        table {
+            width: 100%;
+            border-collapse: collapse;  /* 셀 테두리 합치기 */
+            font-size: 0.95rem;
+        }
+
+        /* ── <caption>: 표 제목 ────────────────────────────────────
+           기본적으로 표 위 가운데에 표시됩니다.
+        ──────────────────────────────────────────────────────────── */
+        caption {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #1a3a7e;
+            margin-bottom: 12px;
+            text-align: left;
+            padding-left: 4px;
+            border-left: 4px solid #5b8dee;
+        }
+
+        /* ── <th>: 제목 셀 ─────────────────────────────────────────
+           <thead> 안에서 컬럼 제목을 나타냅니다.
+           기본값: 굵게(bold), 가운데 정렬.
+        ──────────────────────────────────────────────────────────── */
+        th {
+            background-color: #1a3a7e;
+            color: #fff;
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* 첫 번째 <th> — 왼쪽 둥근 모서리 */
+        thead tr th:first-child {
+            border-radius: 6px 0 0 0;
+        }
+
+        /* 마지막 <th> — 오른쪽 둥근 모서리 */
+        thead tr th:last-child {
+            border-radius: 0 6px 0 0;
+        }
+
+        /* ── <td>: 데이터 셀 ───────────────────────────────────────
+           실제 데이터를 담는 일반 셀입니다.
+        ──────────────────────────────────────────────────────────── */
+        td {
+            padding: 11px 16px;
+            border-bottom: 1px solid #e8ecf0;
+            text-align: center;
+            color: #444;
+        }
+
+        /* ── <tbody> 짝수 행 배경 (Zebra Stripe) ───────────────────
+           행이 많아질 때 가독성을 높이는 기법입니다.
+        ──────────────────────────────────────────────────────────── */
+        tbody tr:nth-child(even) td {
+            background-color: #f8f9fc;
+        }
+
+        tbody tr:hover td {
+            background-color: #eef3ff;
+            transition: background-color 0.1s;
+        }
+
+        /* ── <tfoot>: 바닥글 영역 ──────────────────────────────────
+           합계나 요약을 표시하는 영역입니다.
+           시각적으로 구분되도록 배경색과 테두리를 추가합니다.
+        ──────────────────────────────────────────────────────────── */
+        tfoot td {
+            background-color: #eef3ff;
+            color: #1a3a7e;
+            font-weight: bold;
+            border-top: 2px solid #aac0f5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="table-card">
+
+        <!--
+            <table>: 표 전체를 감싸는 최상위 컨테이너.
+            기존 border="1" 속성(HTML4 방식) 제거 → CSS border로 처리
+        -->
+        <table>
+
+            <!-- <caption>: 표의 제목. <table> 바로 아래에 위치해야 합니다.
+                 스크린 리더가 표를 읽기 전에 이 제목을 먼저 읽어줍니다. -->
+            <caption>📅 2026년 상반기 코딩 모임 명단</caption>
+
+            <!-- ── <thead>: 머리글 영역 ──────────────────────────────
+                 컬럼 제목(헤더)을 담는 영역입니다.
+                 <th> 태그를 사용해 각 열의 이름을 정의합니다.
+            ─────────────────────────────────────────────────────────── -->
+            <thead>
+                <tr>
+                    <!-- <th>: 제목 셀 — 기본적으로 굵게 + 가운데 정렬 -->
+                    <th>성함</th>
+                    <th>활동 분야</th>
+                    <th>비고</th>
+                </tr>
+            </thead>
+
+            <!-- ── <tbody>: 본문 데이터 영역 ─────────────────────────
+                 실제 데이터 행들을 담는 영역입니다.
+                 <td> 태그로 각 셀의 데이터를 표시합니다.
+            ─────────────────────────────────────────────────────────── -->
+            <tbody>
+                <tr>
+                    <!-- <td>: 데이터 셀 — 일반 텍스트로 표시 -->
+                    <td>김코딩</td>
+                    <td>Frontend</td>
+                    <td>팀장</td>
+                </tr>
+                <tr>
+                    <td>이코딩</td>
+                    <td>Backend</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+
+            <!-- ── <tfoot>: 바닥글 영역 ───────────────────────────────
+                 합계, 요약, 총계 등을 표시하는 영역입니다.
+                 HTML 내 위치는 <tbody> 뒤지만, 브라우저는 표 하단에 렌더링합니다.
+            ─────────────────────────────────────────────────────────── -->
+            <tfoot>
+                <tr>
+                    <!--
+                        colspan="2": "총 인원" 셀이 2개 열(성함 + 활동 분야)을 병합합니다.
+                        → 3개 열 중 앞 2개를 합쳐 하나의 셀로 표시
+                    -->
+                    <td colspan="2">총 인원</td>
+                    <td>2명</td>
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+
+</body>
+</html>

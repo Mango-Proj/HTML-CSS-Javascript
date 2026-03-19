@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 폼 예제</title>
+
+    <!--
+        [example.html]
+        학습 목표: 폼(Form) 관련 태그와 속성을 종합적으로 이해하고 활용
+
+        사용 태그 목록:
+        - <form>      : 폼 전체 컨테이너. action(목적지), method(전송방식) 속성
+        - <fieldset>  : 관련 입력 요소들을 논리적으로 묶는 그룹
+        - <legend>    : <fieldset>의 제목
+        - <label>     : 입력 필드의 이름 표시. for 속성으로 input의 id와 연결
+        - <input>     : 다양한 type 속성으로 여러 형태의 입력 필드 생성
+        - <select>    : 드롭다운 선택 메뉴
+        - <optgroup>  : <select> 안의 옵션을 그룹으로 묶음
+        - <option>    : <select> 안의 각 선택 항목
+        - <textarea>  : 여러 줄 텍스트 입력 필드
+        - <button>    : 폼 제출(submit) / 초기화(reset) 버튼
+
+        핵심 속성 요약:
+        - name     : 서버로 전송 시 데이터의 키(Key) 값 — 필수
+        - id       : label의 for와 연결하기 위한 고유 식별자
+        - required : 비워두면 제출이 차단되는 필수 입력 필드
+        - placeholder: 입력 전 힌트 텍스트
+        - value    : 초기값 또는 서버로 전송될 실제 값
+    -->
+
+    <style>
+        /* ── 리셋 & 기본 설정 ──────────────────────────────────── */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 48px 24px;
+            line-height: 1.7;
+        }
+
+        /* ── 폼 전체 카드 ──────────────────────────────────────── */
+        form {
+            background-color: #fff;
+            border-radius: 14px;
+            padding: 36px 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+        }
+
+        /* ── 폼 상단 타이틀 ────────────────────────────────────── */
+        form::before {
+            content: "회원가입";
+            display: block;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #1a1a2e;
+            border-left: 5px solid #5b8dee;
+            padding-left: 12px;
+            margin-bottom: 28px;
+        }
+
+        /* ── <fieldset>: 입력 그룹 ────────────────────────────────
+           border 속성 초기화 후 CSS로 스타일 재정의합니다.
+        ──────────────────────────────────────────────────────────── */
+        fieldset {
+            border: 1px solid #dde3f0;
+            border-radius: 8px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+
+        /* ── <legend>: fieldset 제목 ──────────────────────────────
+           fieldset 테두리 위에 제목처럼 표시됩니다.
+        ──────────────────────────────────────────────────────────── */
+        legend {
+            font-size: 0.88rem;
+            font-weight: bold;
+            color: #5b8dee;
+            padding: 0 8px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── 폼 행 단위 래퍼 ──────────────────────────────────── */
+        p {
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* ── <label>: 입력 필드 이름 ──────────────────────────────
+           for 속성으로 input의 id와 연결하면
+           라벨 텍스트 클릭 시 해당 입력창에 포커스가 이동합니다.
+        ──────────────────────────────────────────────────────────── */
+        label {
+            font-size: 0.88rem;
+            color: #555;
+            min-width: 80px;
+            cursor: pointer;
+        }
+
+        /* radio / checkbox를 감싸는 label — 인라인 처리 */
+        label:has(input[type="radio"]),
+        label:has(input[type="checkbox"]) {
+            min-width: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background-color: #f5f7fc;
+            border: 1px solid #dde3f0;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.87rem;
+            transition: background-color 0.15s;
+        }
+
+        label:has(input[type="radio"]):hover,
+        label:has(input[type="checkbox"]):hover {
+            background-color: #eef3ff;
+        }
+
+        /* ── <input> 공통 스타일 ───────────────────────────────────
+           text, password, email, tel, number, color 등 대부분의
+           input 타입에 공통으로 적용됩니다.
+        ──────────────────────────────────────────────────────────── */
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="number"] {
+            flex: 1;
+            min-width: 180px;
+            padding: 9px 12px;
+            border: 1px solid #ccd4e8;
+            border-radius: 6px;
+            font-size: 0.93rem;
+            color: #333;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            outline: none;
+        }
+
+        /* 포커스 시 테두리 강조 */
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus {
+            border-color: #5b8dee;
+            box-shadow: 0 0 0 3px rgba(91, 141, 238, 0.15);
+        }
+
+        /* 필수 입력 필드(required) 표시 */
+        input:required {
+            border-left: 3px solid #5b8dee;
+        }
+
+        /* radio / checkbox — 크기 확대 */
+        input[type="radio"],
+        input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            accent-color: #5b8dee;
+            cursor: pointer;
+        }
+
+        /* color 피커 — 크기 및 테두리 정리 */
+        input[type="color"] {
+            width: 40px;
+            height: 34px;
+            padding: 2px;
+            border: 1px solid #ccd4e8;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* ── <select>: 드롭다운 ────────────────────────────────────
+           기본 화살표 아이콘은 유지하고 테두리 / 패딩만 조정합니다.
+        ──────────────────────────────────────────────────────────── */
+        select {
+            flex: 1;
+            min-width: 160px;
+            padding: 9px 12px;
+            border: 1px solid #ccd4e8;
+            border-radius: 6px;
+            font-size: 0.93rem;
+            color: #333;
+            background-color: #fff;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        select:focus {
+            border-color: #5b8dee;
+            box-shadow: 0 0 0 3px rgba(91, 141, 238, 0.15);
+        }
+
+        /* ── <textarea>: 여러 줄 입력 ─────────────────────────────
+           resize: vertical — 세로 방향으로만 크기 조절 허용
+        ──────────────────────────────────────────────────────────── */
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccd4e8;
+            border-radius: 6px;
+            font-size: 0.93rem;
+            font-family: inherit;
+            color: #333;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.15s;
+            margin-top: 4px;
+        }
+
+        textarea:focus {
+            border-color: #5b8dee;
+            box-shadow: 0 0 0 3px rgba(91, 141, 238, 0.15);
+        }
+
+        /* textarea 행 — 레이블을 위로 배치 */
+        p:has(textarea) {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        /* ── <button>: 제출 / 초기화 버튼 ────────────────────────── */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        button {
+            padding: 11px 28px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        /* type="submit": 폼 데이터를 action URL로 전송 */
+        button[type="submit"] {
+            background-color: #5b8dee;
+            color: #fff;
+            flex: 1;
+        }
+
+        /* type="reset": 폼 내 모든 입력값을 초기값으로 되돌림 */
+        button[type="reset"] {
+            background-color: #f0f4f8;
+            color: #666;
+            border: 1px solid #dde3f0;
+        }
+    </style>
+</head>
+<body>
+
+    <!--
+        <form>: 폼 전체를 감싸는 컨테이너.
+        - action="/submit-user-info" : 제출 시 데이터를 보낼 서버 URL
+        - method="post"             : 데이터를 HTTP 바디에 담아 전송
+                                      (GET은 URL에 노출되므로 개인정보에 부적합)
+    -->
+    <form action="/submit-user-info" method="post">
+
+        <!-- ── fieldset 1: 기본 정보 ──────────────────────────────────
+             <fieldset>: 관련 입력 요소를 하나의 그룹으로 묶습니다.
+             <legend>: fieldset의 제목 — 접근성과 구조 파악에 중요합니다.
+        ──────────────────────────────────────────────────────────────── -->
+        <fieldset>
+            <legend>기본 정보</legend>
+
+            <p>
+                <!--
+                    <label for="uid">: for="uid"가 아래 input의 id="uid"와 연결됩니다.
+                    → 라벨 텍스트("아이디:")를 클릭하면 입력창에 포커스가 이동합니다.
+                -->
+                <label for="uid">아이디:</label>
+                <!--
+                    type="text"  : 일반 한 줄 텍스트 입력
+                    id="uid"     : label의 for와 연결
+                    name="userid": 서버 전송 시 키(Key) — 필수
+                    required     : 비어 있으면 폼 제출이 차단됨
+                    placeholder  : 입력 전 힌트 텍스트
+                -->
+                <input type="text" id="uid" name="userid" required placeholder="5자 이상 입력">
+            </p>
+
+            <p>
+                <label for="upw">비밀번호:</label>
+                <!--
+                    type="password": 입력 내용이 ●●●으로 마스킹 처리됩니다.
+                    required       : 필수 입력 필드
+                -->
+                <input type="password" id="upw" name="userpw" required>
+            </p>
+        </fieldset>
+
+
+        <!-- ── fieldset 2: 추가 정보 ──────────────────────────────────
+             radio와 checkbox를 사용한 선택 입력 예시입니다.
+        ──────────────────────────────────────────────────────────────── -->
+        <fieldset>
+            <legend>추가 정보</legend>
+
+            <p>성별:
+                <!--
+                    type="radio": 같은 name="gender" 그룹 안에서 하나만 선택 가능.
+                    value="m"   : 선택 시 서버로 전송될 실제 값
+                    checked     : 페이지 로드 시 기본으로 선택된 상태
+                -->
+                <label><input type="radio" name="gender" value="m" checked> 남성</label>
+                <label><input type="radio" name="gender" value="f"> 여성</label>
+            </p>
+
+            <p>관심 분야:
+                <!--
+                    type="checkbox": 같은 name="hobby" 그룹 안에서 다중 선택 가능.
+                    radio와 달리 여러 항목을 동시에 선택할 수 있습니다.
+                -->
+                <label><input type="checkbox" name="hobby" value="html"> HTML</label>
+                <label><input type="checkbox" name="hobby" value="css"> CSS</label>
+            </p>
+        </fieldset>
+
+
+        <!-- ── fieldset 3: 상세 설정 ──────────────────────────────────
+             select, textarea, color 입력 예시입니다.
+        ──────────────────────────────────────────────────────────────── -->
+        <fieldset>
+            <legend>상세 설정</legend>
+
+            <p>
+                <label for="city">거주 지역:</label>
+                <!--
+                    <select>: 드롭다운 선택 메뉴.
+                    id="city"       : label의 for와 연결
+                    name="location" : 서버 전송 시 키
+                -->
+                <select id="city" name="location">
+                    <!--
+                        <optgroup label="서울">: 옵션을 "서울"이라는 그룹으로 묶습니다.
+                        시각적 구분선과 그룹 레이블이 자동으로 표시됩니다.
+                    -->
+                    <optgroup label="서울">
+                        <!-- value="gangnam": 서버로 전송될 실제 값 -->
+                        <option value="gangnam">강남구</option>
+                        <!-- selected: 페이지 로드 시 기본 선택 -->
+                        <option value="gangseo" selected>강서구</option>
+                    </optgroup>
+                    <!-- optgroup 밖의 option은 그룹에 속하지 않습니다 -->
+                    <option value="etc">기타 지역</option>
+                </select>
+            </p>
+
+            <p>
+                <label for="bio">자기소개:</label>
+                <!--
+                    <textarea>: 여러 줄의 긴 텍스트를 입력받는 필드.
+                    rows="4"  : 세로 줄 수 (높이 기준)
+                    cols="50" : 가로 글자 수 (너비 기준) — CSS width로도 제어 가능
+                    placeholder: 입력 전 안내 텍스트
+                -->
+                <textarea id="bio" name="bio" rows="4" cols="50" placeholder="자신을 소개해 주세요."></textarea>
+            </p>
+
+            <p>
+                <label for="favcolor">테마 색상:</label>
+                <!--
+                    type="color": 색상 선택 팔레트(Color Picker)를 표시합니다.
+                    value="#00ff00": 초기 선택 색상 (16진수 색상 코드)
+                -->
+                <input type="color" id="favcolor" name="color" value="#00ff00">
+            </p>
+        </fieldset>
+
+
+        <!-- ── 버튼 그룹 ────────────────────────────────────────────────
+             type="submit": 폼 데이터를 action URL로 전송합니다.
+             type="reset" : 폼 내 모든 입력값을 초기값으로 되돌립니다.
+        ──────────────────────────────────────────────────────────────── -->
+        <div class="btn-group">
+            <button type="submit">가입하기</button>
+            <button type="reset">초기화</button>
+        </div>
+
+    </form>
+
+</body>
+</html>

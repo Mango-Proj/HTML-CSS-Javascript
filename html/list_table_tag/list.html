@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>목록 태그 (ul, ol) 예제</title>
+
+    <!--
+        [list.html]
+        학습 목표: 목록 태그의 종류와 중첩 구조 이해
+
+        목록 태그 종류:
+        - <ul> (Unordered List) : 순서가 없는 목록 — 항목 앞에 불릿(●) 표시
+        - <ol> (Ordered List)   : 순서가 있는 목록 — 항목 앞에 번호(1, 2, 3...) 표시
+        - <li> (List Item)      : ul / ol 안에서 각 항목을 나타냄
+
+        태그 간 관계 (중첩 구조):
+        - <ul> 안에 또 다른 <ul>을 넣어 계층형 목록을 만들 수 있습니다.
+        - <li> 안에 <ul> 또는 <ol>을 자식으로 포함할 수 있습니다.
+
+        ⚠️  <ul> / <ol>의 직계 자식은 반드시 <li>여야 합니다.
+    -->
+
+    <style>
+        /* ── 기본 페이지 스타일 ────────────────────────────────── */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            max-width: 680px;
+            margin: 48px auto;
+            padding: 0 24px;
+            line-height: 1.8;
+        }
+
+        /* ── 섹션 카드 ─────────────────────────────────────────── */
+        .section-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+        }
+
+        /* ── 섹션 제목 ─────────────────────────────────────────── */
+        h2 {
+            font-size: 1.05rem;
+            color: #1a3a7e;
+            border-left: 4px solid #5b8dee;
+            padding-left: 10px;
+            margin: 0 0 16px 0;
+        }
+
+        h3 {
+            font-size: 1.05rem;
+            color: #1e6b45;
+            border-left: 4px solid #48c78e;
+            padding-left: 10px;
+            margin: 0 0 16px 0;
+        }
+
+        /* ── <hr> 구분선 숨김 — 카드 레이아웃으로 대체 ─────────── */
+        hr {
+            display: none;
+        }
+
+        /* ── <ul>: 순서 없는 목록 ──────────────────────────────────
+           기본 불릿(disc)을 커스텀 스타일로 교체합니다.
+        ──────────────────────────────────────────────────────────── */
+        ul {
+            list-style: none;  /* 기본 불릿 제거 */
+            padding: 0;
+            margin: 0;
+        }
+
+        /* 1단계 <li> */
+        ul > li {
+            position: relative;
+            padding: 7px 10px 7px 22px;
+            border-radius: 4px;
+            font-size: 0.96rem;
+            transition: background-color 0.1s;
+        }
+
+        ul > li:hover {
+            background-color: #f0f4ff;
+        }
+
+        /* 커스텀 불릿: 파란 원 */
+        ul > li::before {
+            content: "●";
+            position: absolute;
+            left: 6px;
+            color: #5b8dee;
+            font-size: 0.5em;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* 2단계 중첩 <ul> (하위 목록) */
+        ul ul {
+            margin: 6px 0 2px 12px;
+            border-left: 2px solid #d6e4ff;
+            padding-left: 8px;
+        }
+
+        /* 2단계 <li> — 하위 항목은 색상 구분 */
+        ul ul > li::before {
+            content: "◦";
+            color: #aac0f5;
+            font-size: 0.75em;
+        }
+
+        /* ── <ol>: 순서 있는 목록 ──────────────────────────────────
+           기본 숫자 대신 커스텀 카운터로 스타일링합니다.
+        ──────────────────────────────────────────────────────────── */
+        ol {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: ol-counter;  /* 카운터 초기화 */
+        }
+
+        ol > li {
+            counter-increment: ol-counter;  /* 항목마다 카운터 증가 */
+            position: relative;
+            padding: 8px 10px 8px 40px;
+            border-radius: 4px;
+            font-size: 0.96rem;
+            margin-bottom: 4px;
+            background-color: #f8f9fc;
+            border: 1px solid #e8ecf0;
+            transition: background-color 0.1s;
+        }
+
+        ol > li:hover {
+            background-color: #eef3ff;
+        }
+
+        /* 커스텀 번호 배지 */
+        ol > li::before {
+            content: counter(ol-counter);
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #48c78e;
+            color: #fff;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.78rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── 순서 없는 목록: <ul> ─────────────────────────────────────
+         카페 메뉴처럼 항목 간 순서가 의미 없을 때 사용합니다.
+         <li> 안에 또 다른 <ul>을 넣어 중첩(계층) 목록을 만들 수 있습니다.
+
+         구조:
+         ul (1단계 — 카테고리)
+         └── li "커피"
+             └── ul (2단계 — 하위 메뉴)
+                 ├── li "아메리카노"
+                 └── li "바닐라라떼"
+         └── li "에이드"
+    ──────────────────────────────────────────────────────────────── -->
+    <div class="section-card">
+        <h2>☕ 카페 메뉴 (순서 없음)</h2>
+
+        <!--
+            <ul>: 순서가 중요하지 않은 항목 목록.
+            직계 자식은 반드시 <li>여야 합니다.
+        -->
+        <ul>
+            <!-- <li>: 목록의 각 항목. 안에 중첩 <ul>을 포함할 수 있습니다. -->
+            <li>커피
+                <!-- 중첩 <ul>: "커피"의 하위 메뉴 목록 -->
+                <ul>
+                    <li>아메리카노</li>
+                    <li>바닐라라떼</li>
+                </ul>
+            </li>
+            <li>에이드</li>
+        </ul>
+    </div>
+
+    <!-- ── 순서 있는 목록: <ol> ─────────────────────────────────────
+         인기 순위처럼 항목의 순서가 의미를 가질 때 사용합니다.
+         브라우저가 1, 2, 3... 번호를 자동으로 부여합니다.
+    ──────────────────────────────────────────────────────────────── -->
+    <div class="section-card">
+        <h3>🏆 실시간 인기 메뉴 (순서 있음)</h3>
+
+        <!--
+            <ol>: 순서가 중요한 항목 목록.
+            1위부터 자동으로 번호가 매겨집니다.
+        -->
+        <ol>
+            <li>아이스 아메리카노</li>
+            <li>딸기 라떼</li>
+        </ol>
+    </div>
+
+</body>
+</html>
