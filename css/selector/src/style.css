@@ -1,0 +1,79 @@
+/* ==============================================
+   CSS 선택자 (Selector) 연습
+   - 각 선택자의 문법과 동작 범위를 확인합니다.
+   ============================================== */
+
+
+/* 1. 전체 선택자 (Universal Selector)
+   - 문법: *
+   - 문서 내 모든 요소를 선택
+   - 주로 브라우저 기본 여백을 초기화할 때 사용 */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+
+/* 2. 아이디 선택자 (ID Selector)
+   - 문법: #아이디명
+   - id 속성 값이 일치하는 요소를 선택
+   - 한 페이지에 동일한 id는 하나만 사용해야 함 */
+#main-title {
+  font-size: 32px;
+  color: navy;
+}
+
+
+/* 3. 클래스 선택자 (Class Selector)
+   - 문법: .클래스명
+   - class 속성 값이 일치하는 모든 요소를 선택
+   - 여러 요소에 반복 적용 가능 */
+.text {
+  color: gray;
+}
+
+
+/* 4. 교집합 선택자 (AND Selector)
+   - 문법: .클래스1.클래스2 (공백 없이 붙여씀)
+   - 두 클래스를 동시에 가진 요소만 선택
+   - 예: <p class="text blue"> → .text만 있으면 해당 안됨 */
+.text.blue {
+  color: blue;
+}
+
+
+/* 5. 자식 선택자 (Child Selector)
+   - 문법: 부모 > 자식
+   - 부모의 직계 자식만 선택 (손자 이하는 제외)
+   - 예: .container > p → ul 안의 p는 해당 안됨 */
+.container > p {
+  font-weight: bold;
+}
+
+
+/* 6. 자손 선택자 (Descendant Selector)
+   - 문법: 조상 자손 (공백으로 구분)
+   - 조상 안의 모든 깊이의 자손을 선택
+   - 예: .container p → 직계 p + ul 안의 p 모두 해당 */
+.container p {
+  border-bottom: 1px solid silver;
+}
+
+
+/* 7. 인접 형제 선택자 (Adjacent Sibling Selector)
+   - 문법: A + B
+   - A 바로 다음에 오는 형제 B 하나만 선택
+   - 예: span + span → 첫 번째 span 뒤의 span 하나에만 적용 */
+span + span {
+  margin-left: 10px;
+}
+
+
+/* 8. 그룹 선택자 (Group Selector)
+   - 문법: A, B
+   - 여러 선택자를 쉼표로 묶어 동일한 스타일을 한 번에 적용
+   - 코드 중복을 줄일 때 유용 */
+h1,
+span {
+  font-style: italic;
+}
