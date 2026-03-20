@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>CSS Transform & Transition</title>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ─────────────────────────────────────────
+      섹션 1: Transition 종합 예제 (버튼)
+      - transition: all 0.3s ease-out 으로 모든 변화를 부드럽게 처리
+      - hover 시 background-color, transform, box-shadow 동시 전환
+      마우스를 올려 효과를 확인하세요
+    ──────────────────────────────────────────── -->
+    <section class="demo-section">
+      <h2 class="section-title">Transition 종합 예제</h2>
+      <button class="ani-button">Hover Me!</button>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+      섹션 2: Transform 개별 함수 예제
+      각 박스에 hover 시 하나의 transform 함수만 단독으로 적용
+      - .scale     → scale()     : 크기 변형
+      - .rotate    → rotate()    : 회전
+      - .translate → translate() : 위치 이동
+      - .skew      → skew()      : 기울임 (추가)
+    ──────────────────────────────────────────── -->
+    <section class="demo-section">
+      <h2 class="section-title">Transform 개별 함수</h2>
+      <div class="box-group">
+
+        <!-- scale(1.5): 원래 크기의 1.5배로 확대
+             레이아웃에 영향 없이 시각적으로만 커짐 (주변 박스가 밀리지 않음) -->
+        <div class="box-wrap">
+          <div class="box scale">Scale</div>
+          <p class="box-label">scale(1.5)</p>
+        </div>
+
+        <!-- rotate(180deg): 시계 방향 180도 회전
+             기준점은 기본적으로 요소 정중앙 (transform-origin: center) -->
+        <div class="box-wrap">
+          <div class="box rotate">Rotate</div>
+          <p class="box-label">rotate(180deg)</p>
+        </div>
+
+        <!-- translate(100px, 0): 오른쪽으로 100px 이동
+             position: top/left 이동과 달리 리플로우가 발생하지 않아 성능상 유리 -->
+        <div class="box-wrap">
+          <div class="box translate">Translate</div>
+          <p class="box-label">translate(100px)</p>
+        </div>
+
+        <!-- skewX(20deg): X축 기준으로 20도 기울임
+             텍스트나 카드에 기울어진 효과를 줄 때 사용 -->
+        <div class="box-wrap">
+          <div class="box skew">Skew</div>
+          <p class="box-label">skewX(20deg)</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────
+      섹션 3: timing-function 비교 예제
+      동일한 translate 변형을 다른 속도 곡선으로 비교
+      마우스를 올리면 각 박스의 이동 속도 패턴이 다름을 확인
+    ──────────────────────────────────────────── -->
+    <section class="demo-section">
+      <h2 class="section-title">Timing Function 비교</h2>
+      <div class="timing-group">
+
+        <!-- linear: 일정한 속도로 끝까지 이동 -->
+        <div class="timing-box linear-box">linear</div>
+
+        <!-- ease: 시작·끝 느리고 중간 빠름 (기본값) -->
+        <div class="timing-box ease-box">ease</div>
+
+        <!-- ease-in: 천천히 시작 → 점점 빠름 -->
+        <div class="timing-box ease-in-box">ease-in</div>
+
+        <!-- ease-out: 빠르게 시작 → 점점 느림 -->
+        <div class="timing-box ease-out-box">ease-out</div>
+
+        <!-- ease-in-out: 천천히 시작 → 중간 빠름 → 천천히 끝 -->
+        <div class="timing-box ease-in-out-box">ease-in-out</div>
+
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>

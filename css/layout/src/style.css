@@ -1,0 +1,196 @@
+/* ==============================================
+   CSS 레이아웃 종합 예제
+   Display · Position · Flexbox · Grid 를
+   실제 페이지 구조에 조합하여 사용합니다.
+
+   레이아웃 전략:
+   - Grid  → .wrapper 전체 영역 분할 (큰 틀)
+   - Flex  → header, main 내부 정렬 (세부 정렬)
+   - Position → header 고정, card 배지 배치
+   ============================================== */
+
+
+/* ── 기본 초기화 ─────────────────────────────── */
+
+* {
+  box-sizing: border-box; /* 모든 요소의 크기 계산에 padding·border 포함 */
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ── 1. Grid: 전체 페이지 구조 분할 ─────────────
+   display: grid 로 큰 틀을 잡고
+   grid-template-areas로 영역 이름을 배치도처럼 지정
+
+   열(columns): 200px 고정(사이드바) | 나머지 전부(1fr, 본문)
+   행(rows)   : 80px(헤더) | 가용 높이 전부(1fr, 본문) | 60px(풋터)
+
+   grid-template-areas 시각 구조:
+   ┌─────────┬─────────┐
+   │   nav   │   nav   │  ← 1행: 헤더가 2열 전체 차지
+   ├─────────┼─────────┤
+   │  side   │  main   │  ← 2행: 사이드바 + 본문
+   ├─────────┼─────────┤
+   │ footer  │ footer  │  ← 3행: 풋터가 2열 전체 차지
+   └─────────┴─────────┘ */
+.wrapper {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: 80px 1fr 60px;
+  grid-template-areas:
+    "nav    nav"
+    "side   main"
+    "footer footer";
+  height: 100vh; /* 전체 뷰포트 높이를 꽉 채움 */
+  gap: 10px;     /* 모든 그리드 셀 사이 간격 */
+}
+
+
+/* ── 2. Position: 스크롤 시 상단 고정 헤더 ───────
+   grid-area: nav → grid-template-areas의 "nav" 영역에 배치
+
+   position: sticky
+   - 평소: relative처럼 일반 흐름에 위치
+   - top: 0 지점에 닿으면: fixed처럼 뷰포트 상단에 고정
+   - fixed와 차이: 부모 요소 범위를 벗어나지 않음
+
+   z-index: 10
+   - aside, main, footer보다 위 레이어에 표시
+   - position이 static이 아닌 요소끼리만 z-index 비교 가능
+
+   3. Flex: 헤더 내부 좌우 정렬 ─────────────────
+   display: flex + justify-content: space-between
+   → LOGO는 왼쪽, nav-links는 오른쪽 끝에 배치
+   align-items: center → 세로 기준 가운데 정렬 */
+header {
+  grid-area: nav;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #333;
+  color: white;
+  display: flex;
+  justify-content: space-between; /* 주축(가로): 양 끝 정렬 */
+  align-items: center;            /* 교차축(세로): 가운데 정렬 */
+  padding: 0 20px;
+}
+
+/* 헤더 내 우측 메뉴 링크 영역
+   display: flex + gap → Login, Join 을 간격 두고 가로 나열 */
+.nav-links {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-links span {
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.nav-links span:hover {
+  text-decoration: underline;
+}
+
+
+/* ── 4. Grid 아이템: aside ───────────────────────
+   grid-area: side → "side" 영역에 배치
+   overflow-y: auto → 메뉴가 많아지면 사이드바 내부에서 스크롤 */
+aside {
+  grid-area: side;
+  background-color: #f0f0f0;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.aside-title {
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #555;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.aside-menu {
+  list-style: none;
+}
+
+.aside-menu li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.aside-menu li:hover {
+  color: #1e90ff;
+}
+
+
+/* ── 5. Flex: main 내부 카드 정렬 ───────────────
+   grid-area: main → "main" 영역에 배치
+
+   display: flex → 자식 .card 들을 flex 아이템으로 만듦
+   flex-wrap: wrap → 카드가 main 너비를 초과하면 자동 줄 바꿈
+                     (nowrap이 기본값이므로 명시 필요)
+   gap: 20px → 카드 사이 간격
+   padding: 20px → main 내부 여백 */
+main {
+  grid-area: main;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  align-content: flex-start; /* 여러 줄일 때 위쪽부터 채움 */
+}
+
+
+/* ── 6. Display + Position: 카드 ────────────────
+   flex 아이템으로 동작하므로 main의 flex 규칙을 따름
+
+   position: relative
+   - 자식 ::before(position: absolute)의 기준점 역할
+   - 이 선언이 없으면 ::before가 더 위의 조상을 기준으로 위치함
+
+   display: flex → 카드 안의 숫자를 정중앙에 배치 */
+.card {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  background-color: gold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 8px;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* 카드 우측 상단 배지
+   position: absolute → .card(position: relative)를 기준으로 절대 위치
+   - top: 6px, right: 6px → 카드 우측 상단 모서리에 배치
+   ※ .card에 position: relative가 없으면 기준이 달라짐 */
+.card::before {
+  content: "No.";
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 11px;
+  font-weight: normal;
+  color: #666;
+}
+
+
+/* ── 7. Grid 아이템: footer ─────────────────────
+   grid-area: footer → "footer footer" 로 2열 전체 차지
+   line-height으로 텍스트를 수직 중앙 정렬 */
+footer {
+  grid-area: footer;
+  background-color: #ccc;
+  text-align: center;
+  line-height: 60px; /* footer row 높이와 맞춰 텍스트 수직 중앙 정렬 */
+  font-size: 13px;
+  color: #555;
+}

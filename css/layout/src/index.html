@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>CSS 레이아웃 종합 예제</title>
+</head>
+<body>
+
+  <!--
+    ┌─────────────────────────────────────────┐
+    │  전체 레이아웃 구조 (.wrapper)            │
+    │  display: grid 로 큰 틀을 잡음           │
+    │                                         │
+    │  [        header (nav)         ]        │
+    │  [ aside (side) | main (main)  ]        │
+    │  [        footer (footer)      ]        │
+    └─────────────────────────────────────────┘
+    grid-template-areas로 영역 이름을 지정하고
+    각 자식 요소에서 grid-area로 연결함
+  -->
+  <div class="wrapper">
+
+    <!--
+      header: Grid 영역 "nav" 에 배치
+      - position: sticky → 스크롤해도 상단에 고정
+      - display: flex    → 내부 LOGO와 메뉴를 양 끝 정렬 (justify-content: space-between)
+      - z-index: 10      → aside, main 보다 위에 쌓임
+    -->
+    <header>
+      <h1>LOGO</h1>
+      <!-- .nav-links: 헤더 내부 우측 메뉴 → flex로 가로 나열 -->
+      <nav class="nav-links">
+        <span>Login</span>
+        <span>Join</span>
+      </nav>
+    </header>
+
+    <!--
+      aside: Grid 영역 "side" 에 배치
+      - 사이드바 역할. 고정 너비 200px은 grid-template-columns에서 지정
+    -->
+    <aside>
+      <p class="aside-title">메뉴바</p>
+      <ul class="aside-menu">
+        <li>메뉴 1</li>
+        <li>메뉴 2</li>
+        <li>메뉴 3</li>
+      </ul>
+    </aside>
+
+    <!--
+      main: Grid 영역 "main" 에 배치
+      - display: flex + flex-wrap: wrap → 카드가 많아지면 자동 줄 바꿈
+      - 내부 .card들은 flex 아이템으로 동작
+    -->
+    <main>
+      <!--
+        .card: flex 아이템이면서 동시에 position: relative 기준 요소
+        - ::before 가상 요소(position: absolute)의 기준점이 됨
+        - display: flex → 카드 안의 숫자를 정중앙에 배치
+      -->
+      <div class="card">1</div>
+      <div class="card">2</div>
+      <div class="card">3</div>
+    </main>
+
+    <!--
+      footer: Grid 영역 "footer" 에 배치
+      - grid-template-areas에서 "footer footer"로 2열 전체를 차지
+    -->
+    <footer>Copyright 2026</footer>
+
+  </div>
+
+</body>
+</html>

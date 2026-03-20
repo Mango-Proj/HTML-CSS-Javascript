@@ -1,0 +1,206 @@
+/* ==============================================
+   CSS Transform & Transition 연습
+   - Transform : scale, rotate, translate, skew
+   - Transition: duration, timing-function, delay
+   - 두 속성을 조합한 실전 hover 패턴 확인
+   ============================================== */
+
+
+/* ── 기본 초기화 ─────────────────────────────── */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f8f9fa;
+  font-family: sans-serif;
+}
+
+
+/* ── 전체 레이아웃 ───────────────────────────── */
+
+/* 세로 방향으로 각 섹션을 나열하고 가운데 정렬 */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 60px;
+  padding: 60px 20px;
+}
+
+.demo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+}
+
+.section-title {
+  font-size: 1rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 6px;
+}
+
+
+/* ── 1. Transition 종합 예제: 버튼 ──────────────
+   transition은 변경 전(기본 상태)에 선언해야 함
+   hover 상태에 선언하면 복귀할 때 전환 효과가 없음
+
+   단축 속성: transition: 속성 지속시간 타이밍함수 대기시간
+   - all      → 변경되는 모든 속성에 전환 적용
+   - 0.3s     → 0.3초 동안 전환
+   - ease-out → 빠르게 시작해 천천히 끝남 (튀어나오는 느낌) */
+.ani-button {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
+
+/* hover 시 세 가지 속성이 동시에 전환됨
+   - background-color: 파란색 → 초록색
+   - transform: scale(키우기) + translateY(위로 이동)
+     여러 함수는 공백으로 연결, 왼쪽부터 순서대로 적용
+   - box-shadow: 그림자가 나타나면서 떠있는 느낌 */
+.ani-button:hover {
+  background-color: #2ecc71;
+  transform: scale(1.1) translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ── 2. Transform 개별 함수 예제 ────────────────
+
+   transform은 시각적 변형만 담당.
+   주변 요소의 위치에 영향을 주지 않음 (리플로우 없음) */
+
+/* 박스 그룹: flex로 가로 나열 */
+.box-group {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* 박스 + 라벨을 묶는 래퍼 */
+.box-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.box-label {
+  font-size: 12px;
+  color: #999;
+  font-family: monospace;
+}
+
+/* 박스 공통 스타일
+   transition: transform 0.5s ease-in-out
+   → transform 속성 변화만 0.5초 동안 부드럽게 전환
+   (background-color 등 다른 속성은 전환 없이 즉시 변경) */
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: #e74c3c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: transform 0.5s ease-in-out;
+}
+
+/* scale(1.5): 원래 크기의 1.5배로 확대
+   scaleX(n), scaleY(n) 으로 한 축만 변형도 가능
+   scale(sx, sy) 로 가로·세로 비율을 다르게 줄 수도 있음 */
+.scale:hover {
+  transform: scale(1.5);
+}
+
+/* rotate(180deg): 시계 방향으로 180도 회전
+   음수(-180deg) → 반시계 방향
+   기준점은 transform-origin으로 변경 가능 (기본: center) */
+.rotate:hover {
+  transform: rotate(180deg);
+}
+
+/* translate(100px, 0): 오른쪽으로 100px 이동
+   translateX(100px) 와 동일
+   position의 top/left 이동과 달리 GPU 가속이 적용되어 성능상 유리 */
+.translate:hover {
+  transform: translate(100px, 0);
+}
+
+/* skewX(20deg): X축 방향으로 20도 기울임
+   skewY(deg): Y축 방향 기울임
+   skew(xdeg, ydeg): 양쪽 동시 기울임 */
+.skew:hover {
+  transform: skewX(20deg);
+}
+
+
+/* ── 3. Timing Function 비교 예제 ───────────────
+   동일한 거리(200px)를 동일한 시간(1s) 동안 이동하지만
+   속도 곡선이 달라 체감이 다름
+
+   timing-function 종류:
+   linear      → 일정한 속도. 기계적인 느낌
+   ease        → 시작·끝 느리고 중간 빠름 (브라우저 기본값)
+   ease-in     → 천천히 시작 → 빠르게 끝. 무거운 느낌
+   ease-out    → 빠르게 시작 → 천천히 끝. 튀어나오는 느낌
+   ease-in-out → 양쪽 다 천천히. 가장 자연스러운 느낌
+   cubic-bezier(x1, y1, x2, y2) → 완전 커스텀 */
+.timing-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* 타이밍 박스 공통 스타일
+   transform은 transition 선언 전 기본 상태에서 작성 */
+.timing-box {
+  width: 100px;
+  height: 44px;
+  background-color: #9b59b6;
+  color: white;
+  font-size: 13px;
+  font-family: monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  /* duration: 1s로 길게 설정해야 차이가 잘 보임 */
+  transition: transform 1s;
+}
+
+/* 컨테이너 hover 시 모든 타이밍 박스가 동시에 이동
+   → 같은 거리를 이동하지만 속도 곡선 차이가 눈에 보임 */
+.timing-group:hover .timing-box {
+  transform: translateX(200px);
+}
+
+/* 각 박스에 개별 timing-function 적용
+   transition-property와 duration은 공통 스타일에서 상속,
+   timing-function만 덮어씀 */
+.linear-box     { transition-timing-function: linear; }
+.ease-box       { transition-timing-function: ease; }
+.ease-in-box    { transition-timing-function: ease-in; }
+.ease-out-box   { transition-timing-function: ease-out; }
+.ease-in-out-box { transition-timing-function: ease-in-out; }
