@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>CSS 우선순위와 상속</title>
+</head>
+<body>
+
+  <!--
+    .parent: 상속 예제의 기준 부모 요소
+    - color: blue, font-size: 20px → 자식에게 상속됨 (텍스트 관련)
+    - border: 1px solid black     → 자식에게 상속되지 않음 (레이아웃 관련)
+  -->
+  <div class="parent">
+    부모 요소 (color: blue)
+
+    <!--
+      우선순위 대결 ①: 인라인 스타일 vs 클래스 선택자
+      - style="color: red"  → 점수 1000 (인라인 스타일)
+      - .child { color: green } → 점수 10 (클래스 선택자)
+      결과: 인라인 스타일이 이겨 빨간색으로 표시됨
+    -->
+    <p class="child" style="color: red;">
+      나는 인라인 스타일 때문에 빨간색입니다.
+    </p>
+
+    <!--
+      우선순위 대결 ②: !important vs 인라인 스타일
+      - .important-text { color: hotpink !important } → 모든 순위 압도
+      - 인라인 스타일(1000점)보다도 !important가 강함
+      결과: !important가 이겨 핫핑크색으로 표시됨
+    -->
+    <p class="child important-text">
+      나는 !important 덕분에 분홍색입니다.
+    </p>
+
+    <!--
+      상속 제어 키워드 예제
+      .control-group { color: orange } → span들의 직접 부모 색상
+      .use-inherit → inherit으로 부모(orange)를 강제 상속
+      .use-initial → initial로 브라우저 기본값(black, 16px)으로 초기화
+    -->
+    <div class="control-group">
+      <span class="use-inherit">부모 색상을 강제로 따름 (inherit)</span>
+      <span class="use-initial">기본 검정색으로 돌아감 (initial)</span>
+    </div>
+
+  </div>
+
+</body>
+</html>

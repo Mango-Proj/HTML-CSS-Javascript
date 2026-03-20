@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>CSS 배경 스타일링</title>
+</head>
+<body>
+
+  <!-- 1. background-color: 배경 색상만 적용한 기본 예제 -->
+  <div class="box color">background-color: skyblue</div>
+
+  <!-- 2. background-size: contain
+       - 이미지 전체가 잘리지 않고 다 보이도록 축소/확대
+       - 요소 비율과 이미지 비율이 다르면 빈 공간 발생
+       - 빈 공간은 background-color(lightgray)로 채워짐 -->
+  <div class="box contain">background-size: contain</div>
+
+  <!-- 3. background-size: cover
+       - 요소를 빈틈없이 꽉 채우도록 이미지를 확대/축소
+       - 이미지 비율 유지, 넘치는 부분은 잘려서 보이지 않음 -->
+  <div class="box cover">background-size: cover</div>
+
+  <!-- 4. background-repeat: repeat-x
+       - 이미지를 50×50px로 축소한 뒤 가로 방향으로만 반복
+       - 세로 방향은 반복하지 않음 -->
+  <div class="box repeat-x">background-repeat: repeat-x</div>
+
+</body>
+</html>

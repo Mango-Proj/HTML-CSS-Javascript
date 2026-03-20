@@ -1,0 +1,86 @@
+/* ==============================================
+   CSS 단위와 색상 (Units & Colors) 연습
+   - 절대/상대/뷰포트 단위, RGB·Hex 색상,
+     rgba vs opacity 차이를 확인합니다.
+   ============================================== */
+
+
+/* 루트 폰트 크기 설정
+   - rem 단위의 기준값이 됨
+   - 기본값도 16px이지만 명시적으로 선언하면 의도가 명확해짐 */
+html {
+  font-size: 16px;
+}
+
+
+/* ── 1. em vs rem 비교 ─────────────────────── */
+
+/* 부모 요소
+   - font-size: 20px → 자식의 em 계산 기준이 됨
+   - 배경색과 padding으로 영역을 시각적으로 구분 */
+.parent {
+  font-size: 20px;
+  background-color: #f0f0f0;
+  padding: 10px;
+}
+
+/* em 단위: 부모 요소의 font-size 기준
+   - 1.5em = 부모(20px) × 1.5 = 30px
+   - 부모 크기가 바뀌면 자식 크기도 함께 변함 */
+.child-em {
+  font-size: 1.5em;
+  color: #333;
+}
+
+/* rem 단위: 최상위 <html>의 font-size 기준
+   - 1.5rem = html(16px) × 1.5 = 24px
+   - 부모 크기와 무관하게 항상 동일하게 계산됨 (예측 용이) */
+.child-rem {
+  font-size: 1.5rem;
+  color: #666;
+}
+
+
+/* ── 2. 색상 및 투명도 ──────────────────────── */
+
+/* 색상 박스 공통 스타일
+   - display: flex + align-items/justify-content → 텍스트를 박스 정중앙에 배치 */
+.color-box {
+  width: 200px;
+  height: 100px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+/* rgba 색상 표현
+   - rgba(R, G, B, A): 0~255 숫자 + 0~1 투명도
+   - 0.7 = 70% 불투명 → 배경색만 반투명, 텍스트는 영향 없음 */
+.rgb {
+  background-color: rgba(0, 123, 255, 0.7);
+}
+
+/* Hex 색상 + opacity 속성
+   - #28a745: 16진수 표기법 (#RRGGBB)
+   - opacity: 0.5 → 요소 전체(배경 + 텍스트 + 자식)가 50% 투명해짐
+   ※ rgba와 달리 텍스트까지 투명해지는 점에 주의 */
+.hex {
+  background-color: #28a745;
+  opacity: 0.5;
+}
+
+
+/* ── 3. 뷰포트 단위 ─────────────────────────── */
+
+/* 뷰포트 기준 크기
+   - 100vw: 브라우저 창 너비의 100% (스크롤바 포함)
+   - 20vh : 브라우저 창 높이의 20%
+   - 창 크기를 줄이거나 늘리면 박스 크기도 함께 변함 */
+.full-screen {
+  width: 100vw;
+  height: 20vh;
+  background-color: #ffc107;
+  text-align: center;
+}

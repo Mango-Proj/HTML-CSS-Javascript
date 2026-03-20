@@ -1,0 +1,70 @@
+/* ==============================================
+   CSS 배경 스타일링 (Background) 연습
+   - background-color, background-image,
+     background-size, background-repeat 속성을
+     각 박스에서 비교하며 확인합니다.
+   ============================================== */
+
+
+/* 박스 공통 스타일
+   - 모든 예제 박스에 동일한 크기·테두리·텍스트 스타일 적용
+   - display: flex + align-items/justify-content → 텍스트 정중앙 배치 */
+.box {
+  width: 300px;
+  height: 200px;
+  margin: 20px;
+  border: 2px solid #333;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ── 1. 배경 색상 (background-color) ────────── */
+
+/* 색상 이름, Hex, rgba 등 모든 색상 표현 방식 사용 가능 */
+.color {
+  background-color: skyblue;
+}
+
+
+/* ── 2. background-size: contain ────────────── */
+
+/* contain: 이미지 비율을 유지하면서 요소 안에 전체가 보이도록 맞춤
+   - 이미지가 요소보다 작으면 확대, 크면 축소
+   - 요소와 이미지의 비율이 다르면 한쪽에 빈 공간 발생
+   - background-color로 빈 공간의 색상을 지정하는 것이 일반적 */
+.contain {
+  background-image: url('https://storage.googleapis.com/codingvalley/app/CSS01/CSS01_13.webp');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: lightgray; /* contain으로 생기는 빈 공간을 회색으로 채움 */
+}
+
+
+/* ── 3. background-size: cover ──────────────── */
+
+/* cover: 요소 전체를 빈틈없이 채우도록 이미지를 확대/축소
+   - 이미지 비율을 유지하면서 요소의 가로·세로를 모두 덮음
+   - 비율 차이로 인해 이미지 가장자리 일부가 잘릴 수 있음
+   ※ contain과의 핵심 차이: 여백 없음 대신 이미지 일부 손실 가능 */
+.cover {
+  background-image: url('https://storage.googleapis.com/codingvalley/app/CSS01/CSS01_13.webp');
+  background-size: cover;
+}
+
+
+/* ── 4. background-repeat: repeat-x ─────────── */
+
+/* repeat-x: 이미지를 가로 방향으로만 반복
+   - background-size로 이미지를 50×50px로 줄인 뒤 가로로 나열
+   - repeat-y: 세로 방향만 반복
+   - repeat  : 가로+세로 모두 반복 (기본값)
+   - no-repeat: 반복 없이 한 번만 표시 */
+.repeat-x {
+  background-image: url('https://storage.googleapis.com/codingvalley/app/CSS01/CSS01_13.webp');
+  background-size: 50px 50px;
+  background-repeat: repeat-x;
+}

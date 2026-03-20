@@ -1,0 +1,83 @@
+/* ==============================================
+   CSS 박스 모델 (Box Model) 연습
+   - Content / Padding / Border / Margin 구조와
+     box-sizing 차이를 확인합니다.
+   ============================================== */
+
+
+/* 부모 컨테이너
+   - background-color: 배경색으로 padding 영역을 시각적으로 확인 가능
+   - padding: 20px → 컨테이너 안쪽 네 방향에 20px 내부 여백 */
+.box-container {
+  background-color: #f0f0f0;
+  padding: 20px;
+}
+
+
+/* ── 박스 모델 종합 예제 (.styled-box) ────────── */
+
+.styled-box {
+  /* Content: 콘텐츠 영역의 가로·세로 크기
+     ※ box-sizing 기본값(content-box)에서는 이 크기에 padding·border가 추가됨 */
+  width: 200px;
+  height: 100px;
+
+  /* 배경색과 글자색 */
+  background-color: #3498db;
+  color: white;
+
+  /* Padding: 콘텐츠와 테두리 사이의 내부 여백
+     단축 속성 → 상하 20px / 좌우 40px
+     배경색이 padding 영역까지 채워짐 */
+  padding: 20px 40px;
+
+  /* Border: 테두리 (두께 스타일 색상 순서로 작성)
+     - solid: 실선 / dotted: 점선 / dashed: 긴 점선 / double: 이중선
+     border-radius: 모서리를 15px 반경으로 둥글게 처리 (50% → 원형) */
+  border: 5px solid #2980b9;
+  border-radius: 15px;
+
+  /* Margin: 테두리 바깥의 외부 여백
+     단축 속성 → 상하 30px / 좌우 auto
+     좌우 auto: 블록 요소를 수평 중앙 정렬할 때 사용 */
+  margin: 30px auto;
+
+  /* 텍스트 정중앙 배치 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ── box-sizing 비교 예제 ─────────────────────── */
+
+/* 공통 스타일: 두 박스에 동일한 width·padding·border 적용
+   → box-sizing 값에 따라 실제 렌더링 크기가 달라지는 것을 비교 */
+.box-sizing-demo {
+  width: 200px;
+  padding: 20px;           /* 양쪽 합산 40px */
+  border: 5px solid #333;  /* 양쪽 합산 10px */
+  margin: 10px auto;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* content-box (브라우저 기본값)
+   - width는 Content 영역만의 크기
+   - 실제 너비 = width(200) + padding(40) + border(10) = 250px
+   - padding·border를 추가할수록 요소가 예상보다 커짐 */
+.content-box {
+  box-sizing: content-box;
+  background-color: #e8f4fd;
+}
+
+/* border-box (실무 권장)
+   - width 안에 padding·border가 포함되어 계산됨
+   - 실제 너비 = width(200px) 그대로 유지
+   - 레이아웃 계산이 단순해져 예측 가능한 크기 관리 가능
+   ※ 보통 * { box-sizing: border-box; } 로 전체 적용 */
+.border-box {
+  box-sizing: border-box;
+  background-color: #eafaf1;
+}

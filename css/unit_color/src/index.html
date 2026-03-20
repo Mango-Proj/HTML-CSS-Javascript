@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>CSS 단위와 색상</title>
+</head>
+<body>
+
+  <!-- ============================================================
+    em vs rem 비교 예제
+    - .parent의 font-size: 20px 로 설정
+    - .child-em  → 부모(20px) 기준으로 계산됨
+    - .child-rem → html 루트(16px) 기준으로 계산됨
+  ============================================================ -->
+  <div class="parent">
+    부모 요소 (font-size: 20px)
+
+    <!-- 1.5em = 부모 font-size(20px) × 1.5 = 30px -->
+    <div class="child-em">em 단위 (1.5em = 30px)</div>
+
+    <!-- 1.5rem = 루트 font-size(16px) × 1.5 = 24px -->
+    <div class="child-rem">rem 단위 (1.5rem = 24px)</div>
+  </div>
+
+  <!-- ============================================================
+    색상 표현 방식 비교 예제
+  ============================================================ -->
+
+  <!-- rgba: 배경색만 70% 불투명, 텍스트는 영향 없음 -->
+  <div class="color-box rgb">RGBA 박스 (배경만 투명)</div>
+
+  <!-- hex + opacity: 박스 전체(배경 + 텍스트)가 50% 투명해짐 -->
+  <div class="color-box hex">Hex + opacity 박스 (전체 투명)</div>
+
+  <!-- ============================================================
+    뷰포트 단위 예제
+    - 100vw → 브라우저 창 너비 전체
+    - 20vh  → 브라우저 창 높이의 20%
+    화면 크기를 변경하면 박스 크기도 함께 변함
+  ============================================================ -->
+  <div class="full-screen">화면 꽉 차는 박스 (100vw × 20vh)</div>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+/* ==============================================
+   CSS 가상 요소와 가상 클래스 (Pseudo) 연습
+   - 가상 요소(::) : before, after, selection
+   - 구조 가상 클래스(:) : first-child, nth-child
+   - 상태 가상 클래스(:) : hover, focus
+   ============================================== */
+
+
+/* ── 1. 가상 요소 ::before ───────────────────────
+   선택자::before { content: "내용"; }
+   - 요소의 콘텐츠 앞에 가상의 인라인 요소를 삽입
+   - content 속성 필수 (없으면 화면에 나타나지 않음)
+   - HTML을 수정하지 않고 아이콘·장식 텍스트를 추가할 때 유용 */
+.menu-item::before {
+  content: "🍴 ";
+  font-size: 0.8em;
+}
+
+
+/* ── 2. 가상 요소 ::after ────────────────────────
+   선택자::after { content: "내용"; }
+   - 요소의 콘텐츠 뒤에 가상의 인라인 요소를 삽입
+   - ::before와 동일하게 content 속성 필수 */
+.menu-item::after {
+  content: " (추천)";
+  color: #ff4757;
+  font-size: 0.7em;
+  font-weight: bold;
+}
+
+
+/* ── 3. 구조 가상 클래스 :nth-child(even) ────────
+   :nth-child(n) 패턴:
+   - even / 2n   → 짝수 번째 (2, 4, 6...)
+   - odd  / 2n+1 → 홀수 번째 (1, 3, 5...)
+   - 3n          → 3의 배수 번째 (3, 6, 9...)
+   여기서는 짝수 번째 메뉴(순대, 어묵)에 줄무늬 배경 적용 */
+.menu-item:nth-child(even) {
+  background-color: #f1f2f6;
+}
+
+
+/* ── 4. 구조 가상 클래스 :first-child ───────────
+   부모의 자식 요소 중 첫 번째 요소를 선택
+   - :last-child  → 마지막 요소 선택
+   - :nth-child(1)과 동일한 동작
+   첫 번째 메뉴(떡볶이) 상단에 구분선 추가 */
+.menu-item:first-child {
+  border-top: 2px solid #2f3542;
+}
+
+
+/* ── 5. 상태 가상 클래스 :hover ──────────────────
+   마우스 커서를 요소 위에 올렸을 때 적용
+   - 주로 버튼·링크·목록 항목의 인터랙티브 효과에 사용
+   - cursor: pointer → 마우스 커서를 손가락 모양으로 변경 */
+.menu-item:hover {
+  background-color: #dfe4ea;
+  cursor: pointer;
+}
+
+
+/* ── 6. 상태 가상 클래스 :focus ──────────────────
+   키보드 탭 이동 또는 클릭으로 요소에 포커스가 맞춰졌을 때 적용
+   - 주로 <input>, <textarea>, <button> 등 폼 요소에 사용
+   - outline: 브라우저 기본 포커스 링을 커스텀 스타일로 교체
+   ※ outline: none 만 쓰면 키보드 접근성이 떨어지므로 주의 */
+input:focus {
+  outline: 2px solid #1e90ff;
+  background-color: #f1f9ff;
+}
+
+
+/* ── 7. 가상 요소 ::selection ────────────────────
+   사용자가 마우스로 드래그하여 텍스트를 선택했을 때 적용
+   - 선택자 없이 전역(::selection)으로 쓰면 페이지 전체에 적용
+   - 사용 가능한 속성: background-color, color, text-shadow 등 일부만 지원 */
+::selection {
+  background-color: #ffce00;
+  color: #000;
+}

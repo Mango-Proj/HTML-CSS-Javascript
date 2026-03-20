@@ -1,0 +1,66 @@
+/* ==============================================
+   CSS 텍스트 스타일링 (Typography) 연습
+   - font, color, text-align, text-shadow 등
+     텍스트 관련 주요 속성을 확인합니다.
+   ============================================== */
+
+
+/* 웹 폰트 적용 및 전체 기본 설정
+   - font-family: 구글 폰트 우선 적용, 없으면 시스템 sans-serif 폴백
+   - line-height: 숫자만 쓰면 현재 font-size의 배수로 계산 (1.6 → 16px × 1.6 = 25.6px)
+   - color: 본문 기본 글자색 (순수 검정 #000 보다 약간 부드러운 톤) */
+body {
+  font-family: "Noto Sans KR", sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+
+/* 제목 스타일 (.title)
+   - font-size: rem 단위 사용 → 브라우저 기본 크기(16px) 기준 상대값 (2.5rem = 40px)
+   - font-weight: 700 = bold, 숫자로 쓰면 세밀한 굵기 조절 가능
+   - text-align: center → 블록 요소 내에서 가로 중앙 정렬
+   - letter-spacing: 음수 사용 시 자간이 좁아져 헤딩에 세련된 느낌을 줌
+   - text-decoration: underline → 제목 하단에 밑줄 장식 */
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: #1a73e8;
+  letter-spacing: -1px;
+  text-decoration: underline;
+}
+
+
+/* 본문 스타일 (.content)
+   - font-size: px 단위 → 고정 크기
+   - word-spacing: 단어(띄어쓰기) 사이 간격 확대 → 긴 문장의 단어 구분을 명확하게
+   - text-align: justify → 양쪽 정렬, 좌우 끝을 맞춰 깔끔한 단락 모양 */
+.content {
+  font-size: 18px;
+  word-spacing: 2px;
+  text-align: justify;
+}
+
+
+/* 인라인 강조 스타일 (.highlight)
+   - <span>에 적용하여 문장 일부만 강조
+   - font-weight: bold + font-style: italic 조합으로 시각적 강조
+   - color: 경고·포인트 계열 빨간색 */
+.highlight {
+  color: #d93025;
+  font-weight: bold;
+  font-style: italic;
+}
+
+
+/* 그림자 텍스트 (.shadow-text)
+   - text-align: right → 오른쪽 정렬
+   - text-shadow: 가로offset 세로offset 번짐정도 색상
+     → 2px(오른쪽) 2px(아래) 4px(번짐) rgba(0,0,0,0.2)(20% 투명도 검정)
+     → 값이 클수록 그림자가 선명하고 멀리 떨어짐 */
+.shadow-text {
+  font-size: 20px;
+  text-align: right;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
