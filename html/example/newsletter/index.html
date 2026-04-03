@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- [NEW] 탭 제목을 신문 이름으로 변경 — 브라우저 탭에서 페이지를 식별하기 쉽게 함 -->
+    <title>The Daily Mango</title>
+    <style>
+        /* ===== 기존 스타일 (수정 없음) ===== */
+        body{
+            background-color: rgb(134, 153, 216);
+            opacity: 100%;
+
+        }
+        header {
+            height: 100px;
+            background-color: beige;
+            font-size: 1.15rem;
+            font-weight: bold;
+            border-radius: 15px;
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
+            margin: 10px;
+            opacity: 90%;
+        }
+        main {
+            height: 540px;
+            background-color: beige;
+            font-size: 1.15rem;
+            font-weight: bold;
+            border-radius: 15px;
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
+            margin: 10px;
+            opacity: 90%;
+        }
+        footer {
+            height: 100px;
+            background-color: beige;
+            font-size: 1.15rem;
+            font-weight: bold;
+            border-radius: 15px;
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
+            margin: 10px;
+            opacity: 90%;
+        }
+
+        /* ===== 새로 추가된 스타일 ===== */
+
+        /* [NEW] 마스트헤드 래퍼
+           — header 내부를 flexbox 세로 정렬로 구성해 제호, 날짜, 슬로건을 수직으로 배치 */
+        .masthead {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        /* [NEW] 마스트헤드 상단 정보바
+           — 날짜·호수·가격을 좌우에 균등하게 배치. 실제 신문 상단의 작은 메타 정보 영역을 재현 */
+        .masthead-top {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.65rem;
+            font-weight: normal;
+            font-family: Georgia, serif;
+            border-bottom: 1px solid #555;
+            padding-bottom: 3px;
+            margin-bottom: 4px;
+        }
+
+        /* [NEW] 신문 제호(타이틀)
+           — serif 폰트와 자간(letter-spacing)으로 클래식 신문 로고 느낌 표현 */
+        .masthead-title {
+            font-size: 2rem;
+            font-family: Georgia, 'Times New Roman', serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        /* [NEW] 슬로건 라인
+           — 제호 아래 이탤릭 소문자로 신문의 모토 문구 표시. 권위 있는 느낌을 위해 이탤릭 사용 */
+        .masthead-tagline {
+            font-size: 0.6rem;
+            font-weight: normal;
+            font-family: Georgia, serif;
+            font-style: italic;
+            margin-top: 3px;
+            letter-spacing: 0.05em;
+        }
+
+        /* [NEW] 3단 컬럼 그리드
+           — CSS Grid로 신문의 다단 구성(2:2:1.2 비율) 구현. overflow:hidden으로 고정 높이를 초과하는 내용 숨김 */
+        .newspaper-grid {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1.2fr;
+            height: 100%;
+            padding: 12px 16px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* [NEW] 각 컬럼 공통 스타일
+           — 패딩과 우측 border로 신문 단 구분선 표현 */
+        .col {
+            padding: 0 12px;
+            border-right: 1px solid #bbb;
+            overflow: hidden;
+        }
+        .col:first-child { padding-left: 0; }
+        .col:last-child  { border-right: none; padding-right: 0; }
+
+        /* [NEW] 메인 헤드라인 (1단 대기사 제목)
+           — serif 폰트와 하단 굵은 선으로 신문의 주요 기사 제목 스타일 구현 */
+        .article-headline {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 1rem;
+            font-weight: bold;
+            line-height: 1.2;
+            margin: 0 0 5px 0;
+            border-bottom: 2px solid #333;
+            padding-bottom: 4px;
+        }
+
+        /* [NEW] 서브 헤드라인 (2단 이하 기사 제목)
+           — 메인보다 작고 선도 가는 스타일로 기사 위계 구분 */
+        .article-subheadline {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 0.8rem;
+            font-weight: bold;
+            line-height: 1.2;
+            margin: 8px 0 3px 0;
+            border-bottom: 1px solid #666;
+            padding-bottom: 2px;
+        }
+
+        /* [NEW] 기사 본문
+           — 작은 serif 폰트와 justify 정렬로 실제 신문 단락 레이아웃 재현 */
+        .article-body {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 0.62rem;
+            font-weight: normal;
+            line-height: 1.55;
+            text-align: justify;
+            margin: 0 0 5px 0;
+        }
+
+        /* [NEW] 기자명/출처 표기
+           — 이탤릭 소문자로 기사 작성자 및 담당 섹션 표시 */
+        .article-byline {
+            font-size: 0.55rem;
+            font-weight: normal;
+            font-style: italic;
+            font-family: Georgia, serif;
+            margin: 0 0 5px 0;
+            color: #444;
+        }
+
+        /* [NEW] 기사 내부 구분선
+           — 같은 컬럼 안에서 두 기사를 시각적으로 분리하는 얇은 선 */
+        .article-divider {
+            border: none;
+            border-top: 1px solid #999;
+            margin: 10px 0;
+        }
+
+        /* [NEW] 사이드바 섹션 제목
+           — 다크 배경 + 밝은 텍스트로 사이드바의 각 항목(날씨, 단신 등) 시작을 명확히 표시 */
+        .sidebar-section-title {
+            font-family: Arial, sans-serif;
+            font-size: 0.63rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background-color: #555;
+            color: beige;
+            padding: 2px 6px;
+            margin: 0 0 5px 0;
+        }
+
+        /* [NEW] 날씨 항목 행
+           — flexbox로 도시명과 날씨 아이콘·기온을 양 끝 정렬. 점선 구분으로 가독성 확보 */
+        .weather-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            font-weight: normal;
+            font-family: Arial, sans-serif;
+            padding: 2px 0;
+            border-bottom: 1px dotted #aaa;
+        }
+
+        /* [NEW] 사이드바 날씨 박스
+           — 날씨 항목들을 묶어 하단 여백으로 다음 섹션과 간격 확보 */
+        .weather-box {
+            margin-bottom: 10px;
+        }
+
+        /* [NEW] 단신 기사 항목
+           — 짧은 뉴스 한 건을 감싸는 래퍼. 하단 여백으로 항목 간 간격 유지 */
+        .brief-item {
+            margin-bottom: 6px;
+        }
+
+        /* [NEW] 단신 본문 텍스트
+           — 본문보다 더 작은 폰트로 사이드바 공간에 맞게 조정 */
+        .brief-item p {
+            font-family: Georgia, serif;
+            font-size: 0.58rem;
+            font-weight: normal;
+            line-height: 1.45;
+            margin: 2px 0 0 0;
+        }
+
+        /* [NEW] 단신 소제목
+           — .article-subheadline의 속성 일부를 override해 사이드바 좁은 폭에 맞게 축소 */
+        .brief-title {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 0.63rem;
+            font-weight: bold;
+            border-bottom: 1px solid #666;
+            padding-bottom: 1px;
+            margin: 6px 0 2px 0;
+        }
+
+        /* [NEW] footer 3분할 레이아웃
+           — space-between으로 좌(판권)/중(제호)/우(연락처)를 균등 배치 */
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 24px;
+            box-sizing: border-box;
+        }
+
+        /* [NEW] footer 공통 텍스트 스타일
+           — 작은 serif 폰트로 발행사 정보를 눈에 띄지 않게 표시 */
+        .footer-left,
+        .footer-center,
+        .footer-right {
+            font-family: Georgia, serif;
+            font-size: 0.6rem;
+            font-weight: normal;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        /* [NEW] footer 중앙 제호
+           — 신문 이름을 footer에서도 가장 두드러지게 표시해 브랜드 일관성 유지 */
+        .footer-center {
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== header: 신문 마스트헤드 (제호 영역) ===== -->
+    <header>
+        <!-- [NEW] 마스트헤드 컨테이너 — header 안의 내용을 수직 중앙 정렬하기 위한 래퍼 -->
+        <div class="masthead">
+
+            <!-- [NEW] 상단 정보바 — 발행 날짜, 권호, 가격을 좌·중·우로 나눠 배치 -->
+            <div class="masthead-top">
+                <span>Thursday, April 3, 2026</span>
+                <span>VOL. CXLII . . . No. 49,215</span>
+                <span>$3.50</span>
+            </div>
+
+            <!-- [NEW] 신문 제호 — 대문자 serif로 신문 이름을 크게 표시 -->
+            <div class="masthead-title">The Daily Mango</div>
+
+            <!-- [NEW] 신문 슬로건 — 제호 아래 이탤릭 모토 문구 -->
+            <div class="masthead-tagline">"All the News That's Fit to Read"</div>
+
+        </div>
+    </header>
+
+    <!-- ===== main: 신문 본문 기사 영역 ===== -->
+    <main>
+        <!-- [NEW] 3단 컬럼 그리드 — 실제 신문의 다단 편집 구조를 CSS Grid로 구현 -->
+        <div class="newspaper-grid">
+
+            <!-- ── 1단: 메인 특집 기사 ── -->
+            <!-- [NEW] 첫 번째 컬럼 — 이번 호 가장 비중 있는 특집 기사 배치 -->
+            <div class="col">
+                <h2 class="article-headline">AI Reshapes the World of Software</h2>
+                <p class="article-byline">By Shannon K. · Technology Desk</p>
+                <p class="article-body">
+                    Artificial intelligence has moved from the realm of science fiction into
+                    the everyday workflows of developers worldwide. Tools powered by large
+                    language models can now write, review, and debug code at a speed that
+                    rivals seasoned engineers, forcing the industry to rethink long-held
+                    assumptions about productivity and quality.
+                </p>
+                <p class="article-body">
+                    Major technology firms report that AI-assisted engineering has reduced
+                    time-to-market for new features by as much as forty percent. Critics,
+                    however, warn that an overreliance on automated suggestions could
+                    introduce subtle security vulnerabilities that go undetected for months.
+                </p>
+                <p class="article-body">
+                    "We are not replacing engineers — we are amplifying them," said one
+                    senior architect at a leading cloud provider. "The key is learning to
+                    collaborate with these systems rather than simply deferring to them."
+                </p>
+                <p class="article-body">
+                    Regulators in the European Union are already drafting guidelines that
+                    would require companies to disclose when AI was used in the development
+                    of safety-critical software, a measure that many industry groups have
+                    called both necessary and long overdue.
+                </p>
+            </div>
+
+            <!-- ── 2단: 중간 비중 기사 2건 ── -->
+            <!-- [NEW] 두 번째 컬럼 — 중간 중요도의 기사 두 건을 구분선으로 나눠 배치 -->
+            <div class="col">
+                <h3 class="article-subheadline">Global Tech Summit Opens in Seoul</h3>
+                <p class="article-byline">By J. Park · International</p>
+                <p class="article-body">
+                    Delegates from more than sixty nations gathered in Seoul on Wednesday
+                    for the annual Global Technology Summit. The agenda focused on
+                    cross-border data governance and the ethical deployment of autonomous
+                    systems. The opening keynote called for a binding international treaty
+                    on AI accountability by the end of the decade.
+                </p>
+                <p class="article-body">
+                    South Korea's Prime Minister pledged to invest two billion dollars in
+                    domestic AI research centers over the next four years, positioning the
+                    country as a hub for next-generation semiconductor design.
+                </p>
+
+                <!-- [NEW] 기사 구분선 — 두 번째 기사 시작 전 시각적 분리를 위한 수평선 -->
+                <hr class="article-divider">
+
+                <h3 class="article-subheadline">Election Results Signal Policy Shift</h3>
+                <p class="article-byline">By M. Choi · National Politics</p>
+                <p class="article-body">
+                    Preliminary results from Tuesday's municipal elections show a decisive
+                    swing toward candidates who campaigned on urban renewal and green
+                    infrastructure. Analysts say the outcome reflects voter frustration with
+                    soaring housing costs and inadequate public transport links.
+                </p>
+                <p class="article-body">
+                    The winning coalition has promised to fast-track zoning reforms and
+                    expand light-rail networks across the three largest metropolitan areas.
+                    A full certified count is expected by Friday morning.
+                </p>
+            </div>
+
+            <!-- ── 3단: 사이드바 (날씨 + 단신) ── -->
+            <!-- [NEW] 세 번째 컬럼 — 날씨 예보와 짧은 단신 뉴스를 모아 사이드바 구성 -->
+            <div class="col">
+
+                <!-- [NEW] 날씨 섹션 — 오늘 주요 도시의 날씨를 간략하게 한눈에 파악하도록 표 형태로 나열 -->
+                <div class="weather-box">
+                    <div class="sidebar-section-title">Today's Weather</div>
+                    <div class="weather-item"><span>Seoul</span>   <span>☀️ 18°C</span></div>
+                    <div class="weather-item"><span>Tokyo</span>   <span>🌤 20°C</span></div>
+                    <div class="weather-item"><span>New York</span><span>🌧 12°C</span></div>
+                    <div class="weather-item"><span>London</span>  <span>⛅ 14°C</span></div>
+                    <div class="weather-item"><span>Sydney</span>  <span>☀️ 24°C</span></div>
+                </div>
+
+                <!-- [NEW] 단신 섹션 헤더 — In Brief 라벨로 짧은 뉴스 묶음의 시작을 표시 -->
+                <div class="sidebar-section-title">In Brief</div>
+
+                <!-- [NEW] 단신 1 — 금융·경제 관련 짧은 뉴스 -->
+                <div class="brief-item">
+                    <div class="brief-title">Markets Rally</div>
+                    <p>Global equities climbed for a third consecutive session as inflation
+                    data came in below forecasts, easing pressure on central banks to
+                    keep raising interest rates.</p>
+                </div>
+
+                <!-- [NEW] 단신 2 — 우주·과학 관련 짧은 뉴스 -->
+                <div class="brief-item">
+                    <div class="brief-title">Space Milestone</div>
+                    <p>A private spacecraft docked with the lunar gateway station,
+                    completing the first commercial lunar resupply mission in history.</p>
+                </div>
+
+                <!-- [NEW] 단신 3 — 스포츠 관련 짧은 뉴스 -->
+                <div class="brief-item">
+                    <div class="brief-title">Sports</div>
+                    <p>The national football team secured a 2–1 victory in last night's
+                    qualifier, booking a place in the continental semifinals.</p>
+                </div>
+
+            </div><!-- /.col (사이드바) -->
+
+        </div><!-- /.newspaper-grid -->
+    </main>
+
+    <!-- ===== footer: 발행사 정보 영역 ===== -->
+    <footer>
+        <!-- [NEW] footer 3분할 레이아웃 — 판권 / 신문 제호 / 연락처를 좌·중·우로 균등 배치 -->
+        <div class="footer-content">
+
+            <!-- [NEW] 좌측 — 저작권 표기 -->
+            <div class="footer-left">
+                © 2026 The Daily Mango<br>
+                All rights reserved.
+            </div>
+
+            <!-- [NEW] 중앙 — footer에서도 신문 이름을 가장 눈에 띄게 재표시해 브랜드 일관성 유지 -->
+            <div class="footer-center">THE DAILY MANGO</div>
+
+            <!-- [NEW] 우측 — 독자 연락처 및 창간 연도 표기 -->
+            <div class="footer-right">
+                contact@dailymango.com<br>
+                Issue No. 49,215 · Est. 1884
+            </div>
+
+        </div>
+    </footer>
+
+</body>
+</html>
