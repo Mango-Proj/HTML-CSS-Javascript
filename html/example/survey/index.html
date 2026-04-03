@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- [NEW] 브라우저 탭 제목을 설문 내용에 맞게 변경 -->
+    <title>2026 라이프스타일 밸런스 체크</title>
+
+    <!-- [NEW] =====================================================================
+         전체 스타일시트 — 기존 HTML 구조(header/main/footer/table)는 변경하지 않고
+         CSS만으로 시각적 완성도를 높인다.
+    ====================================================================== -->
+    <style>
+
+        /* [NEW] 전체 초기화 & 기본 폰트 설정
+           — margin/padding 기본값을 제거하고 box-sizing을 border-box로 통일해
+             레이아웃 계산을 직관적으로 만든다. */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* [NEW] body 배경
+           — 보라·남색 계열 그라디언트로 '갓생' 에너지 넘치는 분위기 표현.
+             min-height: 100vh로 짧은 콘텐츠에서도 배경이 화면 전체를 채운다. */
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #111827;
+        }
+
+        /* [NEW] header 스타일
+           — flexbox 중앙 정렬 + 보라 그라디언트 배경으로 설문 제목을 강조.
+             text-shadow로 가독성을 높이고, 아래쪽 margin으로 main과 간격을 확보한다. */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 22px 30px;
+            border-radius: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 6px 24px rgba(79, 70, 229, 0.45);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+            letter-spacing: -0.01em;
+            line-height: 1.4;
+        }
+
+        /* [NEW] main 스타일
+           — 흰 카드 디자인, max-height + overflow-y: auto로 테이블이 길어도
+             스크롤 영역 안에서 관리되게 한다. */
+        main {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 14px;
+            max-height: 62vh;
+            overflow-y: auto;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+        }
+
+        /* [NEW] main 스크롤바 스타일링
+           — webkit 전용이지만 Chrome·Edge·Safari에서 얇고 세련된 스크롤바를 표시 */
+        main::-webkit-scrollbar { width: 6px; }
+        main::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 8px; }
+        main::-webkit-scrollbar-thumb { background: #a5b4fc; border-radius: 8px; }
+        main::-webkit-scrollbar-thumb:hover { background: #6d28d9; }
+
+        /* [NEW] 진행률 바 컨테이너
+           — sticky top: 0으로 테이블 스크롤 중에도 항상 상단에 고정된다.
+             배경을 흰색으로 채워 테이블 위로 겹쳐 보이는 것을 방지 */
+        .progress-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: #ffffff;
+            padding-bottom: 12px;
+            margin-bottom: 4px;
+        }
+
+        /* [NEW] 진행률 숫자 표시 (상단 레이블)
+           — 완료 문항 수를 우측 정렬로 보여주고, 보라색으로 강조 */
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 0.78rem;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+        .progress-label span:last-child {
+            font-weight: 700;
+            color: #6d28d9;
+            font-size: 0.85rem;
+        }
+
+        /* [NEW] 진행률 바 트랙 (배경)
+           — 둥근 직사각형 트랙 안에 채워지는 막대가 들어간다. */
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        /* [NEW] 진행률 바 막대 (채워지는 부분)
+           — width는 JavaScript로 동적으로 조절. transition으로 부드러운 애니메이션 적용 */
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 999px;
+            transition: width 0.35s ease;
+        }
+
+        /* [NEW] 테이블 기본 레이아웃
+           — border-collapse: collapse으로 셀 간 이중 선을 제거.
+             table-layout: fixed + width: 100%로 컬럼 너비를 고정 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            table-layout: fixed;
+        }
+
+        /* [NEW] thead 헤더 행
+           — sticky top: 53px으로 진행률 바 바로 아래에 고정. 스크롤해도 컬럼 헤더가 보인다.
+             53px은 .progress-wrap의 실제 높이에 맞춘 값 */
+        thead tr {
+            position: sticky;
+            top: 53px;
+            z-index: 10;
+            background: #4f46e5;
+            color: white;
+        }
+
+        /* [NEW] 헤더 셀
+           — 중앙 정렬, 적당한 패딩. 2번째 th(질문 컬럼)는 좌측 정렬로 별도 처리 */
+        thead th {
+            padding: 11px 8px;
+            text-align: center;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+        thead th:nth-child(2) { text-align: left; }
+
+        /* [NEW] 컬럼 너비 고정
+           — 번호, 질문, 5점 척도 컬럼의 너비를 지정해 정렬이 흐트러지지 않게 한다. */
+        col.col-no       { width: 44px; }
+        col.col-question { width: auto; }
+        col.col-option   { width: 80px; }
+
+        /* [NEW] 본문 행 기본 스타일
+           — 하단 구분선, 배경 전환 애니메이션 */
+        tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.15s ease;
+        }
+
+        /* [NEW] 짝수 행 연한 배경 (zebra striping)
+           — 행이 많을 때 줄을 쉽게 따라갈 수 있게 한다. */
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        /* [NEW] 행 hover 효과
+           — 마우스를 올리면 연보라로 변해 현재 응답 중인 행을 강조한다. */
+        tbody tr:hover {
+            background-color: #ede9fe;
+        }
+
+        /* [NEW] 섹션 구분 — 각 그룹(5문항) 시작 행에 굵은 상단 선 추가
+           — Q1, Q6, Q11, Q16이 각 테마 섹션의 시작점이다. */
+        tbody tr:nth-child(1) td,
+        tbody tr:nth-child(6) td,
+        tbody tr:nth-child(11) td,
+        tbody tr:nth-child(16) td {
+            border-top: 2px solid #c4b5fd;
+        }
+
+        /* [NEW] 섹션 번호(no 컬럼)에 테마 색상 왼쪽 선 추가
+           — 4개 섹션에 각각 다른 색상 인디케이터를 부여해 섹션 구분을 시각화한다. */
+        tbody tr:nth-child(-n+5) td:first-child       { border-left: 4px solid #3b82f6; } /* 디지털 디톡스: 파랑 */
+        tbody tr:nth-child(n+6):nth-child(-n+10) td:first-child  { border-left: 4px solid #10b981; } /* 두뇌 건강: 초록 */
+        tbody tr:nth-child(n+11):nth-child(-n+15) td:first-child { border-left: 4px solid #f59e0b; } /* 휴식·회복: 주황 */
+        tbody tr:nth-child(n+16) td:first-child                  { border-left: 4px solid #ec4899; } /* 아날로그 감성: 핑크 */
+
+        /* [NEW] 본문 셀 공통 패딩·정렬 */
+        tbody td {
+            padding: 10px 8px;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: 400;
+        }
+
+        /* [NEW] 번호 셀 — 굵고 보라색으로 강조 */
+        tbody td:first-child {
+            font-weight: 700;
+            color: #7c3aed;
+            font-size: 0.82rem;
+        }
+
+        /* [NEW] 질문 텍스트 셀 — 좌측 정렬, 충분한 줄간격으로 가독성 확보 */
+        tbody td:nth-child(2) {
+            text-align: left;
+            line-height: 1.55;
+            color: #374151;
+            font-size: 0.85rem;
+            word-break: keep-all;
+        }
+
+        /* [NEW] 라디오 버튼 스타일링
+           — accent-color로 선택 색상을 브랜드 보라로 변경.
+             width·height를 키워 클릭 영역을 넓히고 cursor:pointer로 인터랙션을 명확히 한다. */
+        input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #7c3aed;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        input[type="radio"]:hover {
+            transform: scale(1.25);
+        }
+
+        /* [NEW] 라디오 버튼이 선택된 셀에 배경 하이라이트
+           — :has()는 선택된 라디오 버튼이 있는 <td>에 시각적 피드백을 제공한다.
+             Safari 15.4+, Chrome 105+, Firefox 121+ 이상에서 지원 */
+        tbody td:has(input[type="radio"]:checked) {
+            background-color: rgba(139, 92, 246, 0.12);
+            border-radius: 6px;
+        }
+
+        /* [NEW] footer 스타일
+           — 흰 카드, flexbox 양 끝 정렬로 안내 문구(좌)와 제출 버튼(우)을 배치한다. */
+        footer {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 0 28px;
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+            gap: 16px;
+        }
+
+        /* [NEW] footer 안내 문구
+           — 5점 척도 의미를 간략히 설명해 응답자가 선택 기준을 잊지 않게 돕는다. */
+        .footer-note {
+            font-size: 0.75rem;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        .footer-note strong {
+            color: #4f46e5;
+        }
+
+        /* [NEW] 제출 버튼
+           — 그라디언트 배경과 둥근 모서리로 CTA(Call-to-Action)를 강조.
+             hover 시 위로 살짝 이동하는 효과로 인터랙티브한 느낌을 준다. */
+        .submit-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 12px 38px;
+            border-radius: 999px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.45);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(79, 70, 229, 0.55);
+        }
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* [NEW] 결과 오버레이 (배경 딤 처리)
+           — position: fixed + inset: 0으로 화면 전체를 덮는다.
+             backdrop-filter: blur로 배경을 흐리게 해 모달에 집중시킨다. */
+        .result-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.65);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        /* [NEW] 결과 카드
+           — 흰 카드 + 상단 보라 포인트 선으로 깔끔한 모달 디자인.
+             애니메이션으로 아래에서 올라오는 효과 */
+        .result-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 36px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            border-top: 6px solid #7c3aed;
+            animation: slideUp 0.35s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* [NEW] 결과 카드 내부 요소들 */
+        .result-emoji { font-size: 3.5rem; margin-bottom: 10px; }
+
+        .result-score {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #4f46e5;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .result-score span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #9ca3af;
+        }
+
+        .result-type {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 10px 0 8px;
+        }
+
+        .result-desc {
+            font-size: 0.88rem;
+            color: #6b7280;
+            line-height: 1.65;
+            margin-bottom: 24px;
+        }
+
+        /* [NEW] 섹션별 세부 점수 표 */
+        .result-breakdown {
+            background: #f5f3ff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+        .result-breakdown h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6d28d9;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 10px;
+        }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            padding: 4px 0;
+            border-bottom: 1px solid #ede9fe;
+        }
+        .breakdown-row:last-child { border-bottom: none; }
+        .breakdown-row span:first-child { color: #374151; }
+        .breakdown-row span:last-child {
+            font-weight: 700;
+            color: #7c3aed;
+        }
+
+        /* [NEW] 다시하기 버튼 */
+        .reset-btn {
+            width: 100%;
+            padding: 13px;
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .reset-btn:hover { background: #e5e7eb; }
+
+        /* [NEW] hidden 유틸리티 클래스 — JavaScript로 토글해 오버레이 표시/숨김 제어 */
+        .hidden { display: none !important; }
+
+    </style>
+</head>
+<body>
+
+    <!-- ===== 기존 header (수정 없음) ===== -->
+    <header>2026 라이프스타일 밸런스 체크: 나의 '갓생' 지수는?</header>
+
+    <!-- ===== 기존 main (수정 없음) + 내부에 새 요소 추가 ===== -->
+    <main>
+
+        <!-- [NEW] 진행률 표시 영역
+             — 스크롤해도 상단에 고정되어, 몇 문항이 완료됐는지 항상 확인할 수 있다. -->
+        <div class="progress-wrap">
+            <div class="progress-label">
+                <span>응답 진행률</span>
+                <!-- [NEW] JS가 이 span의 텍스트를 "N / 20 완료"로 동적 업데이트 -->
+                <span id="progressText">0 / 20 완료</span>
+            </div>
+            <div class="progress-track">
+                <!-- [NEW] JS가 이 div의 width(%)를 동적으로 조절 -->
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- [NEW] form 래퍼 시작
+             — 라디오 버튼들을 form으로 감싸 제출(submit) 이벤트와 연결한다.
+               action이 없으면 기본적으로 페이지 새로고침이 발생하므로, JS에서 preventDefault() 처리 -->
+        <form id="surveyForm">
+
+        <!-- ===== 기존 table (수정 없음) ===== -->
+        <table>
+            <!-- [NEW] colgroup — 각 컬럼 너비를 CSS 클래스로 제어하기 위해 추가 -->
+            <colgroup>
+                <col class="col-no">
+                <col class="col-question">
+                <col class="col-option">
+                <col class="col-option">
+                <col class="col-option">
+                <col class="col-option">
+                <col class="col-option">
+            </colgroup>
+            <thead><tr>
+                <th>no</th>
+                <th>question</th>
+                <th>Strongly Agree</th>
+                <th>Agree</th>
+                <th>Neutral</th>
+                <th>Disagree</th>
+                <th>Strongly Disagree</th>
+            </tr></thead>
+
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>나는 하루 중 스마트폰 알림을 끄고 지내는 시간이 꼭 필요하다.</td>
+                    <td><input type="radio" name="q1" value="5"></td>
+                    <td><input type="radio" name="q1" value="4"></td>
+                    <td><input type="radio" name="q1" value="3"></td>
+                    <td><input type="radio" name="q1" value="2"></td>
+                    <td><input type="radio" name="q1" value="1"></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>소셜 미디어(SNS) 앱을 삭제하거나 접속을 줄였을 때 심리적 해방감을 느낀다.</td>
+                    <td><input type="radio" name="q2" value="5"></td>
+                    <td><input type="radio" name="q2" value="4"></td>
+                    <td><input type="radio" name="q2" value="3"></td>
+                    <td><input type="radio" name="q2" value="2"></td>
+                    <td><input type="radio" name="q2" value="1"></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>나는 디지털 기기 없이 보내는 '오프라인 시간'의 가치를 높게 평가한다.</td>
+                    <td><input type="radio" name="q3" value="5"></td>
+                    <td><input type="radio" name="q3" value="4"></td>
+                    <td><input type="radio" name="q3" value="3"></td>
+                    <td><input type="radio" name="q3" value="2"></td>
+                    <td><input type="radio" name="q3" value="1"></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>단순한 정보 검색보다 종이책이나 긴 글을 읽는 데 더 집중하려고 노력한다.</td>
+                    <td><input type="radio" name="q4" value="5"></td>
+                    <td><input type="radio" name="q4" value="4"></td>
+                    <td><input type="radio" name="q4" value="3"></td>
+                    <td><input type="radio" name="q4" value="2"></td>
+                    <td><input type="radio" name="q4" value="1"></td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>나는 온라인 관계보다 대면해서 나누는 대화가 더 깊이 있다고 믿는다.</td>
+                    <td><input type="radio" name="q5" value="5"></td>
+                    <td><input type="radio" name="q5" value="4"></td>
+                    <td><input type="radio" name="q5" value="3"></td>
+                    <td><input type="radio" name="q5" value="2"></td>
+                    <td><input type="radio" name="q5" value="1"></td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>나는 두뇌 건강을 위해 명상이나 뇌 훈련 게임 등을 정기적으로 실천한다.</td>
+                    <td><input type="radio" name="q6" value="5"></td>
+                    <td><input type="radio" name="q6" value="4"></td>
+                    <td><input type="radio" name="q6" value="3"></td>
+                    <td><input type="radio" name="q6" value="2"></td>
+                    <td><input type="radio" name="q6" value="1"></td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>업무나 학습 도중 뇌의 휴식을 위해 의도적으로 '멍 때리는 시간'을 갖는다.</td>
+                    <td><input type="radio" name="q7" value="5"></td>
+                    <td><input type="radio" name="q7" value="4"></td>
+                    <td><input type="radio" name="q7" value="3"></td>
+                    <td><input type="radio" name="q7" value="2"></td>
+                    <td><input type="radio" name="q7" value="1"></td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>나는 스트레스가 내 인지 능력(기억력, 집중력)에 직접적인 영향을 준다고 느낀다.</td>
+                    <td><input type="radio" name="q8" value="5"></td>
+                    <td><input type="radio" name="q8" value="4"></td>
+                    <td><input type="radio" name="q8" value="3"></td>
+                    <td><input type="radio" name="q8" value="2"></td>
+                    <td><input type="radio" name="q8" value="1"></td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>영양제나 식단을 선택할 때 '두뇌 활성화'에 도움을 주는 요소를 고려한다.</td>
+                    <td><input type="radio" name="q9" value="5"></td>
+                    <td><input type="radio" name="q9" value="4"></td>
+                    <td><input type="radio" name="q9" value="3"></td>
+                    <td><input type="radio" name="q9" value="2"></td>
+                    <td><input type="radio" name="q9" value="1"></td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>새로운 기술이나 언어를 배우는 것이 뇌 노화를 방지하는 데 필수적이라고 생각한다.</td>
+                    <td><input type="radio" name="q10" value="5"></td>
+                    <td><input type="radio" name="q10" value="4"></td>
+                    <td><input type="radio" name="q10" value="3"></td>
+                    <td><input type="radio" name="q10" value="2"></td>
+                    <td><input type="radio" name="q10" value="1"></td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>나는 주말이나 휴가 때 '아무것도 하지 않는 것'에 대해 죄책감을 느끼지 않는다.</td>
+                    <td><input type="radio" name="q11" value="5"></td>
+                    <td><input type="radio" name="q11" value="4"></td>
+                    <td><input type="radio" name="q11" value="3"></td>
+                    <td><input type="radio" name="q11" value="2"></td>
+                    <td><input type="radio" name="q11" value="1"></td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>피곤할 때 억지로 버티기보다 짧은 낮잠이나 휴식을 선택하는 편이다.</td>
+                    <td><input type="radio" name="q12" value="5"></td>
+                    <td><input type="radio" name="q12" value="4"></td>
+                    <td><input type="radio" name="q12" value="3"></td>
+                    <td><input type="radio" name="q12" value="2"></td>
+                    <td><input type="radio" name="q12" value="1"></td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>나는 나만의 확실한 '에너지 충전 루틴'(취미, 반신욕 등)을 가지고 있다.</td>
+                    <td><input type="radio" name="q13" value="5"></td>
+                    <td><input type="radio" name="q13" value="4"></td>
+                    <td><input type="radio" name="q13" value="3"></td>
+                    <td><input type="radio" name="q13" value="2"></td>
+                    <td><input type="radio" name="q13" value="1"></td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td>복잡한 여행지보다 조용한 곳에서 머물며 쉬는 '스테이케이션'을 선호한다.</td>
+                    <td><input type="radio" name="q14" value="5"></td>
+                    <td><input type="radio" name="q14" value="4"></td>
+                    <td><input type="radio" name="q14" value="3"></td>
+                    <td><input type="radio" name="q14" value="2"></td>
+                    <td><input type="radio" name="q14" value="1"></td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>번아웃을 예방하기 위해 일과 삶의 경계를 엄격히 구분하려고 한다.</td>
+                    <td><input type="radio" name="q15" value="5"></td>
+                    <td><input type="radio" name="q15" value="4"></td>
+                    <td><input type="radio" name="q15" value="3"></td>
+                    <td><input type="radio" name="q15" value="2"></td>
+                    <td><input type="radio" name="q15" value="1"></td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td>메모나 일기를 쓸 때 태블릿보다 종이와 펜을 사용하는 것을 더 좋아한다.</td>
+                    <td><input type="radio" name="q16" value="5"></td>
+                    <td><input type="radio" name="q16" value="4"></td>
+                    <td><input type="radio" name="q16" value="3"></td>
+                    <td><input type="radio" name="q16" value="2"></td>
+                    <td><input type="radio" name="q16" value="1"></td>
+                </tr>
+                <tr>
+                    <td>17</td>
+                    <td>필름 카메라나 바이닐(LP)처럼 손이 많이 가는 물건에서 더 큰 만족감을 느낀다.</td>
+                    <td><input type="radio" name="q17" value="5"></td>
+                    <td><input type="radio" name="q17" value="4"></td>
+                    <td><input type="radio" name="q17" value="3"></td>
+                    <td><input type="radio" name="q17" value="2"></td>
+                    <td><input type="radio" name="q17" value="1"></td>
+                </tr>
+                <tr>
+                    <td>18</td>
+                    <td>직접 손으로 무언가를 만드는 과정(DIY, 요리, 공예 등)에서 성취감을 얻는다.</td>
+                    <td><input type="radio" name="q18" value="5"></td>
+                    <td><input type="radio" name="q18" value="4"></td>
+                    <td><input type="radio" name="q18" value="3"></td>
+                    <td><input type="radio" name="q18" value="2"></td>
+                    <td><input type="radio" name="q18" value="1"></td>
+                </tr>
+                <tr>
+                    <td>19</td>
+                    <td>빠른 메신저보다 손편지나 직접 만든 선물에 담긴 정성을 더 소중히 여긴다.</td>
+                    <td><input type="radio" name="q19" value="5"></td>
+                    <td><input type="radio" name="q19" value="4"></td>
+                    <td><input type="radio" name="q19" value="3"></td>
+                    <td><input type="radio" name="q19" value="2"></td>
+                    <td><input type="radio" name="q19" value="1"></td>
+                </tr>
+                <tr>
+                    <td>20</td>
+                    <td>나는 오래된 물건이나 빈티지 소품이 주는 따뜻한 감성을 선호한다.</td>
+                    <td><input type="radio" name="q20" value="5"></td>
+                    <td><input type="radio" name="q20" value="4"></td>
+                    <td><input type="radio" name="q20" value="3"></td>
+                    <td><input type="radio" name="q20" value="2"></td>
+                    <td><input type="radio" name="q20" value="1"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        </form>
+        <!-- [NEW] form 래퍼 끝 -->
+
+    </main>
+
+    <!-- ===== 기존 footer (수정 없음) + 내부에 새 요소 추가 ===== -->
+    <footer>
+
+        <!-- [NEW] 5점 척도 기준 안내 문구
+             — 응답자가 스크롤 중에도 척도 의미를 잊지 않도록 footer에 고정 표시 -->
+        <div class="footer-note">
+            <strong>5</strong> 매우 그렇다 &nbsp;·&nbsp;
+            <strong>4</strong> 그렇다 &nbsp;·&nbsp;
+            <strong>3</strong> 보통 &nbsp;·&nbsp;
+            <strong>2</strong> 아니다 &nbsp;·&nbsp;
+            <strong>1</strong> 전혀 아니다
+        </div>
+
+        <!-- [NEW] 제출 버튼
+             — type="submit"이지만 form 밖에 있으므로 form="surveyForm" 속성으로
+               surveyForm과 연결한다. JS의 submit 이벤트가 정상적으로 발화된다. -->
+        <button type="submit" form="surveyForm" class="submit-btn">결과 확인하기 →</button>
+
+    </footer>
+
+    <!-- [NEW] 결과 오버레이 (초기 상태: 숨김)
+         — JS가 계산 완료 후 .hidden 클래스를 제거해 이 오버레이를 표시한다. -->
+    <div class="result-overlay hidden" id="resultOverlay">
+        <div class="result-card">
+            <!-- [NEW] JS가 각 요소의 textContent를 동적으로 채운다 -->
+            <div class="result-emoji"  id="resultEmoji"></div>
+            <div class="result-score">
+                <span id="resultScore"></span>
+                <span>/ 100</span>
+            </div>
+            <div class="result-type"   id="resultType"></div>
+            <div class="result-desc"   id="resultDesc"></div>
+
+            <!-- [NEW] 섹션별 점수 세부 내역 표 -->
+            <div class="result-breakdown">
+                <h4>섹션별 점수</h4>
+                <div class="breakdown-row">
+                    <span>📵 디지털 디톡스 (Q1–5)</span>
+                    <span id="scoreA"></span>
+                </div>
+                <div class="breakdown-row">
+                    <span>🧠 두뇌 건강 (Q6–10)</span>
+                    <span id="scoreB"></span>
+                </div>
+                <div class="breakdown-row">
+                    <span>💤 휴식과 회복 (Q11–15)</span>
+                    <span id="scoreC"></span>
+                </div>
+                <div class="breakdown-row">
+                    <span>✍️ 아날로그 감성 (Q16–20)</span>
+                    <span id="scoreD"></span>
+                </div>
+            </div>
+
+            <!-- [NEW] 다시하기 버튼 — 오버레이를 닫고 모든 선택을 초기화 -->
+            <button class="reset-btn" id="resetBtn">다시 응답하기</button>
+        </div>
+    </div>
+
+    <!-- [NEW] =====================================================================
+         JavaScript — 진행률 추적, 유효성 검사, 점수 계산, 결과 표시를 담당한다.
+    ====================================================================== -->
+    <script>
+
+        /* [NEW] 총 문항 수 상수 — 숫자 리터럴 대신 상수를 사용해 유지보수성을 높인다. */
+        const TOTAL = 20;
+
+        /* [NEW] 섹션 그룹 정의
+           — 각 섹션이 포함하는 문항 번호 범위를 배열로 관리.
+             점수 세부 분석 시 이 배열을 순회해 섹션별 합산 점수를 구한다. */
+        const SECTIONS = [
+            { id: 'scoreA', start: 1,  end: 5  },   // 디지털 디톡스
+            { id: 'scoreB', start: 6,  end: 10 },   // 두뇌 건강
+            { id: 'scoreC', start: 11, end: 15 },   // 휴식과 회복
+            { id: 'scoreD', start: 16, end: 20 },   // 아날로그 감성
+        ];
+
+        /* [NEW] 점수 등급 테이블
+           — 점수 구간별 결과 데이터를 배열로 관리.
+             minScore 이상이고 다음 항목의 minScore 미만인 경우 해당 등급 적용 */
+        const GRADES = [
+            {
+                minScore: 87,
+                emoji: '🌿',
+                type: '갓생 실천가',
+                desc: '디지털 디톡스, 두뇌 건강, 회복 루틴, 아날로그 감성까지 모두 높은 점수를 기록했습니다. 현대적 삶과 내면의 균형을 완벽히 실천하는 라이프스타일 리더입니다.',
+            },
+            {
+                minScore: 72,
+                emoji: '⚖️',
+                type: '밸런스 추구형',
+                desc: '디지털과 아날로그, 바쁨과 여유를 균형 있게 조율하고 있습니다. 특정 영역에서 조금 더 의식적인 노력을 기울이면 완전한 갓생에 가까워질 수 있어요.',
+            },
+            {
+                minScore: 52,
+                emoji: '🔍',
+                type: '균형 탐색 중',
+                desc: '삶의 균형이 필요하다는 것은 알지만 실천이 쉽지 않은 단계입니다. 하루 5분 오프라인 타임과 같은 작은 루틴부터 시작해보는 건 어떨까요?',
+            },
+            {
+                minScore: 35,
+                emoji: '📱',
+                type: '디지털 의존 경향',
+                desc: '일상의 상당 부분이 디지털 기기 중심으로 돌아가고 있습니다. 주 1회 디지털 디톡스 데이를 설정해보면 의외로 큰 변화를 느낄 수 있습니다.',
+            },
+            {
+                minScore: 0,
+                emoji: '🖥️',
+                type: '완전 디지털 라이프',
+                desc: '온라인 세계가 생활의 중심입니다. 오프라인에서 오는 아날로그 감성과 신체·두뇌 건강에 조금 더 관심을 기울여보세요.',
+            },
+        ];
+
+        /* [NEW] DOM 요소 캐싱
+           — 이벤트 핸들러에서 매번 쿼리하지 않고 한 번만 참조해 성능을 개선한다. */
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const surveyForm   = document.getElementById('surveyForm');
+        const resultOverlay = document.getElementById('resultOverlay');
+        const resetBtn     = document.getElementById('resetBtn');
+
+        /* [NEW] 진행률 업데이트 함수
+           — 라디오 버튼에 변화가 생길 때마다 호출.
+             각 name 그룹(q1~q20)에서 선택된 항목이 있으면 +1 카운트한다. */
+        function updateProgress() {
+            let answered = 0;
+            for (let i = 1; i <= TOTAL; i++) {
+                if (document.querySelector(`input[name="q${i}"]:checked`)) {
+                    answered++;
+                }
+            }
+            const pct = (answered / TOTAL) * 100;
+            progressFill.style.width = pct + '%';
+            progressText.textContent = `${answered} / ${TOTAL} 완료`;
+        }
+
+        /* [NEW] 모든 라디오 버튼에 change 이벤트 리스너 등록
+           — 이벤트 위임을 사용할 수도 있지만, 라디오 버튼이 20*5=100개로 한정되어
+             직접 등록해도 성능 문제가 없다. */
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', updateProgress);
+        });
+
+        /* [NEW] 점수 → 등급 변환 함수
+           — GRADES 배열을 순회해 minScore 이상인 첫 번째 등급을 반환한다.
+             배열이 높은 점수부터 내림차순 정렬되어 있으므로 첫 번째 일치가 정확한 등급이다. */
+        function getGrade(score) {
+            return GRADES.find(g => score >= g.minScore);
+        }
+
+        /* [NEW] 결과 오버레이 표시 함수
+           — 점수, 등급 정보, 섹션별 점수를 받아 DOM 요소를 업데이트하고 오버레이를 표시한다. */
+        function showResult(totalScore, sectionScores) {
+            const grade = getGrade(totalScore);
+
+            document.getElementById('resultEmoji').textContent = grade.emoji;
+            document.getElementById('resultScore').textContent = totalScore;
+            document.getElementById('resultType').textContent  = grade.type;
+            document.getElementById('resultDesc').textContent  = grade.desc;
+
+            /* [NEW] 섹션별 점수를 SECTIONS 배열을 순회해 채운다
+               — sectionScores 배열 인덱스가 SECTIONS 배열과 1:1 대응 */
+            SECTIONS.forEach((sec, i) => {
+                document.getElementById(sec.id).textContent = `${sectionScores[i]} / 25`;
+            });
+
+            resultOverlay.classList.remove('hidden');
+        }
+
+        /* [NEW] 폼 제출 이벤트 핸들러
+           — 기본 제출(페이지 새로고침)을 막고 유효성 검사 → 점수 계산 → 결과 표시 순으로 처리 */
+        surveyForm.addEventListener('submit', function (e) {
+            e.preventDefault();   // [NEW] 기본 동작(페이지 이동)을 막는다
+
+            /* [NEW] 미응답 문항 수집 — 빈 응답이 있으면 alert로 해당 번호 알림 */
+            const unanswered = [];
+            for (let i = 1; i <= TOTAL; i++) {
+                if (!document.querySelector(`input[name="q${i}"]:checked`)) {
+                    unanswered.push(i);
+                }
+            }
+            if (unanswered.length > 0) {
+                alert(`아직 응답하지 않은 문항이 있습니다.\n\n문항 번호: ${unanswered.join(', ')}`);
+                return;
+            }
+
+            /* [NEW] 총점 및 섹션별 점수 계산
+               — SECTIONS 배열로 구간을 정의하고, 각 구간 내 radio 선택값을 숫자로 합산 */
+            let totalScore = 0;
+            const sectionScores = SECTIONS.map(sec => {
+                let sectionSum = 0;
+                for (let i = sec.start; i <= sec.end; i++) {
+                    const val = parseInt(
+                        document.querySelector(`input[name="q${i}"]:checked`).value
+                    );
+                    sectionSum += val;
+                    totalScore += val;
+                }
+                return sectionSum;
+            });
+
+            showResult(totalScore, sectionScores);
+        });
+
+        /* [NEW] 다시하기 버튼 핸들러
+           — 오버레이를 숨기고, 폼 내 모든 라디오 선택을 초기화하며, 진행률 바를 0으로 리셋 */
+        resetBtn.addEventListener('click', function () {
+            resultOverlay.classList.add('hidden');
+            surveyForm.reset();      // [NEW] form.reset()은 내부 모든 입력값을 기본값으로 되돌린다
+            updateProgress();        // [NEW] 진행률 바도 0%로 업데이트
+        });
+
+    </script>
+
+</body>
+</html>
