@@ -1,0 +1,1236 @@
+/*
+ * style.css — 이벤트 캘린더 스타일시트
+ * ========================================
+ * 구성 순서:
+ *   1. Reset & Base          — 전역 초기화 및 body 기본 설정
+ *   2. Layout                — 최상위 Flex 컨테이너
+ *   3. Sidebar               — 좌측 사이드바 (데스크탑 고정 / 모바일 드로어)
+ *   4. Mini Calendar         — 사이드바 내 소형 월별 달력
+ *   5. Calendar Category     — 카테고리 필터 체크박스 목록
+ *   6. Main Area             — 우측 메인 영역
+ *   7. Toolbar               — 상단 네비게이션 바
+ *   8. Calendar Grid         — 월별 7×N 그리드
+ *   9. Events (칩)           — 날짜 셀 안의 이벤트 태그
+ *  10. 목록 뷰               — 시간순 이벤트 목록 레이아웃
+ *  11. 주 보기 뷰            — 시간대별 주간 그리드
+ *  12. Utility               — 범용 헬퍼 클래스
+ *  13. Modal                 — 이벤트 추가/수정 모달
+ *  14. 이벤트 상세 팝업      — 클릭 시 나타나는 소형 카드
+ *  15. 반응형 미디어 쿼리    — 태블릿(≤900px) / 모바일(≤640px) / 소형(≤380px)
+ */
+
+/* ===========================
+   1. Reset & Base
+   - 모든 요소의 box-sizing을 border-box로 통일하여
+     padding/border가 레이아웃 계산에 포함되도록 합니다.
+   - margin·padding 초기화로 브라우저 기본값 차이를 제거합니다.
+=========================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  /* 한글·영문 혼용에 적합한 폰트 스택 */
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  background: #f0f2f5; /* 연한 회색 배경 */
+  color: #333;
+  height: 100vh;
+  /* 브라우저 스크롤바가 생겨 레이아웃이 밀리지 않도록 */
+  overflow: hidden;
+}
+
+/* ===========================
+   2. Layout
+   - .app: 사이드바와 메인 영역을 가로로 배치하는 최상위 Flex 컨테이너
+=========================== */
+.app {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ===========================
+   3. Sidebar
+   - 데스크탑: 240px 고정 폭으로 항상 표시
+   - 모바일(≤640px): position:fixed + translateX(-100%)로 숨기고,
+     .open 클래스 토글로 슬라이드인/아웃 처리 (미디어 쿼리 참고)
+=========================== */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px;
+  gap: 28px;          /* 각 섹션 간 세로 간격 */
+  overflow-y: auto;   /* 내용이 넘칠 경우 스크롤 */
+  /* 모바일 드로어 슬라이드 애니메이션 */
+  transition: transform 0.25s ease;
+  z-index: 200;       /* 팝업(400), 모달(500)보다 아래 */
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a73e8; /* Google Blue */
+  letter-spacing: -0.3px;
+}
+
+/* 닫기 버튼은 데스크탑에서 숨기고 모바일에서만 표시 (미디어 쿼리 참고) */
+.sidebar-close {
+  display: none;
+}
+
+/*
+ * 모바일 드로어 오버레이
+ * - 사이드바가 열릴 때 배경을 어둡게 덮습니다.
+ * - inset: 0 = top/right/bottom/left 모두 0 (전체 화면 커버)
+ * - .open 클래스가 추가될 때 display:block으로 나타납니다.
+ */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 190; /* 사이드바(200)보다 아래 */
+}
+
+/* ===========================
+   4. Mini Calendar
+   - 사이드바 안의 소형 월별 달력
+   - 7열 그리드로 요일 레이블과 날짜 셀을 배치합니다.
+=========================== */
+.mini-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mini-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+}
+
+/* 아이콘 버튼 공통 스타일 (‹ ›, ✕, 햄버거 등) */
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #888;
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* 미니 캘린더 7열 그리드 */
+.mini-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+}
+
+/* 요일 헤더 (일~토) */
+.mini-cal-grid .day-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #bbb;
+  padding: 2px 0 4px;
+}
+
+/* 날짜 셀 */
+.mini-cal-grid .mini-day {
+  font-size: 0.7rem;
+  color: #555;
+  padding: 3px 0;
+  border-radius: 50%;   /* 원형 강조를 위해 */
+  cursor: pointer;
+  transition: background 0.15s;
+  line-height: 1.8;
+}
+
+.mini-cal-grid .mini-day:hover {
+  background: #f0f0f0;
+}
+
+/* 이전·다음 달의 날짜: 흐리게 표시 */
+.mini-cal-grid .mini-day.other {
+  color: #ccc;
+}
+
+/* 오늘 날짜: 파란 원 배경 */
+.mini-cal-grid .mini-day.today {
+  background: #1a73e8;
+  color: #fff;
+  font-weight: 700;
+}
+
+.mini-cal-grid .mini-day.today:hover {
+  background: #1557b0;
+}
+
+/* 선택된 날짜 강조 (현재 미사용, 향후 확장 용도) */
+.mini-cal-grid .mini-day.selected {
+  background: #e8f0fe;
+  color: #1a73e8;
+  font-weight: 600;
+}
+
+/* ===========================
+   5. Calendar Category List
+   - 카테고리별 색상 점(dot)과 체크박스로 구성된 필터 목록
+=========================== */
+.calendar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 섹션 레이블 ("내 캘린더") */
+.calendar-list h3 {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
+}
+
+/* 각 카테고리 행 (체크박스 + 색상 점 + 레이블) */
+.calendar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #444;
+  cursor: pointer;
+  user-select: none; /* 더블클릭 시 텍스트 선택 방지 */
+}
+
+.calendar-item input[type="checkbox"] {
+  accent-color: #1a73e8; /* 체크 색상을 파랑으로 통일 */
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* 카테고리 색상 점 (공통) */
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* 카테고리별 색상 — CATEGORY_COLOR 맵의 .bar 값과 동일 */
+.dot-blue   { background: #1a73e8; }
+.dot-green  { background: #34a853; }
+.dot-orange { background: #fa7b17; }
+.dot-purple { background: #9334e6; }
+
+/* ===========================
+   6. Main Area
+   - 사이드바를 제외한 우측 전체 영역
+   - min-width: 0 은 Flex 아이템이 내용 너비보다 줄어들 수 있게 하는 핵심 속성
+=========================== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ===========================
+   7. Toolbar
+   - 상단 네비게이션 바
+   - flex-wrap: wrap 으로 좁은 화면에서 두 줄로 자연스럽게 줄바꿈
+=========================== */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;  /* 캘린더 그리드가 늘어나도 툴바 높이는 고정 */
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 햄버거 버튼: 데스크탑에서 숨기고 모바일에서만 표시 */
+.hamburger {
+  display: none;
+  font-size: 1.3rem;
+}
+
+/* "오늘" 버튼 */
+.btn-today {
+  padding: 5px 12px;
+  border: 1px solid #dadce0;
+  background: #fff;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #444;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.btn-today:hover {
+  background: #f6f8fc;
+}
+
+/* 현재 연월 텍스트 ("2026년 4월") */
+.current-month {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #222;
+  white-space: nowrap;
+}
+
+/* 보기 탭 그룹 (주 | 월 | 목록) */
+.view-tabs {
+  display: flex;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  overflow: hidden; /* 내부 버튼의 border-radius를 그룹 테두리로 대체 */
+}
+
+.view-tab {
+  padding: 5px 12px;
+  background: #fff;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  /* 탭 사이 구분선: 오른쪽 테두리만 사용 */
+  border-right: 1px solid #dadce0;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.view-tab:last-child { border-right: none; }
+.view-tab:hover { background: #f6f8fc; }
+
+/* 현재 활성 탭 강조 */
+.view-tab.active {
+  background: #e8f0fe;
+  color: #1a73e8;
+  font-weight: 700;
+}
+
+/* "+ 새 이벤트" 버튼: 알약 형태(border-radius:20px) */
+.btn-add {
+  padding: 6px 14px;
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(26,115,232,0.3);
+  transition: background 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.btn-add:hover {
+  background: #1557b0;
+  box-shadow: 0 2px 6px rgba(26,115,232,0.4);
+}
+
+/* ===========================
+   8. Calendar Grid (월별 뷰)
+   - .calendar-wrap: 캘린더 그리드를 감싸는 Flex 컨테이너
+   - .calendar-grid: 7열 CSS Grid. 행 수는 JS가 style.grid-template-rows로 동적 지정
+   - 셀 사이 1px 간격은 gap:1px + 배경색(#e0e0e0)으로 구현 (border 없이)
+=========================== */
+.calendar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.calendar-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #e0e0e0; /* 셀 사이 구분선 색 */
+  gap: 1px;
+  overflow: hidden;
+}
+
+/* display:contents 사용 시 자식 요소가 그리드에 직접 참여 (현재 미사용) */
+.cal-header-row {
+  display: contents;
+}
+
+/* 요일 헤더 셀 (일~토) */
+.cal-header-cell {
+  background: #fff;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #999;
+  padding: 8px 0;
+  letter-spacing: 0.5px;
+}
+
+/* 일요일·토요일 요일 헤더 색상 */
+.cal-header-cell.sun { color: #e53935; }
+.cal-header-cell.sat { color: #1a73e8; }
+
+/* 날짜 셀 */
+.cal-cell {
+  background: #fff;
+  padding: 5px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;  /* 이벤트 칩이 셀 밖으로 넘치지 않도록 */
+  cursor: pointer;
+  transition: background 0.1s;
+  min-height: 0;     /* Flex 아이템이 내용보다 작아질 수 있도록 허용 */
+}
+
+.cal-cell:hover { background: #f8f9fa; }
+
+/* 이전·다음 달에 속하는 날짜 셀: 배경을 살짝 어둡게 */
+.cal-cell.other-month { background: #fafafa; }
+.cal-cell.other-month .date-num { color: #ccc; }
+
+/* 토요일·일요일 날짜 숫자 색상 */
+.cal-cell.sat .date-num { color: #1a73e8; }
+.cal-cell.sun .date-num { color: #e53935; }
+
+/* 오늘 날짜: 파란 원 배경 강조 */
+.cal-cell.today .date-num {
+  background: #1a73e8;
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+/* 날짜 숫자 (24×24 크기의 Flex 중앙 정렬 컨테이너) */
+.date-num {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #333;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ===========================
+   9. Events (셀 내 이벤트 칩)
+   - 각 날짜 셀 안에 배치되는 작은 태그형 요소
+   - 최대 3개까지 표시하고, 초과분은 "+N개 더"로 처리 (JS)
+=========================== */
+.event {
+  font-size: 0.67rem;
+  font-weight: 500;
+  padding: 2px 5px;
+  border-radius: 3px;
+  white-space: nowrap;    /* 줄바꿈 방지 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 길면 "..." 처리 */
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+/* 호버 시 살짝 어둡게 */
+.event:hover { filter: brightness(0.9); }
+
+/* 카테고리별 배경색 + 텍스트색 (파스텔 톤) */
+.event-blue   { background: #d2e3fc; color: #1a56c4; }
+.event-green  { background: #ceead6; color: #137333; }
+.event-orange { background: #fce8b2; color: #b06000; }
+.event-purple { background: #e6d0fb; color: #6a1d9a; }
+
+/* "+N개 더" 텍스트: 클릭 시 목록 뷰로 전환 */
+.event-more {
+  font-size: 0.62rem;
+  color: #888;
+  padding: 1px 4px;
+  cursor: pointer;
+}
+
+.event-more:hover { color: #1a73e8; }
+
+/* ===========================
+   10. 목록 뷰
+   - 모든 이벤트를 날짜순으로 나열하는 뷰
+   - 월별 그룹(list-month-group) > 이벤트 행(list-event-row) 구조
+=========================== */
+.list-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+/* 월별 그룹 컨테이너 */
+.list-month-group {
+  margin-bottom: 24px;
+}
+
+/* 월별 그룹 헤더 ("2026년 4월") */
+.list-month-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+/*
+ * 이벤트 행: [날짜 숫자] [카테고리 바] [제목·시간·메모]
+ * Flexbox 가로 배치
+ */
+.list-event-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.list-event-row:hover { background: #f6f8fc; }
+
+/* 날짜 컬럼: 큰 숫자 + 요일 이름 */
+.list-event-date {
+  min-width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.list-event-day-num {
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: #444;
+  line-height: 1;
+}
+
+.list-event-day-name {
+  font-size: 0.65rem;
+  color: #999;
+  text-transform: uppercase;
+}
+
+/* 카테고리 색상 세로 막대 */
+.list-event-bar {
+  width: 4px;
+  height: 40px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  align-self: center;
+  /* background 색은 JS가 인라인 스타일로 지정 */
+}
+
+/* 텍스트 정보 영역 */
+.list-event-info {
+  flex: 1;
+}
+
+.list-event-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.list-event-time {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 2px;
+}
+
+.list-event-note {
+  font-size: 0.75rem;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+/* 이벤트가 없을 때 표시되는 빈 상태 메시지 */
+.list-empty {
+  text-align: center;
+  color: #bbb;
+  font-size: 0.9rem;
+  padding: 60px 0;
+}
+
+/* ===========================
+   11. 주 보기 뷰
+   - 헤더(요일+날짜) + 바디(시간대별 슬롯) 구조
+   - 8열 그리드: [시간 레이블 열(48px)] + [7개 요일 열(1fr)]
+=========================== */
+.week-wrap {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 주 헤더: 요일 이름 + 날짜 숫자 */
+.week-header {
+  display: grid;
+  grid-template-columns: 48px repeat(7, 1fr);
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.week-header-cell {
+  text-align: center;
+  padding: 8px 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #888;
+}
+
+/* 날짜 숫자 (큰 글자) */
+.week-header-cell .wk-date {
+  font-size: 1.3rem;
+  font-weight: 300;
+  display: block;
+  color: #444;
+}
+
+/* 오늘 날짜 컬럼 헤더: 파란 원형 강조 */
+.week-header-cell.today-col .wk-date {
+  background: #1a73e8;
+  color: #fff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-weight: 700;
+}
+
+/* 일요일·토요일 컬럼 색상 */
+.week-header-cell.sun-col { color: #e53935; }
+.week-header-cell.sat-col { color: #1a73e8; }
+.week-header-cell.sun-col .wk-date { color: #e53935; }
+.week-header-cell.sat-col .wk-date { color: #1a73e8; }
+
+/*
+ * 주 바디: 시간대별 행 × 요일 열
+ * align-content: start 로 시간 슬롯이 상단부터 채워집니다.
+ */
+.week-body {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 48px repeat(7, 1fr);
+  background: #e0e0e0;
+  gap: 1px;
+  align-content: start;
+}
+
+/* 왼쪽 시간 레이블 열 */
+.week-time-col {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 각 시간(00:00~23:00) 레이블 슬롯 */
+.week-time-slot {
+  height: 52px;        /* 1시간 = 52px */
+  font-size: 0.6rem;
+  color: #bbb;
+  text-align: right;
+  padding: 4px 6px 0 0;
+  flex-shrink: 0;
+}
+
+/* 요일 컬럼 */
+.week-day-col {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.week-day-col:hover { background: #f8f9fa; }
+
+/* 각 시간대 슬롯 (하단 구분선) */
+.week-hour-slot {
+  height: 52px;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* 주 보기 이벤트 칩 */
+.week-event {
+  font-size: 0.68rem;
+  font-weight: 500;
+  padding: 2px 4px;
+  border-radius: 3px;
+  margin: 1px 2px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===========================
+   12. Utility
+   - .hidden: display:none !important 로 요소를 완전히 숨깁니다.
+     JS에서 classList.add/remove('hidden')으로 가시성을 제어합니다.
+=========================== */
+.hidden { display: none !important; }
+
+/* ===========================
+   13. Modal (이벤트 추가/수정)
+   - .modal-backdrop: 전체 화면 반투명 오버레이 (z-index: 500)
+   - .modal: 중앙 카드 (모바일에서는 하단 바텀시트로 전환)
+   - modalIn 애니메이션: 위에서 살짝 내려오며 나타남
+=========================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 500;   /* 사이드바(200), 팝업(400)보다 위 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalIn 0.18s ease;
+}
+
+/* 모달 등장 애니메이션 */
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #222;
+}
+
+/* 폼 영역: 최대 높이를 60vh로 제한하고 내용이 넘치면 스크롤 */
+.modal-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+/* 각 입력 필드 그룹 (레이블 + input/textarea) */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #555;
+}
+
+/* 필수 표시(빨간 *)와 선택 표시(회색 "(선택)") */
+.required { color: #e53935; }
+.optional { color: #bbb; font-weight: 400; }
+
+/* 입력 필드 공통 스타일 */
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group textarea {
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  color: #333;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  background: #fff;
+}
+
+/* 포커스 시 파란 테두리 + 글로우 */
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26,115,232,0.12);
+}
+
+/* 유효성 검사 실패 시 빨간 테두리 */
+.form-group input.error { border-color: #e53935; }
+
+/* 인라인 에러 메시지 */
+.field-error {
+  font-size: 0.72rem;
+  color: #e53935;
+}
+
+/* 날짜·시간 2열 배치 (모바일에서 1열로 전환) */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* textarea: 세로만 리사이즈 허용 */
+.form-group textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+/*
+ * 카테고리 선택 (라디오 버튼 → 알약 형태 UI)
+ * - input[type="radio"]는 display:none으로 숨깁니다.
+ * - .cat-option:has(input:checked)로 선택된 항목을 CSS만으로 강조합니다.
+ */
+.category-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cat-option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  color: #444;
+  cursor: pointer;
+  padding: 5px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.cat-option:hover {
+  background: #f6f8fc;
+}
+
+/* 라디오 버튼 숨김 (레이블 전체를 클릭 영역으로 활용) */
+.cat-option input[type="radio"] {
+  display: none;
+}
+
+/* 선택된 카테고리 옵션 강조 (:has는 모던 브라우저에서 지원) */
+.cat-option:has(input:checked) {
+  border-color: #1a73e8;
+  background: #e8f0fe;
+}
+
+/* 카테고리 색상 점 (모달 내, .dot보다 1px 작음) */
+.cat-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* 모달 하단 버튼 영역: [삭제 버튼] — 오른쪽 — [취소 | 저장] */
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid #f0f0f0;
+  gap: 8px;
+}
+
+.modal-footer-right {
+  display: flex;
+  gap: 8px;
+}
+
+/* 취소 버튼: 테두리형 */
+.btn-cancel {
+  padding: 7px 16px;
+  border: 1px solid #dadce0;
+  background: #fff;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-cancel:hover { background: #f6f8fc; }
+
+/* 저장 버튼: 파란 채움형 */
+.btn-save {
+  padding: 7px 20px;
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-save:hover { background: #1557b0; }
+
+/* 삭제 버튼: 빨간 테두리형 (수정 모드에서만 표시) */
+.btn-delete {
+  padding: 7px 16px;
+  border: 1px solid #fcc;
+  background: #fff;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e53935;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-delete:hover { background: #fff0f0; }
+
+/* ===========================
+   14. 이벤트 상세 팝업
+   - 이벤트 칩 클릭 시 JS가 위치를 계산하여 position:fixed로 표시
+   - z-index: 400 (모달 500보다 아래, 사이드바 200보다 위)
+   - popupIn 애니메이션: 살짝 커지며 등장
+=========================== */
+.event-popup {
+  position: fixed;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  z-index: 400;
+  min-width: 240px;
+  max-width: 300px;
+  overflow: hidden;
+  animation: popupIn 0.15s ease;
+}
+
+/* 팝업 등장 애니메이션 */
+@keyframes popupIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* 팝업 헤더: [카테고리 색상 박스] [수정·삭제·닫기 버튼] */
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px 8px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 4px;
+}
+
+/* 카테고리를 나타내는 작은 색상 박스 (12×12px 정사각형) */
+.popup-color-bar {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  /* background 색은 JS가 인라인 스타일로 지정 */
+}
+
+.popup-actions {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+/* 팝업 본문: 제목 + 날짜/시간 + 메모 */
+.popup-body {
+  padding: 12px 16px 14px;
+}
+
+.popup-body h3 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.popup-date {
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+/* 메모: 개행을 유지하기 위해 white-space:pre-wrap 사용 */
+.popup-note {
+  font-size: 0.78rem;
+  color: #666;
+  white-space: pre-wrap;
+  margin-top: 6px;
+}
+
+/* ===========================
+   15. 반응형 미디어 쿼리
+
+   브레이크포인트:
+     ≤ 900px : 태블릿 — 보기 탭 숨김, 폰트 축소
+     ≤ 640px : 모바일 — 사이드바 드로어, 모달 바텀시트
+     ≤ 380px : 소형폰 — 이벤트 칩 숨기고 색상 점(dot)으로 대체
+=========================== */
+
+/* ── 태블릿 (≤ 900px) ── */
+@media (max-width: 900px) {
+  /* 연월 텍스트 크기 축소 */
+  .current-month { font-size: 1rem; }
+
+  /*
+   * 보기 탭(주·월·목록)을 숨깁니다.
+   * 모바일에서는 하단 탭바 대신 기본 월 뷰만 표시하는 방향으로 간소화
+   */
+  .view-tabs { display: none; }
+
+  /* 요일 헤더·이벤트 폰트 크기 축소 */
+  .cal-header-cell { font-size: 0.62rem; }
+  .event { font-size: 0.6rem; }
+}
+
+/* ── 모바일 (≤ 640px) ── */
+@media (max-width: 640px) {
+
+  /*
+   * 사이드바 → 드로어(서랍) 방식으로 전환
+   * - position:fixed 로 레이아웃에서 분리
+   * - translateX(-100%): 화면 왼쪽 밖으로 숨김
+   * - .open 클래스 추가 시 translateX(0)으로 슬라이드인
+   */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 16px rgba(0,0,0,0.12);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* 오버레이: 사이드바 열릴 때 배경 어둡게 */
+  .sidebar-overlay.open {
+    display: block;
+  }
+
+  /* 닫기 버튼 표시 (데스크탑에서는 display:none) */
+  .sidebar-close {
+    display: flex;
+  }
+
+  /* 햄버거 버튼 표시 */
+  .hamburger {
+    display: flex;
+  }
+
+  /* 툴바 패딩 축소 */
+  .toolbar {
+    padding: 8px 10px;
+  }
+
+  /* "오늘" 버튼 숨김 (좁은 화면에서 공간 절약) */
+  .btn-today {
+    display: none;
+  }
+
+  .current-month {
+    font-size: 0.9rem;
+  }
+
+  .btn-add {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  /* 날짜 셀 패딩·간격 최소화 */
+  .cal-cell {
+    padding: 3px 2px;
+    gap: 1px;
+  }
+
+  .date-num {
+    font-size: 0.65rem;
+    width: 20px;
+    height: 20px;
+  }
+
+  /* 이벤트 칩 크기 축소 */
+  .event {
+    font-size: 0.55rem;
+    padding: 1px 3px;
+    border-radius: 2px;
+  }
+
+  /*
+   * 모달 → 바텀시트(Bottom Sheet)로 전환
+   * - position:fixed + bottom:0 으로 화면 하단에 고정
+   * - border-radius: 위쪽 모서리만 둥글게
+   */
+  .modal {
+    max-width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* 배경 오버레이: 하단 정렬로 변경 */
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  /* 모달 본문 높이 제한 완화 */
+  .modal-body {
+    max-height: 55vh;
+  }
+
+  /* 날짜·시간 입력 → 1열 배치 */
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /*
+   * 이벤트 상세 팝업 → 화면 중앙 고정
+   * (모바일에서 앵커 요소 기반 위치 계산이 어려우므로 중앙 고정)
+   * !important: JS의 인라인 style을 덮어씁니다.
+   */
+  .event-popup {
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  /* 목록 뷰 패딩 축소 */
+  .list-wrap {
+    padding: 12px;
+  }
+
+  /* 주 보기: 시간 레이블 열 너비 축소 */
+  .week-header,
+  .week-body {
+    grid-template-columns: 36px repeat(7, 1fr);
+  }
+}
+
+/* ── 소형 모바일 (≤ 380px) ── */
+@media (max-width: 380px) {
+
+  /* 요일 헤더 폰트 최소화 */
+  .cal-header-cell {
+    font-size: 0.55rem;
+    padding: 4px 0;
+  }
+
+  .date-num {
+    width: 18px;
+    height: 18px;
+    font-size: 0.58rem;
+  }
+
+  /*
+   * 이벤트 칩을 숨기고 색상 점(dot)으로 대체합니다.
+   * 화면이 너무 좁아 칩 텍스트가 읽히지 않기 때문입니다.
+   * .event-dot-row와 .event-dot은 JS가 각 셀에 삽입합니다.
+   */
+  .event {
+    display: none;
+  }
+
+  /* 색상 점 행 (이벤트 수만큼 작은 원을 가로 배치) */
+  .event-dot-row {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+    padding: 0 2px;
+  }
+
+  /* 개별 색상 점 (5×5px 원형) */
+  .event-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    /* background 색은 JS가 인라인 스타일로 지정 */
+  }
+}

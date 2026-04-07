@@ -1,0 +1,146 @@
+[
+  {
+    "id": "s1",
+    "title": "만우절 파티",
+    "date": "2026-04-01",
+    "time": "18:00",
+    "category": "blue",
+    "note": "친구들과 저녁"
+  },
+  {
+    "id": "s2",
+    "title": "팀 미팅",
+    "date": "2026-04-03",
+    "time": "10:00",
+    "category": "green",
+    "note": "주간 스프린트 계획"
+  },
+  {
+    "id": "s3",
+    "title": "가족 나들이",
+    "date": "2026-04-04",
+    "time": "",
+    "category": "orange",
+    "note": "한강 공원"
+  },
+  {
+    "id": "s4",
+    "title": "주간 보고",
+    "date": "2026-04-06",
+    "time": "09:00",
+    "category": "green",
+    "note": ""
+  },
+  {
+    "id": "s6",
+    "title": "점심 약속",
+    "date": "2026-04-07",
+    "time": "12:00",
+    "category": "green",
+    "note": "강남 식당"
+  },
+  {
+    "id": "s7",
+    "title": "식목일",
+    "date": "2026-04-09",
+    "time": "",
+    "category": "purple",
+    "note": "공휴일"
+  },
+  {
+    "id": "s8",
+    "title": "코드 리뷰",
+    "date": "2026-04-10",
+    "time": "15:00",
+    "category": "green",
+    "note": ""
+  },
+  {
+    "id": "s9",
+    "title": "헬스장",
+    "date": "2026-04-13",
+    "time": "07:00",
+    "category": "blue",
+    "note": ""
+  },
+  {
+    "id": "s10",
+    "title": "어머니 생신",
+    "date": "2026-04-15",
+    "time": "",
+    "category": "orange",
+    "note": "저녁 식사 예약 필요"
+  },
+  {
+    "id": "s11",
+    "title": "프로젝트 마감",
+    "date": "2026-04-16",
+    "time": "18:00",
+    "category": "green",
+    "note": ""
+  },
+  {
+    "id": "s12",
+    "title": "발표 준비",
+    "date": "2026-04-16",
+    "time": "20:00",
+    "category": "green",
+    "note": ""
+  },
+  {
+    "id": "s13",
+    "title": "주말 등산",
+    "date": "2026-04-18",
+    "time": "08:00",
+    "category": "orange",
+    "note": "북한산"
+  },
+  {
+    "id": "s14",
+    "title": "주간 보고",
+    "date": "2026-04-20",
+    "time": "09:00",
+    "category": "green",
+    "note": ""
+  },
+  {
+    "id": "s15",
+    "title": "독서 모임",
+    "date": "2026-04-22",
+    "time": "19:00",
+    "category": "blue",
+    "note": ""
+  },
+  {
+    "id": "s16",
+    "title": "분기 리뷰",
+    "date": "2026-04-24",
+    "time": "14:00",
+    "category": "green",
+    "note": ""
+  },
+  {
+    "id": "s17",
+    "title": "부모님 방문",
+    "date": "2026-04-27",
+    "time": "",
+    "category": "orange",
+    "note": ""
+  },
+  {
+    "id": "s18",
+    "title": "월말 정산",
+    "date": "2026-04-30",
+    "time": "",
+    "category": "blue",
+    "note": ""
+  },
+  {
+    "id": "s19",
+    "title": "근로자의 날",
+    "date": "2026-05-01",
+    "time": "",
+    "category": "purple",
+    "note": "공휴일"
+  }
+]

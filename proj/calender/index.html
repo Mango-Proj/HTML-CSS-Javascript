@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<!--
+  index.html — 이벤트 캘린더 메인 페이지
+  =========================================
+  역할: 애플리케이션의 전체 DOM 구조를 정의합니다.
+        실제 캘린더 날짜/이벤트 내용은 app.js가 동적으로 렌더링하며,
+        이 파일은 '뼈대(skeleton)'만 제공합니다.
+
+  주요 구성:
+    1. .sidebar        — 미니 캘린더 + 카테고리 필터
+    2. .main           — 툴바 + 월/주/목록 뷰 컨테이너
+    3. #modalBackdrop  — 이벤트 추가·수정 모달 (평소 hidden)
+    4. #eventPopup     — 이벤트 클릭 시 나타나는 상세 팝업 (평소 hidden)
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <!-- 모바일 뷰포트: 기기 너비에 맞게 렌더링하고 초기 배율을 1로 고정 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이벤트 캘린더</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!--
+    [모바일 전용] 사이드바 드로어 오버레이
+    - 640px 이하에서 사이드바가 열릴 때 배경을 반투명하게 덮어
+      사용자가 오버레이를 탭하면 사이드바가 닫히도록 합니다.
+    - app.js: els.sidebarOverlay.addEventListener('click', ...)
+  -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ============================================================
+       최상위 레이아웃 래퍼 (.app)
+       Flexbox로 [사이드바 | 메인] 구조를 구성합니다.
+  ============================================================ -->
+  <div class="app">
+
+    <!-- ============================================================
+         사이드바 (aside.sidebar)
+         데스크탑: 항상 표시 (240px 고정 폭)
+         모바일:   translateX(-100%) 로 숨기고, .open 클래스 토글로 슬라이드인
+    ============================================================ -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- 사이드바 헤더: 앱 제목 + 모바일 닫기 버튼 -->
+      <div class="sidebar-header">
+        <h2>My Calendar</h2>
+        <!--
+          모바일 전용 닫기 버튼 (데스크탑에서는 CSS로 display:none).
+          클릭 시 사이드바와 오버레이에서 'open' 클래스를 제거합니다.
+        -->
+        <button class="sidebar-close" id="sidebarClose" aria-label="사이드바 닫기">✕</button>
+      </div>
+
+      <!--
+        미니 캘린더
+        - 헤더(이전/다음 달 이동 버튼 + 연월 텍스트)와
+          7×N 그리드(날짜 셀)로 구성됩니다.
+        - #miniCalGrid 내부는 app.js의 renderMiniCal()이 동적으로 채웁니다.
+        - 날짜 클릭 시 해당 날짜로 이벤트 추가 모달이 열립니다.
+      -->
+      <div class="mini-calendar">
+        <div class="mini-cal-header">
+          <!-- &#8249; = ‹ (단일 꺾쇠 좌) -->
+          <button class="icon-btn" id="miniPrev" aria-label="이전 달">&#8249;</button>
+          <!-- JS가 "2026년 4월" 형식으로 텍스트를 채웁니다 -->
+          <span id="miniMonthLabel"></span>
+          <!-- &#8250; = › (단일 꺾쇠 우) -->
+          <button class="icon-btn" id="miniNext" aria-label="다음 달">&#8250;</button>
+        </div>
+        <!-- renderMiniCal()이 .day-label 7개 + .mini-day N개를 삽입합니다 -->
+        <div class="mini-cal-grid" id="miniCalGrid"></div>
+      </div>
+
+      <!--
+        카테고리 필터 체크박스
+        - data-category 속성값("blue"|"green"|"orange"|"purple")을
+          app.js가 읽어 state.hiddenCats Set을 갱신합니다.
+        - 체크 해제 시 해당 카테고리 이벤트가 모든 뷰에서 숨겨집니다.
+      -->
+      <div class="calendar-list">
+        <h3>내 캘린더</h3>
+        <label class="calendar-item">
+          <input type="checkbox" data-category="blue" checked>
+          <span class="dot dot-blue"></span>개인 일정
+        </label>
+        <label class="calendar-item">
+          <input type="checkbox" data-category="green" checked>
+          <span class="dot dot-green"></span>업무
+        </label>
+        <label class="calendar-item">
+          <input type="checkbox" data-category="orange" checked>
+          <span class="dot dot-orange"></span>가족
+        </label>
+        <label class="calendar-item">
+          <input type="checkbox" data-category="purple" checked>
+          <span class="dot dot-purple"></span>공휴일
+        </label>
+      </div>
+
+    </aside><!-- /sidebar -->
+
+    <!-- ============================================================
+         메인 영역 (main.main)
+         Flexbox 세로 배치: [툴바] + [뷰 컨테이너]
+    ============================================================ -->
+    <main class="main">
+
+      <!-- ============================================================
+           상단 툴바 (header.toolbar)
+           좌: 햄버거 | 오늘 | ‹ › | 연월 제목
+           우: 주·월·목록 탭 | + 새 이벤트
+      ============================================================ -->
+      <header class="toolbar">
+        <div class="toolbar-left">
+          <!--
+            햄버거 메뉴 버튼 (모바일 전용, 데스크탑에서는 display:none)
+            클릭 시 사이드바와 오버레이에 'open' 클래스를 추가합니다.
+            &#9776; = ≡ (햄버거 아이콘)
+          -->
+          <button class="icon-btn hamburger" id="hamburger" aria-label="메뉴">&#9776;</button>
+
+          <!-- 오늘 날짜의 연/월로 돌아오는 버튼 -->
+          <button class="btn-today" id="btnToday">오늘</button>
+
+          <!-- 이전/다음 달 이동 버튼 (미니 캘린더와 연동) -->
+          <button class="icon-btn" id="prevMonth" aria-label="이전 달">&#8249;</button>
+          <button class="icon-btn" id="nextMonth" aria-label="다음 달">&#8250;</button>
+
+          <!-- JS가 "2026년 4월" 형식으로 갱신합니다 (renderHeader) -->
+          <h1 class="current-month" id="currentMonthLabel"></h1>
+        </div>
+
+        <div class="toolbar-right">
+          <!--
+            보기 전환 탭 그룹
+            - data-view 속성값으로 switchView()를 호출합니다.
+            - .active 클래스가 현재 선택된 탭에 적용됩니다.
+          -->
+          <div class="view-tabs">
+            <button class="view-tab" data-view="week">주</button>
+            <button class="view-tab active" data-view="month">월</button>
+            <button class="view-tab" data-view="list">목록</button>
+          </div>
+
+          <!-- 날짜 미선택 상태로 이벤트 추가 모달을 열어줍니다 -->
+          <button class="btn-add" id="btnAdd">+ 새 이벤트</button>
+        </div>
+      </header><!-- /toolbar -->
+
+      <!--
+        월별 캘린더 컨테이너 (#calendarWrap)
+        - app.js의 renderMonthView()가 내부에 .calendar-grid를 동적 생성합니다.
+        - 주/목록 뷰가 활성화되면 .hidden 클래스로 숨겨집니다.
+      -->
+      <div class="calendar-wrap" id="calendarWrap">
+        <!-- renderMonthView()가 .calendar-grid를 삽입합니다 -->
+      </div>
+
+      <!--
+        목록 뷰 컨테이너 (#listWrap)
+        - app.js의 renderListView()가 이벤트를 월별 그룹으로 나열합니다.
+        - 기본 hidden 상태이며 '목록' 탭 클릭 시 표시됩니다.
+      -->
+      <div class="list-wrap hidden" id="listWrap">
+        <!-- renderListView()가 .list-month-group 목록을 삽입합니다 -->
+      </div>
+
+      <!--
+        주별 뷰 컨테이너 (#weekWrap)
+        - app.js의 renderWeekView()가 시간대별 그리드를 생성합니다.
+        - 기본 hidden 상태이며 '주' 탭 클릭 시 표시됩니다.
+      -->
+      <div class="week-wrap hidden" id="weekWrap">
+        <!-- renderWeekView()가 .week-header + .week-body를 삽입합니다 -->
+      </div>
+
+    </main><!-- /main -->
+  </div><!-- /app -->
+
+
+  <!-- ============================================================
+       이벤트 추가 / 수정 모달 (#modalBackdrop)
+       - 평소에는 .hidden으로 감춰집니다.
+       - openModal(dateStr, editId)로 열리고 closeModal()로 닫힙니다.
+       - role="dialog" + aria-modal="true": 스크린리더 접근성 지원
+       - 배경(#modalBackdrop) 클릭 시 모달이 닫힙니다.
+  ============================================================ -->
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+      <!-- 모달 헤더: 제목("새 이벤트" / "이벤트 수정") + 닫기 버튼 -->
+      <div class="modal-header">
+        <!-- JS가 추가/수정 여부에 따라 텍스트를 바꿉니다 -->
+        <h2 id="modalTitle">새 이벤트</h2>
+        <button class="icon-btn" id="modalClose" aria-label="닫기">✕</button>
+      </div>
+
+      <!-- 모달 본문: 입력 폼 -->
+      <div class="modal-body">
+
+        <!-- 이벤트 제목 (필수) -->
+        <div class="form-group">
+          <label for="eventTitle">제목 <span class="required">*</span></label>
+          <input type="text" id="eventTitle"
+                 placeholder="이벤트 제목을 입력하세요"
+                 autocomplete="off">
+          <!-- 제목 미입력 시 saveEvent()가 이 요소를 보여줍니다 -->
+          <span class="field-error hidden" id="titleError">제목을 입력해주세요.</span>
+        </div>
+
+        <!-- 날짜·시간 (2열 배치, 모바일에서는 1열로 전환) -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="eventDate">날짜 <span class="required">*</span></label>
+            <!-- type="date": 브라우저 네이티브 날짜 피커 사용 -->
+            <input type="date" id="eventDate">
+          </div>
+          <div class="form-group">
+            <label for="eventTime">시간 <span class="optional">(선택)</span></label>
+            <!-- type="time": 브라우저 네이티브 시간 피커 사용 -->
+            <input type="time" id="eventTime">
+          </div>
+        </div>
+
+        <!--
+          카테고리 선택 (라디오 버튼 그룹)
+          - radio input은 CSS로 숨기고, 부모 .cat-option 레이블을 클릭 영역으로 사용합니다.
+          - :has(input:checked) 선택자로 선택된 항목에 파란 테두리를 강조합니다.
+          - value는 CATEGORY_COLOR 맵의 키("blue"|"green"|"orange"|"purple")와 일치합니다.
+        -->
+        <div class="form-group">
+          <label>카테고리</label>
+          <div class="category-selector">
+            <label class="cat-option">
+              <input type="radio" name="eventCategory" value="blue" checked>
+              <span class="cat-dot dot-blue"></span>개인 일정
+            </label>
+            <label class="cat-option">
+              <input type="radio" name="eventCategory" value="green">
+              <span class="cat-dot dot-green"></span>업무
+            </label>
+            <label class="cat-option">
+              <input type="radio" name="eventCategory" value="orange">
+              <span class="cat-dot dot-orange"></span>가족
+            </label>
+            <label class="cat-option">
+              <input type="radio" name="eventCategory" value="purple">
+              <span class="cat-dot dot-purple"></span>공휴일
+            </label>
+          </div>
+        </div>
+
+        <!-- 메모 (선택) -->
+        <div class="form-group">
+          <label for="eventNote">메모 <span class="optional">(선택)</span></label>
+          <!-- resize: vertical 로 높이만 조절 가능 -->
+          <textarea id="eventNote" rows="3" placeholder="메모를 입력하세요"></textarea>
+        </div>
+
+      </div><!-- /modal-body -->
+
+      <!-- 모달 하단 버튼 영역 -->
+      <div class="modal-footer">
+        <!--
+          삭제 버튼: 수정 모드일 때만 .hidden이 제거되어 표시됩니다.
+          클릭 시 deleteEvent(state.editingId)를 호출합니다.
+        -->
+        <button class="btn-delete hidden" id="btnDelete">삭제</button>
+
+        <div class="modal-footer-right">
+          <button class="btn-cancel" id="btnCancel">취소</button>
+          <!-- 클릭 시 saveEvent()를 호출하여 events.json에 저장합니다 -->
+          <button class="btn-save" id="btnSave">저장</button>
+        </div>
+      </div>
+
+    </div><!-- /modal -->
+  </div><!-- /modal-backdrop -->
+
+
+  <!-- ============================================================
+       이벤트 상세 팝업 (#eventPopup)
+       - 이벤트 칩 클릭 시 showEventPopup()이 위치를 계산해 표시합니다.
+       - 팝업 외부 클릭, ✕ 버튼, ESC 키로 닫힙니다.
+       - 팝업 안의 수정(✏) / 삭제(🗑) 버튼으로 추가 액션을 수행합니다.
+  ============================================================ -->
+  <div class="event-popup hidden" id="eventPopup">
+
+    <div class="popup-header">
+      <!--
+        카테고리 색상 표시 박스
+        showEventPopup()에서 style.background를 CATEGORY_COLOR[category].bar 값으로 설정합니다.
+      -->
+      <div class="popup-color-bar" id="popupColorBar"></div>
+
+      <div class="popup-actions">
+        <!-- &#9998; = ✎ (연필 아이콘) → openModal('', id) 호출 -->
+        <button class="icon-btn" id="popupEdit" title="수정">&#9998;</button>
+        <!-- &#128465; = 🗑 (휴지통 아이콘) → deleteEvent(id) 호출 -->
+        <button class="icon-btn" id="popupDelete" title="삭제">&#128465;</button>
+        <!-- 팝업 닫기 -->
+        <button class="icon-btn" id="popupClose" title="닫기">✕</button>
+      </div>
+    </div>
+
+    <div class="popup-body">
+      <!-- JS가 이벤트 데이터로 채웁니다 -->
+      <h3 id="popupTitle"></h3>
+      <!-- formatDateKo()가 "2026년 4월 7일 (화) 14:00" 형식으로 출력합니다 -->
+      <p id="popupDate" class="popup-date"></p>
+      <!-- 메모가 없으면 .hidden 처리됩니다 -->
+      <p id="popupNote" class="popup-note"></p>
+    </div>
+
+  </div><!-- /event-popup -->
+
+  <!--
+    app.js를 </body> 직전에 로드합니다.
+    - DOM이 모두 파싱된 후 스크립트가 실행되어 getElementById가 안전하게 동작합니다.
+    - 스크립트 최하단의 IIFE(async () => { ... })()가 즉시 실행되어
+      서버에서 events.json을 불러온 뒤 renderAll()로 첫 화면을 그립니다.
+  -->
+  <script src="app.js"></script>
+</body>
+</html>
