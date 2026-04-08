@@ -1,0 +1,593 @@
+/*
+ * style.css — ch01_browser 학습 예제 스타일
+ * ==========================================
+ * 구성:
+ *   1. Reset & Base
+ *   2. 레이아웃 (헤더, 컨테이너, 섹션)
+ *   3. 공통 컴포넌트 (버튼, 배지, 로그 박스)
+ *   4. 섹션 1: DocumentFragment & 이벤트 위임
+ *   5. 섹션 2: 리플로우 / 리페인트 비교
+ *   6. 섹션 3: 이벤트 전파 시각화
+ *   7. 섹션 4: 이벤트 위임 심화 (할 일 목록)
+ *   8. 섹션 5: async vs defer 타임라인
+ */
+
+/* ============================================================
+   1. Reset & Base
+============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', Pretendard, sans-serif;
+  background: #f5f7fa;
+  color: #2d2d2d;
+  line-height: 1.6;
+}
+
+code {
+  font-family: 'Fira Code', 'Consolas', monospace;
+  background: #eef2f7;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: #c0392b;
+}
+
+pre {
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.82rem;
+}
+
+/* ============================================================
+   2. 레이아웃
+============================================================ */
+
+/* 상단 헤더 */
+.page-header {
+  background: linear-gradient(135deg, #1a73e8, #0d47a1);
+  color: #fff;
+  padding: 32px 40px;
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.page-header p {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+/* 메인 콘텐츠 컨테이너 */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* 각 주제 섹션 카드 */
+.demo-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+.demo-section h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 설명 텍스트 */
+.desc {
+  font-size: 0.88rem;
+  color: #555;
+  margin-bottom: 18px;
+  line-height: 1.7;
+}
+
+/* 데모 콘텐츠 영역 (회색 배경 박스) */
+.demo-box {
+  background: #f8f9fb;
+  border: 1px solid #e4e8f0;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* 하단 푸터 */
+.page-footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.78rem;
+  color: #aaa;
+}
+
+/* ============================================================
+   3. 공통 컴포넌트
+============================================================ */
+
+/* 섹션 번호 배지 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: #1a73e8;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* 버튼 공통 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:hover {
+  filter: brightness(0.92);
+}
+
+/* 버튼 변형 */
+.btn-primary   { background: #1a73e8; color: #fff; }
+.btn-secondary { background: #e8ecf4; color: #444; }
+.btn-danger    { background: #e53935; color: #fff; }
+.btn-warning   { background: #f59e0b; color: #fff; }
+.btn-success   { background: #34a853; color: #fff; }
+.btn-sm        { padding: 4px 10px; font-size: 0.75rem; }
+
+/* 버튼 행 */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+/* 로그 출력 박스 */
+.log-box {
+  margin-top: 14px;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.78rem;
+  min-height: 60px;
+}
+
+.log-box strong {
+  display: block;
+  color: #89b4fa;
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.log-box ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.log-box li {
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.78rem;
+}
+
+/* 로그 항목 색상 */
+.log-reflow   { color: #f38ba8; }   /* 빨강 - 리플로우 */
+.log-repaint  { color: #f9e2af; }   /* 노랑 - 리페인트 */
+.log-composite{ color: #a6e3a1; }   /* 초록 - 컴포지트 */
+.log-capture  { color: #cba6f7; }   /* 보라 - 캡처링 */
+.log-bubble   { color: #89dceb; }   /* 청록 - 버블링 */
+.log-target   { color: #f9e2af; }   /* 노랑 - 타깃 */
+
+/* 카운터/안내 메시지 */
+.counter-msg {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: #666;
+}
+
+/* ============================================================
+   4. 섹션 1: DocumentFragment & 이벤트 위임
+============================================================ */
+
+/* li 목록 */
+#myList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+#myList li {
+  background: #fff;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+}
+
+#myList li:hover {
+  background: #eef2ff;
+}
+
+/* 클릭 시 토글되는 active 클래스 (리페인트만 유발 — 색상 변경) */
+#myList li.active {
+  background: #1a73e8;
+  color: #fff;
+  border-color: #1a73e8;
+}
+
+/* ============================================================
+   5. 섹션 2: 리플로우 / 리페인트 비교
+============================================================ */
+
+/* 3열 카드 그리드 */
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.compare-card {
+  background: #fff;
+  border: 1px solid #e0e4ef;
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.compare-card h3 {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.compare-card p {
+  font-size: 0.78rem;
+  color: #666;
+}
+
+/* 렌더링 비용 표시 레이블 */
+.cost-label {
+  font-size: 0.72rem !important;
+  color: #999 !important;
+  font-style: italic;
+}
+
+/* 애니메이션 대상 박스 */
+.anim-box {
+  width: 70px;
+  height: 50px;
+  background: #1a73e8;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  margin: 6px 0;
+  /* 컴포지트 전용 속성 사용 시 GPU 레이어 분리 힌트 */
+  will-change: transform, opacity;
+  transition: all 0.3s ease;
+}
+
+/* [추가] 리플로우 박스 — width 토글 (Layout 재계산 유발) */
+.anim-box.reflow-active {
+  width: 140px;
+  background: #e53935;
+}
+
+/* [추가] 리페인트 박스 — 배경색 토글 (Paint 재실행, Layout은 그대로) */
+.anim-box.repaint-active {
+  background: #f59e0b;
+}
+
+/* [추가] 컴포지트 박스 — transform 이동 (Layout·Paint 생략, Composite만) */
+.anim-box.composite-active {
+  transform: translateX(60px);
+  opacity: 0.5;
+}
+
+/* 태블릿 이하에서 1열로 전환 */
+@media (max-width: 680px) {
+  .compare-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   6. 섹션 3: 이벤트 전파 시각화
+============================================================ */
+
+/* 전파 모드 토글 컨트롤 */
+.prop-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: #444;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-label input[type="checkbox"] {
+  accent-color: #1a73e8;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+/* 중첩 박스 */
+.prop-outer {
+  background: rgba(229, 57, 53, 0.12);
+  border: 2px solid #e53935;
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  position: relative;
+}
+
+.prop-middle {
+  background: rgba(52, 168, 83, 0.12);
+  border: 2px solid #34a853;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  position: relative;
+}
+
+.prop-inner {
+  background: rgba(26, 115, 232, 0.15);
+  border: 2px solid #1a73e8;
+  border-radius: 6px;
+  padding: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* 각 박스의 레이블 */
+.prop-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+/* 클릭 시 잠깐 깜빡이는 강조 효과 */
+.prop-flash {
+  animation: flashAnim 0.4s ease;
+}
+
+@keyframes flashAnim {
+  0%   { filter: brightness(1); }
+  40%  { filter: brightness(1.6); }
+  100% { filter: brightness(1); }
+}
+
+/* ============================================================
+   7. 섹션 4: 이벤트 위임 심화 (할 일 목록)
+============================================================ */
+
+/* 입력 폼 */
+.task-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.task-form input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.task-form input:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26,115,232,0.12);
+}
+
+/* 할 일 목록 */
+.task-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 할 일 항목 */
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #dde3ee;
+  border-radius: 6px;
+  padding: 8px 12px;
+  transition: opacity 0.2s;
+}
+
+/* 완료된 항목 */
+.task-item.done .task-text {
+  text-decoration: line-through;
+  color: #aaa;
+}
+
+.task-text {
+  font-size: 0.85rem;
+  flex: 1;
+}
+
+.task-btns {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   8. 섹션 5: async vs defer 타임라인
+============================================================ */
+
+/* 타임라인 전체 래퍼 */
+.timeline-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* 한 줄 (레이블 + 바) */
+.timeline-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 레이블 (script / async / defer) */
+.tl-label {
+  min-width: 56px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: 'Fira Code', monospace;
+  color: #444;
+  text-align: right;
+}
+
+/* 바 컨테이너 */
+.tl-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  gap: 2px;
+}
+
+/* 세그먼트 공통 */
+.tl-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 4px;
+  white-space: nowrap;
+  padding: 0 8px;
+}
+
+/* 파싱 세그먼트 (파란 계열) */
+.tl-parse       { background: #bbdefb; color: #0d47a1; }
+.tl-parse.short { flex: 1; }
+.tl-parse.long  { flex: 2; }
+.tl-parse.full  { flex: 3; }
+
+/* 차단 세그먼트 (빨강) */
+.tl-block { background: #ffcdd2; color: #b71c1c; flex: 2; }
+
+/* async 즉시 실행 (주황) */
+.tl-exec { background: #ffe0b2; color: #e65100; flex: 1; }
+
+/* defer 파싱 후 실행 (초록) */
+.tl-deferred { background: #c8e6c9; color: #1b5e20; flex: 1; }
+
+/* 코드 스니펫 3열 비교 */
+.code-compare {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.code-block {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e4ef;
+}
+
+.code-title {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.code-title.bad  { background: #ffcdd2; color: #b71c1c; }
+.code-title.warn { background: #fff3cd; color: #856404; }
+.code-title.good { background: #c8e6c9; color: #1b5e20; }
+
+.code-block pre {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 10px 14px;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+@media (max-width: 600px) {
+  .code-compare {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tl-label {
+    text-align: left;
+  }
+}
