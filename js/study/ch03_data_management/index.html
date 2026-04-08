@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<!--
+  index.html — ch03_data_management 학습 예제 페이지
+  =====================================================
+  README의 3가지 핵심 주제를 인터랙티브 데모로 구성합니다.
+
+  섹션 구성:
+    1. 불변성 (Immutability)   — 배열·객체의 가변 vs 불변 방식 비교
+    2. 모듈화 (Modularization) — ES 모듈 구조 시각화 + 테마 영속화 데모
+    3. localStorage            — CRUD + 실시간 테이블
+    4. sessionStorage          — CRUD + 탭 고립 설명
+    5. Cookie                  — set / read / delete + 목록 표시
+
+  스크립트 로딩:
+    <script type="module" src="main.js">
+    → ES 모듈이므로 type="module" 필수
+    → 기본적으로 defer 처럼 동작 (HTML 파싱 완료 후 실행)
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ch03 · 데이터 관리: 불변성, 모듈, 스토리지</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="header-inner">
+      <div>
+        <h1>ch03 · 데이터 관리</h1>
+        <p>불변성, 모듈화, localStorage / sessionStorage / Cookie를 직접 실행하며 확인하는 인터랙티브 예제입니다.</p>
+      </div>
+      <!--
+        [원본 코드 연동]
+        main.js의 원본 themeBtn 핸들러가 이 버튼을 사용합니다.
+        클릭 시 body.className을 'light' ↔ 'dark' 로 전환하고 localStorage에 저장합니다.
+      -->
+      <button class="btn btn-theme" id="theme-btn">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-label">다크 모드</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ============================================================
+         섹션 1: 불변성 (Immutability)
+         - 배열: push(가변) vs spread(불변) 비교
+         - 객체: 직접 수정(가변) vs spread(불변) 비교
+         - const는 재할당을 막지만, 객체·배열 내부 변경은 허용됨을 시연
+    ============================================================ -->
+    <section class="demo-section" id="sec-immutable">
+      <h2><span class="badge">01</span> 불변성 (Immutability)</h2>
+      <p class="desc">
+        <strong>불변성</strong>이란 데이터를 직접 수정하지 않고, 변경이 필요할 때 <strong>새로운 데이터를 생성</strong>하는 원칙입니다.<br>
+        <code>const</code>는 <em>재할당</em>만 막습니다 — 배열·객체 내부 값은 여전히 변경될 수 있습니다.
+      </p>
+
+      <div class="demo-box">
+
+        <!-- 배열 불변성 데모 -->
+        <div class="immutable-panel">
+          <h4 class="panel-title">📦 배열 (Array) 불변성</h4>
+
+          <div class="state-row">
+            <div class="state-box" id="arr-original-box">
+              <span class="state-label">원본 배열 (originalArr)</span>
+              <code class="state-value" id="arr-original">[1, 2, 3]</code>
+            </div>
+            <div class="state-arrow">→</div>
+            <div class="state-box result-box hidden" id="arr-new-box">
+              <span class="state-label">새 배열 (newArr)</span>
+              <code class="state-value" id="arr-new"></code>
+            </div>
+          </div>
+
+          <div class="method-snippet hidden" id="arr-snippet"></div>
+
+          <div class="btn-row">
+            <button class="btn btn-danger"    id="btn-arr-mutable">⚠️ 가변 방식 (push)</button>
+            <button class="btn btn-success"   id="btn-arr-immutable">✅ 불변 방식 (spread)</button>
+            <button class="btn btn-secondary" id="btn-arr-reset">↩ 초기화</button>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 객체 불변성 데모 -->
+        <div class="immutable-panel">
+          <h4 class="panel-title">🗂️ 객체 (Object) 불변성</h4>
+
+          <div class="state-row">
+            <div class="state-box" id="obj-original-box">
+              <span class="state-label">원본 객체 (originalUser)</span>
+              <code class="state-value" id="obj-original">{ name: 'Alice', score: 100 }</code>
+            </div>
+            <div class="state-arrow">→</div>
+            <div class="state-box result-box hidden" id="obj-new-box">
+              <span class="state-label">새 객체 (newUser)</span>
+              <code class="state-value" id="obj-new"></code>
+            </div>
+          </div>
+
+          <div class="method-snippet hidden" id="obj-snippet"></div>
+
+          <div class="btn-row">
+            <button class="btn btn-danger"    id="btn-obj-mutable">⚠️ 가변 방식 (직접 수정)</button>
+            <button class="btn btn-success"   id="btn-obj-immutable">✅ 불변 방식 (spread)</button>
+            <button class="btn btn-secondary" id="btn-obj-reset">↩ 초기화</button>
+          </div>
+        </div>
+
+        <div class="log-box">
+          <strong>실행 로그</strong>
+          <ul id="immutableLog"></ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         섹션 2: 모듈화 (Modularization)
+         - ES 모듈 import / export 구조 시각화
+         - theme.js (export) → main.js (import) 연결 관계 표시
+         - 실제 테마 토글 데모 → localStorage 영속화
+    ============================================================ -->
+    <section class="demo-section" id="sec-module">
+      <h2><span class="badge">02</span> 모듈화 (Modularization)</h2>
+      <p class="desc">
+        코드를 독립적인 파일(모듈)로 나누어 관리합니다.<br>
+        <code>export</code>로 기능을 내보내고 <code>import</code>로 가져옵니다.<br>
+        <code>&lt;script type="module"&gt;</code>로 로드해야 모듈 문법이 동작합니다.
+      </p>
+
+      <div class="demo-box">
+
+        <!-- 모듈 구조 다이어그램 -->
+        <div class="module-diagram">
+          <div class="module-file">
+            <div class="file-header export">theme.js</div>
+            <div class="file-body">
+              <div class="code-line"><span class="kw">export const</span> THEME_KEY = <span class="str">'user_theme'</span>;</div>
+              <div class="code-line"><span class="kw">export function</span> <span class="fn">saveTheme</span>(theme) { … }</div>
+              <div class="code-line"><span class="kw">export function</span> <span class="fn">loadTheme</span>() { … }</div>
+            </div>
+          </div>
+
+          <div class="module-arrow">
+            <span class="arrow-label">import</span>
+            <span class="arrow-body">→</span>
+          </div>
+
+          <div class="module-file">
+            <div class="file-header import">main.js</div>
+            <div class="file-body">
+              <div class="code-line"><span class="kw">import</span> { saveTheme, loadTheme, THEME_KEY }</div>
+              <div class="code-line">&nbsp;&nbsp;<span class="kw">from</span> <span class="str">'./theme.js'</span>;</div>
+              <div class="code-line"><span class="fn">saveTheme</span>(<span class="str">'dark'</span>); <span class="cmt">// 저장</span></div>
+              <div class="code-line"><span class="fn">loadTheme</span>(); <span class="cmt">// 불러오기</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 테마 영속화 데모 (원본 main.js 코드와 연동) -->
+        <div class="theme-demo">
+          <h4>🎨 테마 영속화 데모 (localStorage 연동)</h4>
+          <p class="desc-sm">
+            헤더의 <strong>다크 모드</strong> 버튼을 클릭하면 <code>theme.js</code>의 <code>saveTheme()</code>이 호출되어<br>
+            <code>localStorage['user_theme']</code>에 선택한 테마가 저장됩니다. 페이지를 새로고침해도 유지됩니다.
+          </p>
+          <div class="theme-status">
+            <div class="status-item">
+              <span class="status-label">현재 테마</span>
+              <span class="status-value" id="theme-current-label">light</span>
+            </div>
+            <div class="status-item">
+              <span class="status-label">localStorage 저장값</span>
+              <code class="status-value" id="theme-storage-value">—</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-box">
+          <strong>모듈 로그</strong>
+          <ul id="moduleLog"></ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         섹션 3: localStorage
+         - setItem / getItem / removeItem / clear
+         - 저장된 전체 항목 실시간 테이블 표시
+         - 특성: 탭·창 간 공유, 명시적 삭제 전까지 영구 유지
+    ============================================================ -->
+    <section class="demo-section" id="sec-localstorage">
+      <h2><span class="badge">03</span> localStorage</h2>
+      <p class="desc">
+        <strong>탭·창을 닫아도 유지</strong>되는 브라우저 저장소입니다.<br>
+        같은 도메인의 모든 탭에서 공유되며, 명시적으로 삭제하기 전까지 데이터가 보존됩니다.
+      </p>
+
+      <div class="demo-box">
+
+        <!-- CRUD 컨트롤 -->
+        <div class="storage-controls">
+          <div class="input-row">
+            <input type="text" id="ls-key"   placeholder="키 (key)" class="input-field">
+            <input type="text" id="ls-value" placeholder="값 (value)" class="input-field">
+            <button class="btn btn-primary"   id="btn-ls-set">저장 (setItem)</button>
+            <button class="btn btn-accent"    id="btn-ls-get">불러오기 (getItem)</button>
+            <button class="btn btn-danger"    id="btn-ls-remove">삭제 (removeItem)</button>
+            <button class="btn btn-secondary" id="btn-ls-clear">전체 삭제 (clear)</button>
+          </div>
+          <div class="get-result hidden" id="ls-get-result"></div>
+        </div>
+
+        <!-- 실시간 항목 테이블 -->
+        <div class="storage-table-wrap" id="ls-table">
+          <p class="empty-msg">저장된 항목이 없습니다.</p>
+        </div>
+
+        <div class="log-box">
+          <strong>localStorage 로그</strong>
+          <ul id="lsLog"></ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         섹션 4: sessionStorage
+         - localStorage와 동일한 API, 다른 유지 기간
+         - 탭마다 독립적으로 유지 → 탭을 닫으면 자동 삭제
+    ============================================================ -->
+    <section class="demo-section" id="sec-sessionstorage">
+      <h2><span class="badge">04</span> sessionStorage</h2>
+      <p class="desc">
+        <strong>탭(창)을 닫으면 자동 삭제</strong>되는 임시 저장소입니다.<br>
+        각 탭은 독립된 sessionStorage를 가지며, 같은 도메인이라도 탭 간 데이터가 공유되지 않습니다.
+      </p>
+
+      <div class="demo-box">
+
+        <!-- localStorage vs sessionStorage 비교 표 -->
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr><th>특성</th><th>localStorage</th><th>sessionStorage</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>유지 기간</td><td>영구 (명시적 삭제 전)</td><td>탭·창 닫힘 시 삭제</td></tr>
+              <tr><td>탭 간 공유</td><td>✅ 공유됨</td><td>❌ 탭마다 독립</td></tr>
+              <tr><td>주요 용도</td><td>테마, 자동 로그인, 설정</td><td>임시 입력, 일회성 데이터</td></tr>
+              <tr><td>API</td><td colspan="2">setItem · getItem · removeItem · clear (동일)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- CRUD 컨트롤 (localStorage와 동일 구조) -->
+        <div class="storage-controls">
+          <div class="input-row">
+            <input type="text" id="ss-key"   placeholder="키 (key)" class="input-field">
+            <input type="text" id="ss-value" placeholder="값 (value)" class="input-field">
+            <button class="btn btn-primary"   id="btn-ss-set">저장 (setItem)</button>
+            <button class="btn btn-accent"    id="btn-ss-get">불러오기 (getItem)</button>
+            <button class="btn btn-danger"    id="btn-ss-remove">삭제 (removeItem)</button>
+            <button class="btn btn-secondary" id="btn-ss-clear">전체 삭제 (clear)</button>
+          </div>
+          <div class="get-result hidden" id="ss-get-result"></div>
+        </div>
+
+        <!-- 실시간 항목 테이블 -->
+        <div class="storage-table-wrap" id="ss-table">
+          <p class="empty-msg">저장된 항목이 없습니다.</p>
+        </div>
+
+        <div class="log-box">
+          <strong>sessionStorage 로그</strong>
+          <ul id="ssLog"></ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         섹션 5: Cookie
+         - document.cookie를 통한 쿠키 설정 / 읽기 / 삭제
+         - expires 속성으로 만료 시간 제어
+         - localStorage와의 차이: 서버 요청 시 자동 전송
+         - 참고: cookie_example.js (단독 실행 예제)
+    ============================================================ -->
+    <section class="demo-section" id="sec-cookie">
+      <h2><span class="badge">05</span> Cookie</h2>
+      <p class="desc">
+        <strong>쿠키</strong>는 서버 요청 시 HTTP 헤더에 자동으로 포함되는 작은 데이터입니다.<br>
+        <code>document.cookie</code>로 읽고 쓰며, <code>expires</code> 속성으로 만료 시간을 지정합니다.<br>
+        설정·삭제 시에는 반드시 <code>path=/</code>를 지정해야 같은 경로에서 접근할 수 있습니다.
+      </p>
+
+      <div class="demo-box">
+
+        <!-- 쿠키 저장 컨트롤 -->
+        <div class="cookie-controls">
+          <h4>쿠키 저장</h4>
+          <div class="input-row">
+            <input type="text"   id="cookie-name"  placeholder="이름 (name)" class="input-field">
+            <input type="text"   id="cookie-value" placeholder="값 (value)"  class="input-field">
+            <select id="cookie-days" class="input-field select-field">
+              <option value="1">1일</option>
+              <option value="7" selected>7일</option>
+              <option value="30">30일</option>
+              <option value="365">1년</option>
+            </select>
+            <button class="btn btn-primary" id="btn-cookie-set">쿠키 저장</button>
+          </div>
+        </div>
+
+        <!-- 쿠키 삭제 컨트롤 -->
+        <div class="cookie-controls">
+          <h4>쿠키 삭제</h4>
+          <div class="input-row">
+            <input type="text" id="cookie-delete-name" placeholder="삭제할 쿠키 이름" class="input-field">
+            <button class="btn btn-danger"    id="btn-cookie-delete">쿠키 삭제</button>
+            <button class="btn btn-secondary" id="btn-cookie-refresh">🔄 목록 새로고침</button>
+          </div>
+        </div>
+
+        <!-- 현재 쿠키 목록 -->
+        <div class="cookie-list-wrap" id="cookie-list">
+          <p class="empty-msg">저장된 쿠키가 없습니다.</p>
+        </div>
+
+        <!-- cookie_example.js 코드 참조 안내 -->
+        <div class="code-explain">
+          <h4>cookie_example.js — 기본 사용 예시</h4>
+          <pre><code>// 쿠키 저장: expires 로 만료일 지정, path 로 유효 범위 설정
+document.cookie = "visitor=JohnDoe; expires=Fri, 31 Dec 2026 12:00:00 UTC; path=/";
+
+// 쿠키 읽기: 모든 쿠키가 "key=value; key2=value2" 형태의 문자열로 반환
+console.log("현재 쿠키 목록:", document.cookie);
+
+// ⚠️ 쿠키 삭제: expires를 과거 시간으로 설정
+document.cookie = "visitor=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";</code></pre>
+        </div>
+
+        <div class="log-box">
+          <strong>Cookie 로그</strong>
+          <ul id="cookieLog"></ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="page-footer">
+    <p>ch03 · 데이터 관리: 불변성, 모듈화, 스토리지 학습 예제 | mango_proj frontend study</p>
+  </footer>
+
+  <!--
+    type="module":
+    - ES 모듈 문법(import/export)을 사용하기 위해 반드시 필요
+    - 기본적으로 defer 처럼 동작 → DOM 파싱 완료 후 실행
+    - 모듈 스코프가 적용되어 전역 오염 없음
+  -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>

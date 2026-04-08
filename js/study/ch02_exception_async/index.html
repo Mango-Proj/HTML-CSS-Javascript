@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<!--
+  index.html — ch02_exception_async 학습 예제 페이지
+  ====================================================
+  README의 5가지 핵심 주제를 인터랙티브 데모로 구성합니다.
+
+  섹션 구성:
+    1. try / catch / finally  — 예외 흐름과 throw 직접 실행
+    2. 동기 vs 비동기         — 실행 순서 차이 시각화
+    3. Promise 상태           — Pending → Fulfilled / Rejected 전환 시각화
+    4. async / await          — 원본 fetchTodo + 향상된 UI
+    5. Fetch API              — 정상 요청 / 에러 요청 / response.ok 패턴 비교
+
+  스크립트 로딩: <script defer src="app.js">
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ch02 · 예외 처리 & 비동기 통신</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="page-header">
+    <h1>ch02 · 예외 처리 &amp; 비동기 통신</h1>
+    <p>try/catch, Promise, async/await, Fetch API를 직접 실행하며 확인하는 인터랙티브 예제입니다.</p>
+  </header>
+
+  <main class="container">
+
+    <!-- ============================================================
+         섹션 1: try / catch / finally & throw
+         - 숫자 입력 → 안전 나눗셈 실행 → 각 블록의 실행 흐름을 시각화합니다.
+         - 제수가 0이면 throw로 에러를 던지고 catch가 받는 과정을 보여줍니다.
+    ============================================================ -->
+    <section class="demo-section" id="sec-trycatch">
+      <h2><span class="badge">01</span> try / catch / finally &amp; throw</h2>
+      <p class="desc">
+        두 수를 입력하고 나누기를 실행하세요.<br>
+        제수(b)가 <strong>0</strong>이면 <code>throw</code>로 에러가 발생하고 <code>catch</code>가 처리합니다.<br>
+        <code>finally</code>는 성공·실패 여부에 상관없이 <strong>항상 실행</strong>됩니다.
+      </p>
+
+      <div class="demo-box">
+        <div class="input-row">
+          <input type="number" id="numA" value="10" placeholder="피제수 (a)">
+          <span class="op-label"> ÷ </span>
+          <input type="number" id="numB" value="2"  placeholder="제수 (b)">
+          <button class="btn btn-primary" id="btnDivide">나누기 실행</button>
+        </div>
+
+        <!-- 실행 흐름 블록 시각화 -->
+        <div class="flow-blocks" id="flowBlocks">
+          <div class="flow-block" id="blockTry">
+            <div class="flow-icon">🔵</div>
+            <div class="flow-name">try</div>
+            <div class="flow-desc">코드 실행 시도</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-block" id="blockCatch">
+            <div class="flow-icon">🔴</div>
+            <div class="flow-name">catch</div>
+            <div class="flow-desc">에러 발생 시 실행</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-block" id="blockFinally">
+            <div class="flow-icon">🟢</div>
+            <div class="flow-name">finally</div>
+            <div class="flow-desc">항상 실행</div>
+          </div>
+        </div>
+
+        <div class="log-box">
+          <strong>실행 로그</strong>
+          <ul id="trycatchLog"></ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         섹션 2: 동기 vs 비동기 실행 순서
+         - 동기: A → B → C 순서대로 실행 (B가 끝나야 C 시작)
+         - 비동기: A 시작 → C 시작 → B 완료 (setTimeout/Promise로 순서 어긋남)
+    ============================================================ -->
+    <section class="demo-section" id="sec-syncasync">
+      <h2><span class="badge">02</span> 동기(Sync) vs 비동기(Async) 실행 순서</h2>
+      <p class="desc">
+        각 버튼을 눌러 코드 실행 순서가 어떻게 다른지 로그로 확인하세요.<br>
+        <strong>동기</strong>는 위에서 아래로 순서대로, <strong>비동기</strong>는 기다리지 않고 다음 코드로 넘어갑니다.
+      </p>
+
+      <div class="demo-box">
+        <div class="btn-row">
+          <button class="btn btn-primary"   id="btnSync">동기 실행</button>
+          <button class="btn btn-secondary" id="btnAsync">비동기 실행 (setTimeout)</button>
+          <button class="btn btn-accent"    id="btnPromiseChain">Promise 체이닝</button>
+        </div>
+
+        <!-- 실행 타임라인 시각화 -->
+        <div class="timeline-visual" id="syncTimeline"></div>
+
+        <div class="log-box">
+          <strong>실행 로그</strong>
+          <ul id="syncLog"></ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         섹션 3: Promise 상태 시각화
+         - Pending → resolve() 호출 시 Fulfilled
+         - Pending → reject()  호출 시 Rejected
+         - .then() / .catch() / .finally() 체이닝 흐름을 단계별로 보여줍니다.
+    ============================================================ -->
+    <section class="demo-section" id="sec-promise">
+      <h2><span class="badge">03</span> Promise 상태 &amp; .then / .catch / .finally</h2>
+      <p class="desc">
+        버튼을 클릭해 Promise를 생성하고, 성공(resolve) 또는 실패(reject)를 선택해보세요.<br>
+        상태가 <span class="badge-pending">Pending</span> →
+        <span class="badge-fulfilled">Fulfilled</span> /
+        <span class="badge-rejected">Rejected</span> 로 전환되는 과정을 확인합니다.
+      </p>
+
+      <div class="demo-box">
+        <div class="promise-visual">
+          <!-- Promise 상태 카드 -->
+          <div class="promise-card" id="promiseCard">
+            <div class="promise-state" id="promiseState">대기 중</div>
+            <div class="promise-status pending" id="promiseStatus">Pending</div>
+          </div>
+
+          <!-- 화살표 + .then / .catch -->
+          <div class="promise-chain">
+            <div class="chain-row">
+              <div class="chain-box fulfilled" id="chainThen">.then()</div>
+              <div class="chain-box rejected"  id="chainCatch">.catch()</div>
+            </div>
+            <div class="chain-box always" id="chainFinally">.finally()</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary"   id="btnNewPromise">새 Promise 생성</button>
+          <button class="btn btn-success"   id="btnResolve" disabled>✅ resolve()</button>
+          <button class="btn btn-danger"    id="btnReject"  disabled>❌ reject()</button>
+        </div>
+
+        <!-- Promise.all / Promise.race 데모 -->
+        <div class="parallel-demo">
+          <h4>병렬 Promise 패턴</h4>
+          <div class="btn-row">
+            <button class="btn btn-secondary" id="btnPromiseAll">Promise.all (모두 성공 시)</button>
+            <button class="btn btn-secondary" id="btnPromiseRace">Promise.race (가장 빠른 것)</button>
+          </div>
+        </div>
+
+        <div class="log-box">
+          <strong>Promise 로그</strong>
+          <ul id="promiseLog"></ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         섹션 4: async / await + 원본 fetchTodo
+         - 원본: fetchTodo() — 단일 todo 항목 불러오기
+         - 추가: ID 범위 지정 → 여러 todo를 순차/병렬로 불러오기
+    ============================================================ -->
+    <section class="demo-section" id="sec-asyncawait">
+      <h2><span class="badge">04</span> async / await &amp; Fetch API</h2>
+      <p class="desc">
+        <code>async</code> 함수 안에서 <code>await</code>로 Promise가 처리될 때까지 기다립니다.<br>
+        ID를 입력하고 버튼을 클릭하면 <strong>jsonplaceholder.typicode.com</strong>에서 실제 데이터를 가져옵니다.
+      </p>
+
+      <div class="demo-box">
+        <!-- 원본 코드 연동: #todo-list (단일 항목) -->
+        <div class="fetch-controls">
+          <div class="input-row">
+            <label for="todoId">Todo ID:</label>
+            <input type="number" id="todoId" value="1" min="1" max="200">
+            <!--
+              [원본 코드 연동]
+              이 버튼 클릭 시 app.js의 원본 fetchTodo()가 실행됩니다.
+            -->
+            <button class="btn btn-primary" id="btnFetchOne">단일 항목 불러오기</button>
+          </div>
+          <div class="input-row">
+            <label>ID 범위:</label>
+            <input type="number" id="rangeFrom" value="1"  min="1" max="200">
+            <span>~</span>
+            <input type="number" id="rangeTo"   value="5"  min="1" max="200">
+            <!-- [추가 코드 연동] 여러 항목 병렬 불러오기 -->
+            <button class="btn btn-accent" id="btnFetchRange">범위 병렬 불러오기</button>
+          </div>
+        </div>
+
+        <!-- 로딩 상태 표시 -->
+        <div class="loading-indicator hidden" id="loadingIndicator">
+          <span class="spinner"></span> 데이터를 불러오는 중...
+        </div>
+
+        <!-- 원본 코드 연동: app.js의 ul = document.querySelector('#todo-list') -->
+        <ul id="todo-list" class="todo-list"></ul>
+
+        <!-- [추가] 병렬 fetch 결과 표시 -->
+        <div id="rangeResult" class="range-result hidden"></div>
+
+        <button class="btn btn-secondary" id="btnClearTodo">목록 초기화</button>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         섹션 5: Fetch 에러 처리 패턴
+         - 정상 요청 vs 잘못된 URL (네트워크 에러)
+         - 존재하지 않는 리소스 (HTTP 404)
+         - response.ok 체크 패턴
+    ============================================================ -->
+    <section class="demo-section" id="sec-fetch">
+      <h2><span class="badge">05</span> Fetch 에러 처리 패턴</h2>
+      <p class="desc">
+        <code>fetch()</code>는 HTTP 에러(404, 500)에서도 Promise를 <strong>reject하지 않습니다</strong>.<br>
+        반드시 <code>response.ok</code> 또는 <code>response.status</code>를 직접 확인해야 합니다.
+      </p>
+
+      <div class="demo-box">
+        <div class="error-cases">
+
+          <!-- 케이스 1: 정상 요청 -->
+          <div class="error-case">
+            <h4>✅ 정상 요청</h4>
+            <code>fetch('…/todos/1')</code>
+            <button class="btn btn-success btn-sm" data-case="ok">실행</button>
+            <div class="case-result" id="caseOk"></div>
+          </div>
+
+          <!-- 케이스 2: 404 에러 (존재하지 않는 리소스) -->
+          <div class="error-case">
+            <h4>⚠️ HTTP 404 에러</h4>
+            <code>fetch('…/todos/99999')</code>
+            <button class="btn btn-warning btn-sm" data-case="404">실행</button>
+            <div class="case-result" id="case404"></div>
+          </div>
+
+          <!-- 케이스 3: 네트워크 에러 (잘못된 도메인) -->
+          <div class="error-case">
+            <h4>🔴 네트워크 에러</h4>
+            <code>fetch('https://invalid.domain.xyz')</code>
+            <button class="btn btn-danger btn-sm" data-case="network">실행</button>
+            <div class="case-result" id="caseNetwork"></div>
+          </div>
+
+        </div>
+
+        <!-- response.ok 패턴 코드 설명 -->
+        <div class="code-explain">
+          <h4>response.ok 체크 패턴</h4>
+          <pre><code>const res = await fetch(url);
+
+// ❌ fetch는 404여도 reject하지 않음
+// → response.ok를 반드시 직접 확인해야 함
+
+if (!res.ok) {
+  throw new Error(`HTTP 오류: ${res.status}`);
+}
+
+const data = await res.json();</code></pre>
+        </div>
+
+        <div class="log-box">
+          <strong>에러 처리 로그</strong>
+          <ul id="fetchLog"></ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="page-footer">
+    <p>ch02 · 예외 처리 &amp; 비동기 통신 학습 예제 | mango_proj frontend study</p>
+  </footer>
+
+  <!--
+    defer: HTML 파싱을 막지 않고 파싱 완료 후 실행
+    → 스크립트 내 document.querySelector가 안전하게 동작
+  -->
+  <script defer src="app.js"></script>
+</body>
+</html>

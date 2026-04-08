@@ -1,0 +1,681 @@
+/*
+ * style.css — ch02_exception_async 학습 예제 스타일
+ * ====================================================
+ * 구성:
+ *   1. Reset & Base
+ *   2. 레이아웃 (헤더, 컨테이너, 섹션)
+ *   3. 공통 컴포넌트 (버튼, 배지, 로그 박스, 입력)
+ *   4. 섹션 1: try / catch / finally 흐름 블록
+ *   5. 섹션 2: 동기 vs 비동기 타임라인
+ *   6. 섹션 3: Promise 상태 시각화
+ *   7. 섹션 4: async / await & 할 일 목록
+ *   8. 섹션 5: Fetch 에러 처리 케이스
+ */
+
+/* ============================================================
+   1. Reset & Base
+============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', Pretendard, sans-serif;
+  background: #f5f7fa;
+  color: #2d2d2d;
+  line-height: 1.6;
+}
+
+code {
+  font-family: 'Fira Code', Consolas, monospace;
+  background: #eef2f7;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.84em;
+  color: #c0392b;
+}
+
+pre {
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 0.82rem;
+}
+
+/* ============================================================
+   2. 레이아웃
+============================================================ */
+.page-header {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  color: #fff;
+  padding: 32px 40px;
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.page-header p {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.demo-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+.demo-section h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.desc {
+  font-size: 0.88rem;
+  color: #555;
+  margin-bottom: 18px;
+  line-height: 1.75;
+}
+
+.demo-box {
+  background: #f8f9fb;
+  border: 1px solid #e4e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.page-footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.78rem;
+  color: #aaa;
+}
+
+/* ============================================================
+   3. 공통 컴포넌트
+============================================================ */
+
+/* 섹션 번호 배지 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: #7c3aed;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* 버튼 공통 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.btn:active { transform: scale(0.97); }
+.btn:hover  { filter: brightness(0.92); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-primary   { background: #7c3aed; color: #fff; }
+.btn-secondary { background: #e8ecf4; color: #444; }
+.btn-success   { background: #16a34a; color: #fff; }
+.btn-danger    { background: #dc2626; color: #fff; }
+.btn-warning   { background: #d97706; color: #fff; }
+.btn-accent    { background: #0891b2; color: #fff; }
+.btn-sm        { padding: 4px 10px; font-size: 0.75rem; }
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* 입력 한 줄 배치 */
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.input-row label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+}
+
+.input-row input[type="number"],
+.input-row input[type="text"] {
+  width: 80px;
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input-row input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124,58,237,0.12);
+}
+
+.op-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #666;
+}
+
+/* 로그 박스 */
+.log-box {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.78rem;
+  min-height: 60px;
+}
+
+.log-box strong {
+  display: block;
+  color: #89b4fa;
+  margin-bottom: 6px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.log-box ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.log-box li {
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 0.78rem;
+}
+
+/* 로그 색상 클래스 */
+.log-try      { color: #89b4fa; }   /* 파랑 — try */
+.log-catch    { color: #f38ba8; }   /* 빨강 — catch */
+.log-finally  { color: #a6e3a1; }   /* 초록 — finally */
+.log-throw    { color: #fab387; }   /* 주황 — throw */
+.log-success  { color: #a6e3a1; }   /* 초록 — 성공 */
+.log-error    { color: #f38ba8; }   /* 빨강 — 에러 */
+.log-info     { color: #cdd6f4; }   /* 흰색 — 일반 */
+.log-pending  { color: #cba6f7; }   /* 보라 — pending */
+.log-sync     { color: #89dceb; }   /* 청록 — 동기 */
+.log-async    { color: #f9e2af; }   /* 노랑 — 비동기 */
+.log-warn     { color: #f9e2af; }   /* 노랑 — 경고 (log-async 와 동일) */
+
+/* hidden 유틸 */
+.hidden { display: none !important; }
+
+/* ============================================================
+   4. 섹션 1: try / catch / finally 흐름 블록
+============================================================ */
+
+/* 실행 흐름 블록 3개 가로 배치 */
+.flow-blocks {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.flow-block {
+  flex: 1;
+  min-width: 100px;
+  background: #fff;
+  border: 2px solid #e0e4ef;
+  border-radius: 10px;
+  padding: 14px 12px;
+  text-align: center;
+  transition: border-color 0.25s, background 0.25s, transform 0.2s;
+}
+
+/* 활성화된 블록 강조 */
+.flow-block.active-try     { border-color: #3b82f6; background: #eff6ff; transform: scale(1.04); }
+.flow-block.active-catch   { border-color: #ef4444; background: #fef2f2; transform: scale(1.04); }
+.flow-block.active-finally { border-color: #22c55e; background: #f0fdf4; transform: scale(1.04); }
+
+/* app.js의 highlightBlock()이 붙이는 공통 active/success 클래스 */
+.flow-block.active  { border-color: #3b82f6; background: #eff6ff; transform: scale(1.04); }
+.flow-block.success { border-color: #22c55e; background: #f0fdf4; }
+
+.flow-icon { font-size: 1.4rem; }
+.flow-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin: 4px 0 2px;
+  font-family: 'Fira Code', monospace;
+}
+.flow-desc { font-size: 0.72rem; color: #888; }
+
+.flow-arrow {
+  font-size: 1.3rem;
+  color: #bbb;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   5. 섹션 2: 동기 vs 비동기 타임라인
+============================================================ */
+
+/* 타임라인 시각화 영역 */
+.timeline-visual {
+  min-height: 40px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* 타임라인 각 스텝 태그 */
+.tl-step,
+.tl-block {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  animation: stepIn 0.25s ease;
+}
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tl-step.sync,  .tl-block.tl-sync  { background: #dbeafe; color: #1d4ed8; }
+.tl-step.async, .tl-block.tl-async { background: #fef9c3; color: #92400e; }
+.tl-step.done,  .tl-block.tl-async-done { background: #dcfce7; color: #15803d; }
+
+/* ============================================================
+   6. 섹션 3: Promise 상태 시각화
+============================================================ */
+
+.promise-visual {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Promise 상태 카드 */
+.promise-card {
+  flex-shrink: 0;
+  width: 140px;
+  padding: 16px;
+  border-radius: 10px;
+  border: 2px solid #e0e4ef;
+  text-align: center;
+  background: #fff;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.promise-card.is-pending,  .promise-card.pending   { border-color: #a78bfa; background: #f5f3ff; }
+.promise-card.is-fulfilled,.promise-card.fulfilled { border-color: #22c55e; background: #f0fdf4; }
+.promise-card.is-rejected, .promise-card.rejected  { border-color: #ef4444; background: #fef2f2; }
+
+.promise-state {
+  font-size: 0.82rem;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+/* Promise 상태 뱃지 */
+.promise-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: 'Fira Code', monospace;
+}
+
+.promise-status.pending   { background: #ede9fe; color: #6d28d9; }
+.promise-status.fulfilled { background: #dcfce7; color: #15803d; }
+.promise-status.rejected  { background: #fee2e2; color: #b91c1c; }
+
+/* .then / .catch / .finally 체이닝 박스 */
+.promise-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chain-row {
+  display: flex;
+  gap: 8px;
+}
+
+.chain-box {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: 'Fira Code', monospace;
+  border: 2px solid #e0e4ef;
+  background: #fff;
+  color: #aaa;
+  transition: border-color 0.25s, background 0.25s, color 0.25s, transform 0.2s;
+}
+
+.chain-box.active {
+  transform: scale(1.06);
+}
+
+.chain-box.fulfilled.active { border-color: #22c55e; background: #dcfce7; color: #15803d; }
+.chain-box.rejected.active  { border-color: #ef4444; background: #fee2e2; color: #b91c1c; }
+.chain-box.always.active    { border-color: #7c3aed; background: #ede9fe; color: #6d28d9; }
+
+/* desc 안의 인라인 상태 뱃지 */
+.badge-pending   { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; background: #ede9fe; color: #6d28d9; }
+.badge-fulfilled { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; background: #dcfce7; color: #15803d; }
+.badge-rejected  { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; background: #fee2e2; color: #b91c1c; }
+
+/* 병렬 Promise 패턴 구분선 */
+.parallel-demo {
+  border-top: 1px solid #e4e8f0;
+  padding-top: 12px;
+}
+
+.parallel-demo h4 {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+/* ============================================================
+   7. 섹션 4: async / await & 할 일 목록
+============================================================ */
+
+/* fetch 컨트롤 영역 */
+.fetch-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 로딩 스피너 */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: #7c3aed;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ddd;
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 할 일 목록 */
+.todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.todo-list li,
+.todo-item {
+  background: #fff;
+  border: 1px solid #e0e4ef;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.84rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.todo-list li.error-item,
+.todo-item.error {
+  color: #dc2626;
+  border-color: #fecaca;
+  background: #fff5f5;
+}
+
+.todo-text { flex: 1; color: #333; font-size: 0.82rem; }
+.todo-meta { font-size: 0.72rem; color: #999; white-space: nowrap; }
+
+/* 완료 뱃지 */
+.todo-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.todo-badge.done { background: #dcfce7; color: #15803d; }
+.todo-badge.todo { background: #f3f4f6; color: #6b7280; }
+
+/* 병렬 fetch 결과 */
+.range-result {
+  background: #fff;
+  border: 1px solid #e0e4ef;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 범위 결과 개별 항목 (app.js fetchRange 렌더링) */
+.range-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #f8f9fb;
+  border: 1px solid #e0e4ef;
+  font-size: 0.82rem;
+  animation: slideIn 0.15s ease;
+}
+
+.range-item.done {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.range-result h4 {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+.range-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.range-card {
+  background: #f8f9fb;
+  border: 1px solid #e0e4ef;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+}
+
+.range-card .rc-id    { font-weight: 700; color: #7c3aed; }
+.range-card .rc-title { color: #444; margin-top: 2px; }
+.range-card .rc-done  { margin-top: 4px; }
+
+/* ============================================================
+   8. 섹션 5: Fetch 에러 처리 케이스
+============================================================ */
+
+.error-cases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.error-case {
+  background: #fff;
+  border: 1px solid #e0e4ef;
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.error-case h4 {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.error-case code {
+  font-size: 0.72rem;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 케이스 결과 영역 */
+.case-result {
+  min-height: 28px;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  padding: 6px 8px;
+  animation: fadeIn 0.2s ease;
+}
+
+/* showCaseResult()가 붙이는 클래스 */
+.case-result.case-success { background: #dcfce7; color: #15803d; }
+.case-result.case-warn    { background: #fef9c3; color: #92400e; }
+.case-result.case-error   { background: #fee2e2; color: #b91c1c; }
+.case-result.case-info    { background: #f0f4ff; color: #3730a3; }
+
+/* 기존 클래스 (하위 호환) */
+.case-result.show { display: block; }
+.case-result.ok      { background: #dcfce7; color: #15803d; }
+.case-result.warn    { background: #fef9c3; color: #92400e; }
+.case-result.err     { background: #fee2e2; color: #b91c1c; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* response.ok 패턴 코드 블록 */
+.code-explain {
+  background: #1e1e2e;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.code-explain h4 {
+  background: #313244;
+  color: #cdd6f4;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.code-explain pre {
+  padding: 12px 16px;
+  color: #cdd6f4;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+
+.code-explain code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* ============================================================
+   반응형
+============================================================ */
+@media (max-width: 640px) {
+  .error-cases {
+    grid-template-columns: 1fr;
+  }
+
+  .flow-blocks {
+    flex-direction: column;
+  }
+
+  .flow-arrow {
+    transform: rotate(90deg);
+  }
+
+  .promise-visual {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
