@@ -1,0 +1,292 @@
+/* ============================================================
+   DOM 마스터 가이드 — 스타일시트
+   각 섹션이 독립적인 카드로 구성되어 학습 흐름을 시각적으로 구분합니다.
+============================================================ */
+
+/* ── 공통 변수 ── */
+:root {
+  --bg-page:    #f1f5f9;
+  --bg-card:    #ffffff;
+  --bg-demo:    #f8fafc;
+  --bg-log:     #1e293b;
+  --text-main:  #1e293b;
+  --text-sub:   #64748b;
+  --accent:     #6366f1;   /* 인디고 포인트 컬러 */
+  --accent-dark:#4f46e5;
+  --border:     #e2e8f0;
+  --radius:     10px;
+
+  /* 신호등 색상 */
+  --red:    #ef4444;
+  --yellow: #eab308;
+  --green:  #22c55e;
+
+  /* 로그 메시지 색상 */
+  --log-text:    #94a3b8;
+  --log-success: #34d399;
+  --log-info:    #60a5fa;
+  --log-warn:    #fbbf24;
+  --log-error:   #f87171;
+}
+
+/* ── 기본 초기화 ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+/* ── 페이지 헤더 ── */
+.page-header {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  padding: 40px 32px;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.page-header p {
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+/* ── 메인 컨텐츠 ── */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── 섹션 카드 ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.card h2 {
+  font-size: 1.15rem;
+  color: var(--text-main);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 섹션 번호 뱃지 */
+.badge {
+  background: var(--accent);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.03em;
+}
+
+/* 설명 텍스트 */
+.desc {
+  font-size: 0.88rem;
+  color: var(--text-sub);
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+.desc code {
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+
+/* ── 데모 영역 ── */
+.demo-area {
+  background: var(--bg-demo);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 속성 섹션: 가로 배치 */
+.demo-area--row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+/* 데모 박스: 선택/조작 대상 요소의 기본 스타일 */
+.demo-box {
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  transition: background 0.2s ease, border-color 0.2s ease,
+              transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.demo-box code {
+  background: #f1f5f9;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+/* 선택됐을 때 강조 */
+.demo-box.selected {
+  border-color: var(--accent);
+  background: #eef2ff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* classList active 상태 */
+.demo-box.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+}
+
+.demo-box.active code {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* 속성 카드 */
+.attr-card {
+  flex: 1;
+  min-width: 200px;
+}
+
+.attr-card a {
+  color: var(--accent);
+}
+
+/* hidden-text: display:none으로 숨김 → innerText는 읽지 못함 */
+.hidden-text {
+  display: none;
+}
+
+/* ── 버튼 그룹 ── */
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.btn-group button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-group button:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+.btn-group button:active {
+  transform: translateY(0);
+}
+
+/* 초기화 버튼: 회색 계열 */
+.btn-reset {
+  background: #94a3b8 !important;
+}
+
+.btn-reset:hover {
+  background: #64748b !important;
+}
+
+/* ── 로그 영역 ── */
+.log {
+  background: var(--bg-log);
+  border-radius: 8px;
+  padding: 12px 16px;
+  min-height: 52px;
+  font-family: 'Menlo', 'Consolas', monospace;
+  font-size: 0.8rem;
+  color: var(--log-text);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 로그 한 줄 */
+.log-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.log-line::before {
+  content: '▶';
+  font-size: 0.65rem;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+/* 로그 타입별 색상 */
+.log-success { color: var(--log-success); }
+.log-info    { color: var(--log-info); }
+.log-warn    { color: var(--log-warn); }
+.log-error   { color: var(--log-error); }
+
+/* ── 신호등 목록 ── */
+#traffic-light {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.light {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  width: fit-content;
+  transition: transform 0.2s ease;
+  animation: fadeIn 0.3s ease;
+}
+
+/* 신호등 색상 */
+.light.red    { background: var(--red);    color: white; }
+.light.yellow { background: var(--yellow); color: #1e293b; }
+.light.green  { background: var(--green);  color: white; }
+
+/* 새 요소 추가 시 나타나는 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}

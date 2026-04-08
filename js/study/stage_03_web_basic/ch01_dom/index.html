@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌳 DOM 마스터 가이드</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="page-header">
+    <h1>🌳 DOM 마스터 가이드</h1>
+    <p>JavaScript로 HTML 요소를 선택하고, 수정하고, 생성하고, 삭제하는 방법을 배웁니다.</p>
+  </header>
+
+  <main>
+
+    <!-- ============================================================
+         Section 1. 요소 선택 (Selection)
+         getElementById / querySelector / querySelectorAll 비교
+    ============================================================ -->
+    <section class="card" id="sec-select">
+      <h2><span class="badge">01</span> 요소 선택 (Selection)</h2>
+      <p class="desc">
+        JavaScript가 HTML 요소를 조작하려면 먼저 해당 요소를 <strong>선택</strong>해야 합니다.
+        아래 버튼을 눌러 각 선택 방법의 차이를 확인해보세요.
+      </p>
+
+      <!-- 선택 대상 요소들 -->
+      <div class="demo-area">
+        <div id="box-target" class="demo-box">
+          id="box-target" 박스 <code>(getElementById 대상)</code>
+        </div>
+        <div class="highlight-me demo-box">
+          class="highlight-me" 첫 번째 <code>(querySelector 대상)</code>
+        </div>
+        <div class="highlight-me demo-box">
+          class="highlight-me" 두 번째 <code>(querySelectorAll 대상)</code>
+        </div>
+        <div class="highlight-me demo-box">
+          class="highlight-me" 세 번째 <code>(querySelectorAll 대상)</code>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button onclick="selectById()">getElementById</button>
+        <button onclick="selectByQuery()">querySelector</button>
+        <button onclick="selectAllByQuery()">querySelectorAll</button>
+        <button class="btn-reset" onclick="resetSelect()">초기화</button>
+      </div>
+      <div id="select-log" class="log"></div>
+    </section>
+
+    <!-- ============================================================
+         Section 2. 콘텐츠 조작 (textContent / innerHTML / innerText)
+    ============================================================ -->
+    <section class="card" id="sec-content">
+      <h2><span class="badge">02</span> 콘텐츠 조작</h2>
+      <p class="desc">
+        요소의 내용을 읽거나 바꿀 때 사용하는 세 가지 속성을 비교합니다.
+        <code>textContent</code>, <code>innerHTML</code>, <code>innerText</code>는 각각 다르게 동작합니다.
+      </p>
+
+      <div class="demo-area">
+        <!--
+          숨겨진 span이 포함되어 있음
+          - textContent: 숨겨진 텍스트까지 전부 읽음
+          - innerText: 화면에 보이는 텍스트만 읽음 (CSS 반영)
+          - innerHTML: HTML 태그를 포함해서 읽고 씀
+        -->
+        <div id="content-target" class="demo-box">
+          원본 텍스트입니다.
+          <span class="hidden-text">숨겨진 텍스트 (display:none)</span>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button onclick="changeTextContent()">textContent 변경</button>
+        <button onclick="changeInnerHTML()">innerHTML 변경</button>
+        <button onclick="readInnerText()">innerText 읽기</button>
+        <button onclick="readTextContent()">textContent 읽기</button>
+        <button class="btn-reset" onclick="resetContent()">초기화</button>
+      </div>
+      <div id="content-log" class="log"></div>
+    </section>
+
+    <!-- ============================================================
+         Section 3. classList 조작
+         add / remove / toggle / contains
+    ============================================================ -->
+    <section class="card" id="sec-class">
+      <h2><span class="badge">03</span> classList 조작</h2>
+      <p class="desc">
+        요소의 클래스를 추가·제거·토글하는 방법입니다.
+        <code>active</code> 클래스가 있으면 박스 색이 바뀝니다.
+      </p>
+
+      <div class="demo-area">
+        <div id="class-target" class="demo-box">
+          classList 조작 대상 박스
+          <br>
+          <small>현재 클래스: <code id="class-display">demo-box</code></small>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button onclick="addClass()">add('active')</button>
+        <button onclick="removeClass()">remove('active')</button>
+        <button onclick="toggleClass()">toggle('active')</button>
+        <button onclick="checkContains()">contains('active')?</button>
+        <button class="btn-reset" onclick="resetClass()">초기화</button>
+      </div>
+      <div id="class-log" class="log"></div>
+    </section>
+
+    <!-- ============================================================
+         Section 4. 속성 & 스타일 조작
+         getAttribute / setAttribute / dataset / element.style
+    ============================================================ -->
+    <section class="card" id="sec-attr">
+      <h2><span class="badge">04</span> 속성 & 스타일 조작</h2>
+      <p class="desc">
+        <code>getAttribute / setAttribute</code>로 HTML 속성을 읽고 쓰거나,
+        <code>dataset</code>으로 <code>data-*</code> 커스텀 속성을 읽을 수 있습니다.
+        <code>element.style</code>로 CSS를 직접 변경할 수도 있습니다.
+      </p>
+
+      <div class="demo-area demo-area--row">
+        <!--
+          data-author, data-category 속성: 개발자가 HTML 요소에
+          임의 데이터를 저장할 때 사용하는 data-* 커스텀 속성
+        -->
+        <div
+          id="attr-card"
+          class="attr-card demo-box"
+          data-author="김개발"
+          data-category="JavaScript"
+        >
+          <p><strong>제목:</strong> <span id="attr-title">DOM 기초 학습</span></p>
+          <p><strong>링크:</strong> <a id="demo-link" href="#">원래 링크 텍스트</a></p>
+          <p><small>data-author / data-category 속성 보유</small></p>
+        </div>
+
+        <div id="style-target" class="demo-box" style="min-width: 160px;">
+          스타일 직접 변경 박스
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button onclick="setAttr()">setAttribute (링크 변경)</button>
+        <button onclick="getAttr()">getAttribute (href 읽기)</button>
+        <button onclick="readDataset()">dataset 읽기</button>
+        <button onclick="changeStyle()">style 직접 변경</button>
+        <button class="btn-reset" onclick="resetAttr()">초기화</button>
+      </div>
+      <div id="attr-log" class="log"></div>
+    </section>
+
+    <!-- ============================================================
+         Section 5. 노드 생성 & 삭제
+         createElement / appendChild / removeChild
+    ============================================================ -->
+    <section class="card" id="sec-node">
+      <h2><span class="badge">05</span> 노드 생성 & 삭제 (신호등)</h2>
+      <p class="desc">
+        <code>createElement</code>로 새 요소를 만들고,
+        <code>appendChild</code>로 DOM에 붙이거나
+        <code>removeChild</code>로 제거할 수 있습니다.
+      </p>
+
+      <div class="demo-area">
+        <!-- 신호등 목록 — JS에서 동적으로 추가/제거됨 -->
+        <ul id="traffic-light">
+          <li class="light red">🔴 빨간불</li>
+          <li class="light yellow">🟡 노란불</li>
+        </ul>
+      </div>
+
+      <div class="btn-group">
+        <button onclick="addGreenLight()">🟢 초록불 추가 (createElement)</button>
+        <button onclick="removeYellowLight()">🟡 노란불 제거 (removeChild)</button>
+        <button class="btn-reset" onclick="resetTraffic()">초기화</button>
+      </div>
+      <div id="node-log" class="log"></div>
+    </section>
+
+  </main>
+
+  <!-- app.js는 body 맨 아래에서 로드 → DOM이 모두 준비된 뒤 실행됨 -->
+  <script src="app.js"></script>
+</body>
+</html>
