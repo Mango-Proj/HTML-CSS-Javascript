@@ -1,0 +1,543 @@
+/* ============================================================
+   요금제 테이블 — style.css
+   적용 개념:
+   ✅ CSS 변수 (:root)
+   ✅ Flexbox — 카드 가로 배치, 가운데 정렬
+   ✅ Position absolute — "인기" 배지
+   ✅ 가상 요소 ::before — 체크리스트 아이콘, 버튼 배경
+   ✅ 가상 클래스 :hover, :nth-child
+   ✅ Transform + Transition
+   ✅ linear-gradient — 헤더, 추천 카드
+   ✅ details[open] — HTML 아코디언 스타일
+   ✅ :checked — 청구 주기 토글 스위치
+============================================================ */
+
+
+/* ── 1. CSS 변수 ─────────────────────────────────────────────*/
+:root {
+  --color-bg:        #f8fafc;
+  --color-card:      #ffffff;
+  --color-text:      #1e293b;
+  --color-sub:       #64748b;
+  --color-border:    #e2e8f0;
+  --color-disabled:  #cbd5e1;
+
+  /* 추천 카드 (프로) */
+  --color-featured:  #6366f1;
+  --color-featured-d: #4f46e5;
+  --grad-featured:   linear-gradient(160deg, #6366f1, #8b5cf6);
+
+  --radius: 20px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  --shadow-featured: 0 20px 60px rgba(99, 102, 241, 0.30);
+  --transition: 0.25s ease;
+}
+
+
+/* ── 2. 기본 초기화 ──────────────────────────────────────────*/
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+}
+
+
+/* ── 3. 페이지 헤더 ──────────────────────────────────────────*/
+.page-header {
+  background: linear-gradient(160deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+  color: white;
+  text-align: center;
+  padding: 64px 24px 48px;
+}
+
+.header-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 10px;
+}
+
+.header-sub {
+  font-size: 1rem;
+  opacity: 0.75;
+  margin-bottom: 32px;
+}
+
+
+/* ── 4. 청구 주기 토글 ───────────────────────────────────────
+   checkbox + label 조합으로 토글 스위치 UI를 만듭니다.
+   실제 checkbox는 숨기고, label로 시각적 스위치를 표현합니다.
+──────────────────────────────────────────────────────────── */
+.billing-input {
+  display: none;  /* 실제 checkbox 숨김 */
+}
+
+.billing-toggle {
+  display: inline-flex;
+  align-items: center;
+}
+
+.billing-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.billing-option {
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.7;
+  transition: opacity var(--transition);
+}
+
+/* 스위치 트랙 (배경 바) */
+.billing-switch-track {
+  width: 48px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50px;
+  position: relative;
+  transition: background var(--transition);
+}
+
+/* 스위치 썸 (움직이는 원) */
+.billing-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--transition); /* 좌우 이동 효과 */
+}
+
+/* checkbox가 :checked 상태일 때 → 연간 모드 활성화 */
+.billing-input:checked ~ .billing-label .billing-switch-track {
+  background: #6366f1;
+  border-color: #6366f1;
+}
+
+.billing-input:checked ~ .billing-label .billing-switch-thumb {
+  transform: translateX(22px);   /* 오른쪽으로 이동 */
+}
+
+.billing-input:checked ~ .billing-label .billing-yearly {
+  opacity: 1;
+  font-weight: 700;
+}
+
+.billing-input:checked ~ .billing-label .billing-monthly {
+  opacity: 0.5;
+}
+
+/* checked 아닐 때: 월간이 활성화 */
+.billing-label .billing-monthly {
+  opacity: 1;
+  font-weight: 700;
+}
+.billing-label .billing-yearly {
+  opacity: 0.5;
+}
+
+/* 할인 배지 */
+.discount-badge {
+  display: inline-block;
+  background: #fbbf24;
+  color: #1e293b;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+
+/* ── 5. 요금제 카드 레이아웃 — Flexbox ──────────────────────
+   세 카드를 가로로 나란히 배치합니다.
+   가운데 카드(.plan--featured)는 음수 margin으로 위아래로 더 튀어나옵니다.
+──────────────────────────────────────────────────────────── */
+.plans-wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 48px 24px 40px;
+}
+
+.plans {
+  display: flex;
+  align-items: stretch;    /* 세 카드의 높이를 맞춤 */
+  gap: 0;                  /* 카드 간격은 margin으로 처리 */
+  justify-content: center;
+}
+
+/* 반응형: 모바일에서는 세로로 쌓임 */
+@media (max-width: 720px) {
+  .plans {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  .plan--featured {
+    margin: 0 !important;
+  }
+}
+
+
+/* ── 6. 개별 요금제 카드 ─────────────────────────────────────
+   .plan--featured는 transform + margin으로 강조 효과를 줍니다.
+──────────────────────────────────────────────────────────── */
+.plan {
+  background: var(--color-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  flex: 1;
+  max-width: 320px;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.plan:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+/* 추천 카드: 위아래로 더 크게, 그라데이션 배경 */
+.plan--featured {
+  background: var(--grad-featured);
+  border-color: transparent;
+  color: white;
+  margin: -20px 0;          /* 음수 margin으로 위아래로 더 길어 보임 */
+  box-shadow: var(--shadow-featured);
+  position: relative;       /* .plan-badge의 기준점 */
+  z-index: 1;               /* 다른 카드보다 앞에 표시 */
+}
+
+.plan--featured:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 28px 72px rgba(99, 102, 241, 0.40);
+}
+
+
+/* ── 7. "인기" 배지 — position: absolute ─────────────────────
+   카드 상단 중앙에 배치합니다.
+   left: 50% + transform: translateX(-50%) → 가로 정중앙
+──────────────────────────────────────────────────────────── */
+.plan-badge {
+  position: absolute;       /* .plan--featured(position: relative) 기준 */
+  top: -16px;               /* 카드 위로 살짝 튀어나옴 */
+  left: 50%;
+  transform: translateX(-50%);  /* 배지 너비의 절반만큼 왼쪽으로 이동 → 중앙 */
+  white-space: nowrap;
+}
+
+.plan-badge span {
+  display: inline-block;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  color: #1e293b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 50px;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.40);
+}
+
+
+/* ── 8. 카드 헤더 영역 ───────────────────────────────────────*/
+.plan-header {
+  margin-bottom: 20px;
+  text-align: center;
+  padding-top: 8px;
+}
+
+.plan-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.plan-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.plan-desc {
+  font-size: 0.82rem;
+  color: var(--color-sub);
+  line-height: 1.5;
+}
+
+/* 추천 카드는 텍스트가 white이므로 보조 텍스트도 반투명 흰색 */
+.plan--featured .plan-desc {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* ── 9. 가격 영역 ────────────────────────────────────────────*/
+.plan-price {
+  text-align: center;
+  margin-bottom: 28px;
+  padding: 20px 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.plan--featured .plan-price {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.price-amount {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.price-period {
+  font-size: 0.88rem;
+  color: var(--color-sub);
+  margin-left: 2px;
+}
+
+.plan--featured .price-period {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* ── 10. 기능 목록 — ::before로 체크 아이콘 ─────────────────
+   HTML에 아이콘 태그 없이 CSS ::before만으로
+   각 항목 앞에 체크 표시를 만듭니다.
+──────────────────────────────────────────────────────────── */
+.feature-list {
+  list-style: none;              /* 기본 bullet 제거 */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+  flex: 1;                       /* 버튼이 항상 카드 하단에 오도록 */
+}
+
+.feature-list li {
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.4;
+}
+
+/* ::before 가상 요소로 체크 아이콘 삽입 */
+.feature-list li::before {
+  content: '✓';                  /* 체크 기호 */
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;                /* 아이콘이 줄어들지 않게 */
+}
+
+/* 추천 카드의 체크 아이콘 */
+.plan--featured .feature-list li::before {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+/* 비활성화된 기능: 체크 아이콘이 ✗로 바뀌고 텍스트가 흐려짐 */
+.feature-disabled {
+  opacity: 0.4;
+}
+
+.feature-disabled::before {
+  content: '✕' !important;      /* !important로 일반 ::before 덮어씀 */
+  background: #fee2e2 !important;
+  color: #ef4444 !important;
+}
+
+.plan--featured .feature-disabled::before {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+
+/* ── 11. 버튼 ────────────────────────────────────────────────
+   ::before 가상 요소로 hover 시 버튼 배경 효과를 추가합니다.
+──────────────────────────────────────────────────────────── */
+.plan-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;             /* ::before 오버레이가 밖으로 나가지 않게 */
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+/* hover 시 위로 살짝 이동 */
+.plan-btn:hover {
+  transform: translateY(-2px);
+}
+
+.plan-btn:active {
+  transform: translateY(0);
+}
+
+/* 테두리 버튼 */
+.plan-btn--outline {
+  background: transparent;
+  border: 2px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.plan-btn--outline:hover {
+  border-color: var(--color-featured);
+  color: var(--color-featured);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
+}
+
+/* 채워진 버튼 (추천 카드) */
+.plan-btn--filled {
+  background: white;
+  color: var(--color-featured);
+  border: 2px solid transparent;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.plan-btn--filled:hover {
+  background: #f5f3ff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.20);
+}
+
+/* ::before로 hover 시 반짝이는 광택 효과 */
+.plan-btn--filled::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;                  /* 처음엔 버튼 왼쪽 밖에 위치 */
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.plan-btn--filled:hover::before {
+  left: 150%;                   /* hover 시 오른쪽으로 이동 → 광택이 지나가는 효과 */
+}
+
+
+/* ── 12. 하단 안내 ───────────────────────────────────────────*/
+.plans-note {
+  text-align: center;
+  font-size: 0.84rem;
+  color: var(--color-sub);
+  margin-top: 36px;
+}
+
+
+/* ── 13. FAQ 섹션 ────────────────────────────────────────────
+   <details> 태그는 열림/닫힘 상태를 HTML 자체가 관리합니다.
+   [open] 선택자로 열렸을 때 스타일을 바꿀 수 있습니다.
+──────────────────────────────────────────────────────────── */
+.faq-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+}
+
+.faq-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background: var(--color-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+/* 열렸을 때 강조 */
+.faq-item[open] {
+  border-color: var(--color-featured);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.10);
+}
+
+.faq-question {
+  padding: 18px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;            /* 기본 화살표 제거 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  user-select: none;
+}
+
+/* 브라우저 기본 summary 화살표 제거 */
+.faq-question::-webkit-details-marker { display: none; }
+
+.faq-arrow {
+  font-size: 1.1rem;
+  color: var(--color-sub);
+  transition: transform var(--transition);
+  flex-shrink: 0;
+}
+
+/* 열렸을 때 화살표 회전 */
+.faq-item[open] .faq-arrow {
+  transform: rotate(180deg);
+}
+
+/* 열렸을 때 질문 텍스트 색상 변경 */
+.faq-item[open] .faq-question {
+  color: var(--color-featured);
+}
+
+.faq-answer {
+  padding: 0 20px 18px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 14px;
+}
+
+.faq-answer p {
+  font-size: 0.88rem;
+  color: var(--color-sub);
+  line-height: 1.75;
+}

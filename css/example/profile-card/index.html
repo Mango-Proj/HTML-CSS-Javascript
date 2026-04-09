@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프로필 카드</title>
+
+  <!-- 구글 폰트: Inter(영문) + Noto Sans KR(한글) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!--
+    페이지 중앙에 카드 하나를 배치합니다.
+    body에 Flexbox를 적용해 수평·수직 중앙 정렬합니다.
+  -->
+  <div class="card">
+
+    <!-- 카드 상단 배경 영역 (그라데이션) + 아바타 -->
+    <div class="card-top">
+      <!--
+        아바타: position: absolute로 카드 상단 영역(.card-top)을 기준으로
+        하단 중앙에 걸치도록 배치합니다.
+      -->
+      <div class="avatar">
+        <!-- 아바타 이니셜: ::after 대신 직접 텍스트 사용 -->
+        <span class="avatar-text">KD</span>
+      </div>
+    </div>
+
+    <!-- 카드 본문 -->
+    <div class="card-body">
+
+      <!-- 이름 + 직함 -->
+      <h1 class="name">김개발</h1>
+      <p class="job-title">Frontend Developer</p>
+
+      <!-- 구분선: ::before를 이용한 장식 요소 -->
+      <div class="divider"></div>
+
+      <!-- 소개글 -->
+      <p class="bio">
+        CSS와 JavaScript를 좋아하는 프론트엔드 개발자입니다.
+        읽기 좋은 코드와 아름다운 UI를 만드는 데 관심이 많습니다.
+      </p>
+
+      <!-- 통계 행: Flexbox로 3개 항목을 균등 배치 -->
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-num">128</span>
+          <span class="stat-label">프로젝트</span>
+        </div>
+        <!-- 세로 구분선 -->
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">4.2k</span>
+          <span class="stat-label">팔로워</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">312</span>
+          <span class="stat-label">팔로잉</span>
+        </div>
+      </div>
+
+      <!--
+        스킬 태그 목록
+        :nth-child 로 각 태그에 다른 색상을 적용합니다.
+      -->
+      <div class="skills">
+        <span class="skill-tag">HTML</span>
+        <span class="skill-tag">CSS</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">React</span>
+        <span class="skill-tag">Figma</span>
+      </div>
+
+      <!-- 버튼 그룹: Flexbox로 나란히 배치 -->
+      <div class="btn-group">
+        <!--
+          .btn-primary: 채워진 버튼
+          .btn-outline: 테두리만 있는 버튼
+          두 버튼 모두 :hover 시 transform + box-shadow로 hover 효과 적용
+        -->
+        <button class="btn btn-primary">팔로우</button>
+        <button class="btn btn-outline">메시지</button>
+      </div>
+
+    </div>
+    <!-- /.card-body -->
+
+  </div>
+  <!-- /.card -->
+
+</body>
+</html>

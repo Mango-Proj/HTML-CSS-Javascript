@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>포토 갤러리</title>
+
+  <!-- 구글 폰트: 영문(Inter) + 한글(Noto Sans KR) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ── 페이지 헤더 ─────────────────────────────────────── -->
+  <header class="page-header">
+    <h1 class="header-title">포토 갤러리</h1>
+    <p class="header-sub">CSS Grid · Hover Overlay · aspect-ratio</p>
+  </header>
+
+  <!-- ── 카테고리 필터 탭 ────────────────────────────────── -->
+  <!--
+    순수 CSS(:checked + ~ 형제 선택자)로 탭 전환을 구현합니다.
+    JavaScript 없이도 radio input으로 상태를 관리할 수 있습니다.
+  -->
+  <nav class="filter-nav">
+    <!-- radio input: name이 같으면 하나만 선택됩니다 -->
+    <input type="radio" id="filter-all"    name="filter" class="filter-input" checked>
+    <input type="radio" id="filter-nature" name="filter" class="filter-input">
+    <input type="radio" id="filter-city"   name="filter" class="filter-input">
+    <input type="radio" id="filter-food"   name="filter" class="filter-input">
+
+    <!-- label을 클릭하면 연결된 radio가 선택됩니다 (for ↔ id 연결) -->
+    <div class="filter-tabs">
+      <label for="filter-all"    class="filter-tab">전체</label>
+      <label for="filter-nature" class="filter-tab">자연</label>
+      <label for="filter-city"   class="filter-tab">도시</label>
+      <label for="filter-food"   class="filter-tab">음식</label>
+    </div>
+  </nav>
+
+  <!-- ── 갤러리 메인 ─────────────────────────────────────── -->
+  <main class="gallery-wrap">
+
+    <!--
+      .gallery: CSS Grid 컨테이너
+      repeat(auto-fit, minmax(260px, 1fr)) 덕분에
+      화면 너비에 따라 열 수가 자동으로 조절됩니다.
+    -->
+    <div class="gallery">
+
+      <!-- 카드 1 — 자연 -->
+      <article class="card" data-category="nature">
+        <!--
+          .card-img: aspect-ratio: 4/3 으로 항상 같은 비율 유지
+          실제 이미지 대신 CSS gradient로 색상 배경을 사용합니다.
+        -->
+        <div class="card-img card-img--1">
+          <!--
+            .overlay: 평소에는 opacity: 0 (투명)
+            .card:hover 시 opacity: 1 로 전환 → 부드럽게 나타남
+          -->
+          <div class="overlay">
+            <span class="overlay-icon">🔍</span>
+            <p class="overlay-title">북한산 일출</p>
+            <p class="overlay-sub">서울, 한국</p>
+          </div>
+        </div>
+        <div class="card-info">
+          <span class="tag tag--nature">자연</span>
+          <h3 class="card-title">북한산 일출</h3>
+          <p class="card-meta">서울 · 2024</p>
+        </div>
+      </article>
+
+      <!-- 카드 2 — 도시 -->
+      <article class="card" data-category="city">
+        <div class="card-img card-img--2">
+          <div class="overlay">
+            <span class="overlay-icon">🔍</span>
+            <p class="overlay-title">남산타워 야경</p>
+            <p class="overlay-sub">서울, 한국</p>
+          </div>
+        </div>
+        <div class="card-info">
+          <span class="tag tag--city">도시</span>
+          <h3 class="card-title">남산타워 야경</h3>
+          <p class="card-meta">서울 · 2024</p>
+        </div>
+      </article>
+
+      <!-- 카드 3 — 음식 -->
+      <article class="card" data-category="food">
+        <div class="card-img card-img--3">
+          <div class="overlay">
+            <span class="overlay-icon">🔍</span>
+            <p class="overlay-title">전주비빔밥</p>
+            <p class="overlay-sub">전주, 한국</p>
+          </div>
+        </div>
+        <div class="card-info">
+          <span class="tag tag--food">음식</span>
+          <h3 class="card-title">전주비빔밥</h3>
+          <p class="card-meta">전주 · 2024</p>
+        </div>
+      </article>
+
+      <!-- 카드 4 — 자연 -->
+      <article class="card" data-category="nature">
+        <div class="card-img card-img--4">
+          <div class="overlay">
+            <span class="overlay-icon">🔍</span>
+            <p class="overlay-title">제주 한라산</p>
+            <p class="overlay-sub">제주, 한국</p>
+          </div>
+        </div>
+        <div class="card-info">
+          <span class="tag tag--nature">자연</span>
+          <h3 class="card-title">제주 한라산</h3>
+          <p class="card-meta">제주 · 2024</p>
+        </div>
+      </article>
+
+      <!-- 카드 5 — 도시 -->
+      <article class="card" data-category="city">
+        <div class="card-img card-img--5">
+          <div class="overlay">
+            <span class="overlay-icon">🔍</span>
+            <p class="overlay-title">부산 광안대교</p>
+            <p class="overlay-sub">부산, 한국</p>
+          </div>
+        </div>
+        <div class="card-info">
+          <span class="tag tag--city">도시</span>
+          <h3 class="card-title">부산 광안대교</h3>
+          <p class="card-meta">부산 · 2024</p>
+        </div>
+      </article>
+
+      <!-- 카드 6 — 음식 -->
+      <article class="card" data-category="food">
+        <div class="card-img card-img--6">
+          <div class="overlay">
+            <span class="overlay-icon">🔍</span>
+            <p class="overlay-title">통영 굴밥</p>
+            <p class="overlay-sub">통영, 한국</p>
+          </div>
+        </div>
+        <div class="card-info">
+          <span class="tag tag--food">음식</span>
+          <h3 class="card-title">통영 굴밥</h3>
+          <p class="card-meta">통영 · 2024</p>
+        </div>
+      </article>
+
+      <!-- 카드 7 — 자연 -->
+      <article class="card" data-category="nature">
+        <div class="card-img card-img--7">
+          <div class="overlay">
+            <span class="overlay-icon">🔍</span>
+            <p class="overlay-title">순천만 갈대밭</p>
+            <p class="overlay-sub">순천, 한국</p>
+          </div>
+        </div>
+        <div class="card-info">
+          <span class="tag tag--nature">자연</span>
+          <h3 class="card-title">순천만 갈대밭</h3>
+          <p class="card-meta">순천 · 2024</p>
+        </div>
+      </article>
+
+      <!-- 카드 8 — 도시 -->
+      <article class="card" data-category="city">
+        <div class="card-img card-img--8">
+          <div class="overlay">
+            <span class="overlay-icon">🔍</span>
+            <p class="overlay-title">경복궁 야간</p>
+            <p class="overlay-sub">서울, 한국</p>
+          </div>
+        </div>
+        <div class="card-info">
+          <span class="tag tag--city">도시</span>
+          <h3 class="card-title">경복궁 야간</h3>
+          <p class="card-meta">서울 · 2024</p>
+        </div>
+      </article>
+
+      <!-- 카드 9 — 음식 -->
+      <article class="card" data-category="food">
+        <div class="card-img card-img--9">
+          <div class="overlay">
+            <span class="overlay-icon">🔍</span>
+            <p class="overlay-title">강릉 커피거리</p>
+            <p class="overlay-sub">강릉, 한국</p>
+          </div>
+        </div>
+        <div class="card-info">
+          <span class="tag tag--food">음식</span>
+          <h3 class="card-title">강릉 커피거리</h3>
+          <p class="card-meta">강릉 · 2024</p>
+        </div>
+      </article>
+
+    </div>
+    <!-- /.gallery -->
+
+  </main>
+
+  <!-- ── 푸터 ──────────────────────────────────────────────── -->
+  <footer class="page-footer">
+    <p>CSS Grid Photo Gallery — HTML &amp; CSS Only</p>
+  </footer>
+
+</body>
+</html>

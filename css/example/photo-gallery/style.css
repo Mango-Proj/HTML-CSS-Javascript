@@ -1,0 +1,370 @@
+/* ============================================================
+   포토 갤러리 — style.css
+   적용 개념:
+   ✅ CSS 변수 (:root)
+   ✅ CSS Grid — auto-fit / minmax / 반응형
+   ✅ aspect-ratio — 이미지 비율 고정
+   ✅ object-fit 대체 — gradient로 이미지 시뮬레이션
+   ✅ Position absolute — hover overlay
+   ✅ Transition + opacity — 부드러운 overlay 효과
+   ✅ Transform — scale, translateY
+   ✅ :hover — 카드, 오버레이
+   ✅ :nth-child — 카드 등장 딜레이 (animation-delay)
+   ✅ @keyframes — 카드 페이드인 등장 효과
+   ✅ 가상 요소 ::after — 태그 색상 구분
+   ✅ CSS 필터 (filter: radio checked 탭 패턴)
+============================================================ */
+
+
+/* ── 1. CSS 변수 ─────────────────────────────────────────────
+   색상, 크기, 그림자를 변수로 선언합니다.
+──────────────────────────────────────────────────────────── */
+:root {
+  --color-bg:       #f8fafc;
+  --color-card:     #ffffff;
+  --color-text:     #1e293b;
+  --color-sub:      #64748b;
+  --color-border:   #e2e8f0;
+
+  /* 카테고리별 태그 색상 */
+  --tag-nature: #dcfce7;
+  --tag-nature-text: #166534;
+  --tag-city:   #dbeafe;
+  --tag-city-text:   #1d4ed8;
+  --tag-food:   #fef3c7;
+  --tag-food-text:   #b45309;
+
+  --radius: 16px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.15);
+
+  --transition: 0.3s ease;
+}
+
+
+/* ── 2. 기본 초기화 ──────────────────────────────────────────*/
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+}
+
+
+/* ── 3. 페이지 헤더 ──────────────────────────────────────────
+   linear-gradient로 배경을 만들고
+   텍스트를 중앙 정렬합니다.
+──────────────────────────────────────────────────────────── */
+.page-header {
+  background: linear-gradient(135deg, #1e3a5f, #2563eb, #7c3aed);
+  color: white;
+  text-align: center;
+  padding: 56px 24px 40px;
+}
+
+.header-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.header-sub {
+  font-size: 0.9rem;
+  opacity: 0.75;
+  letter-spacing: 0.04em;
+}
+
+
+/* ── 4. 카테고리 필터 탭 ────────────────────────────────────
+   radio input + label 조합으로 JS 없이 탭 UI를 구현합니다.
+   ① radio input은 시각적으로 숨김 (display: none)
+   ② label을 클릭하면 radio가 :checked 상태로 변함
+   ③ :checked ~ .filter-tabs .filter-tab 선택자로 스타일 전환
+──────────────────────────────────────────────────────────── */
+.filter-input {
+  display: none;  /* radio 버튼 자체는 숨김 */
+}
+
+.filter-nav {
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 0;
+  position: relative;     /* filter-input들의 형제 컨테이너 역할 */
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 50px;
+  padding: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.filter-tab {
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--color-sub);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.filter-tab:hover {
+  background: #f1f5f9;
+  color: var(--color-text);
+}
+
+/*
+  :checked 상태일 때 해당 label에 활성화 스타일 적용
+  CSS 선택자: #filter-all:checked ~ .filter-tabs label[for="filter-all"]
+  (checked된 input의 형제 중 .filter-tabs를 찾고, 그 안의 해당 label)
+*/
+#filter-all:checked    ~ .filter-tabs label[for="filter-all"],
+#filter-nature:checked ~ .filter-tabs label[for="filter-nature"],
+#filter-city:checked   ~ .filter-tabs label[for="filter-city"],
+#filter-food:checked   ~ .filter-tabs label[for="filter-food"] {
+  background: #2563eb;
+  color: white;
+}
+
+/*
+  필터 기능: :checked에 따라 카드 표시/숨김
+  기본적으로 모든 카드를 보여주고,
+  특정 카테고리 선택 시 해당 data-category 카드만 보임
+*/
+
+/* 기본: 전체 카드 표시 */
+.gallery .card { display: block; }
+
+/* "자연" 탭 선택 시: nature 카드만 보이고 나머지 숨김 */
+#filter-nature:checked ~ .gallery-wrap .card { display: none; }
+#filter-nature:checked ~ .gallery-wrap .card[data-category="nature"] { display: block; }
+
+/* "도시" 탭 선택 시 */
+#filter-city:checked ~ .gallery-wrap .card { display: none; }
+#filter-city:checked ~ .gallery-wrap .card[data-category="city"] { display: block; }
+
+/* "음식" 탭 선택 시 */
+#filter-food:checked ~ .gallery-wrap .card { display: none; }
+#filter-food:checked ~ .gallery-wrap .card[data-category="food"] { display: block; }
+
+
+/* ── 5. 갤러리 레이아웃 — CSS Grid ──────────────────────────
+   auto-fit + minmax: 화면 크기에 따라 열 수가 자동 조절됩니다.
+
+   minmax(260px, 1fr) 의미:
+   - 최소 260px 확보
+   - 남은 공간은 균등하게 나눔 (1fr)
+
+   결과:
+   - 넓은 화면(1200px+): 4열
+   - 중간 화면(800px):   3열
+   - 좁은 화면(560px):   2열
+   - 모바일(320px):      1열
+──────────────────────────────────────────────────────────── */
+.gallery-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* 핵심! */
+  gap: 24px;
+}
+
+
+/* ── 6. 갤러리 카드 ──────────────────────────────────────────
+   overflow: hidden → .card-img가 border-radius 밖으로 나가지 않게
+   position: relative → .overlay(position: absolute)의 기준점
+──────────────────────────────────────────────────────────── */
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;           /* 이미지가 둥근 모서리 밖으로 삐져나오지 않게 */
+  position: relative;
+  cursor: pointer;
+
+  /* hover 시 카드 전체가 위로 이동 */
+  transition: transform var(--transition), box-shadow var(--transition);
+
+  /* 카드 등장 애니메이션 */
+  animation: fadeUp 0.5s ease-out both;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+}
+
+/*
+  :nth-child로 각 카드의 animation-delay를 다르게 설정
+  → 카드들이 순서대로 하나씩 나타나는 효과
+*/
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.10s; }
+.card:nth-child(3) { animation-delay: 0.15s; }
+.card:nth-child(4) { animation-delay: 0.20s; }
+.card:nth-child(5) { animation-delay: 0.25s; }
+.card:nth-child(6) { animation-delay: 0.30s; }
+.card:nth-child(7) { animation-delay: 0.35s; }
+.card:nth-child(8) { animation-delay: 0.40s; }
+.card:nth-child(9) { animation-delay: 0.45s; }
+
+/* 카드 등장 keyframe */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);  /* 아래에서 위로 올라오며 등장 */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ── 7. 카드 이미지 영역 ─────────────────────────────────────
+   aspect-ratio: 4/3 → 항상 가로:세로 = 4:3 비율 유지
+   (실제 이미지가 없어도 화면 너비가 바뀌면 높이도 자동 조절)
+
+   실제 프로젝트에서는:
+   <img> 태그 + object-fit: cover 로 같은 효과를 냅니다.
+──────────────────────────────────────────────────────────── */
+.card-img {
+  aspect-ratio: 4 / 3;           /* 이미지 비율 고정 — 핵심! */
+  position: relative;             /* .overlay의 기준점 */
+  overflow: hidden;
+
+  /* 이미지 확대 효과: hover 시 transform이 이 요소에 적용됨 */
+  transition: transform var(--transition);
+}
+
+/* 카드 hover 시 이미지 약간 확대 */
+.card:hover .card-img {
+  transform: scale(1.04);
+}
+
+/* 실제 이미지 대신 CSS gradient로 색상 배경 시뮬레이션 */
+.card-img--1 { background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706); }
+.card-img--2 { background: linear-gradient(135deg, #1e3a5f, #2563eb, #1d4ed8); }
+.card-img--3 { background: linear-gradient(135deg, #dc2626, #ef4444, #f59e0b); }
+.card-img--4 { background: linear-gradient(135deg, #166534, #16a34a, #4ade80); }
+.card-img--5 { background: linear-gradient(135deg, #1e40af, #3b82f6, #06b6d4); }
+.card-img--6 { background: linear-gradient(135deg, #92400e, #b45309, #d97706); }
+.card-img--7 { background: linear-gradient(135deg, #854d0e, #a16207, #ca8a04); }
+.card-img--8 { background: linear-gradient(135deg, #3b0764, #7e22ce, #a855f7); }
+.card-img--9 { background: linear-gradient(135deg, #312e81, #4338ca, #6366f1); }
+
+
+/* ── 8. hover overlay — opacity 전환 ────────────────────────
+   평소: opacity: 0 (완전 투명, 보이지 않음)
+   hover: opacity: 1 (완전 불투명, 나타남)
+   transition으로 부드럽게 전환됩니다.
+
+   position: absolute + inset: 0 → 부모(.card-img) 전체를 덮음
+   inset: 0 은 top:0; right:0; bottom:0; left:0 의 단축 표현
+──────────────────────────────────────────────────────────── */
+.overlay {
+  position: absolute;
+  inset: 0;                       /* top/right/bottom/left 모두 0 = 꽉 채움 */
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: white;
+  text-align: center;
+  padding: 16px;
+
+  opacity: 0;                     /* 기본: 투명 */
+  transition: opacity var(--transition);  /* 부드럽게 전환 */
+}
+
+/* hover 시 overlay 나타남 */
+.card:hover .overlay {
+  opacity: 1;
+}
+
+.overlay-icon {
+  font-size: 2rem;
+  margin-bottom: 4px;
+  /* 아이콘이 아래에서 위로 나타나는 효과 */
+  transform: translateY(8px);
+  transition: transform var(--transition);
+}
+
+.card:hover .overlay-icon {
+  transform: translateY(0);
+}
+
+.overlay-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.overlay-sub {
+  font-size: 0.82rem;
+  opacity: 0.8;
+}
+
+
+/* ── 9. 카드 정보 영역 ───────────────────────────────────────*/
+.card-info {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.card-meta {
+  font-size: 0.8rem;
+  color: var(--color-sub);
+}
+
+
+/* ── 10. 카테고리 태그 ───────────────────────────────────────
+   카테고리별로 다른 색상을 적용합니다.
+──────────────────────────────────────────────────────────── */
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  width: fit-content;
+}
+
+.tag--nature { background: var(--tag-nature); color: var(--tag-nature-text); }
+.tag--city   { background: var(--tag-city);   color: var(--tag-city-text); }
+.tag--food   { background: var(--tag-food);   color: var(--tag-food-text); }
+
+
+/* ── 11. 푸터 ────────────────────────────────────────────────*/
+.page-footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 0.82rem;
+  color: var(--color-sub);
+  border-top: 1px solid var(--color-border);
+}

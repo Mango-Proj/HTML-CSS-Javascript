@@ -1,0 +1,364 @@
+/* ============================================================
+   프로필 카드 — style.css
+   적용 개념:
+   ✅ CSS 변수 (:root)
+   ✅ box-sizing, 기본 초기화
+   ✅ Flexbox — body 중앙 정렬, stats 행, 버튼 그룹
+   ✅ Box Model — padding, border, border-radius, box-shadow
+   ✅ Position — absolute (아바타, 배지)
+   ✅ 가상 요소 — ::before (구분선 장식, 버튼 배경효과)
+   ✅ 가상 클래스 — :hover, :nth-child
+   ✅ Transform + Transition — 카드·버튼 hover 효과
+   ✅ 배경 — linear-gradient
+   ✅ 텍스트 스타일 — font-family, letter-spacing, line-height
+============================================================ */
+
+
+/* ── 1. CSS 변수 (:root) ─────────────────────────────────────
+   자주 쓰는 색상·크기를 변수로 선언합니다.
+   var(--변수명)으로 어디서든 재사용할 수 있습니다.
+   나중에 색상 테마를 바꿀 때 이 부분만 수정하면 됩니다.
+──────────────────────────────────────────────────────────── */
+:root {
+  --color-primary:   #6366f1;       /* 포인트 색상 (인디고) */
+  --color-primary-d: #4f46e5;       /* 포인트 색상 진하게 */
+  --color-bg:        #f0f4ff;       /* 페이지 배경 */
+  --color-card:      #ffffff;       /* 카드 배경 */
+  --color-text:      #1e293b;       /* 기본 텍스트 */
+  --color-sub:       #64748b;       /* 보조 텍스트 */
+  --color-border:    #e2e8f0;       /* 테두리 색상 */
+  --grad-top:  linear-gradient(135deg, #6366f1, #8b5cf6); /* 카드 상단 그라데이션 */
+  --grad-page: linear-gradient(160deg, #e0e7ff 0%, #f0f4ff 60%, #e8f4ff 100%); /* 페이지 배경 */
+  --shadow-card:  0 20px 60px rgba(99, 102, 241, 0.15);  /* 카드 기본 그림자 */
+  --shadow-hover: 0 30px 80px rgba(99, 102, 241, 0.25);  /* 카드 hover 그림자 */
+  --radius-card: 24px;
+}
+
+
+/* ── 2. 기본 초기화 ──────────────────────────────────────────
+   모든 요소에 box-sizing: border-box 적용 →
+   width/height 안에 padding·border가 포함됩니다.
+   content-box(기본값)는 padding을 추가하면 실제 크기가 커지지만,
+   border-box는 항상 지정한 크기를 유지합니다.
+──────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ── 3. body — Flexbox로 수평·수직 중앙 정렬 ────────────────
+   페이지 전체 높이(min-height: 100vh)에서
+   justify-content + align-items: center 로 카드를 정중앙에 놓습니다.
+──────────────────────────────────────────────────────────── */
+body {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  background: var(--grad-page);   /* CSS 변수 참조 */
+  min-height: 100vh;              /* 뷰포트 전체 높이 확보 */
+  display: flex;                  /* Flexbox 컨테이너 */
+  justify-content: center;        /* 주축(가로) 중앙 */
+  align-items: center;            /* 교차축(세로) 중앙 */
+  padding: 40px 16px;             /* 모바일 여백 */
+
+  /* 페이지 배경 장식: ::before로 큰 원 두 개 삽입 */
+  position: relative;
+  overflow: hidden;
+}
+
+/* 배경 장식 원 1 (좌상단) — 가상 요소 ::before */
+body::before {
+  content: '';                    /* 가상 요소는 content 필수 */
+  position: absolute;
+  top: -120px;
+  left: -120px;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;             /* 원형 */
+  background: rgba(99, 102, 241, 0.08);
+  pointer-events: none;           /* 마우스 이벤트 통과 */
+}
+
+/* 배경 장식 원 2 (우하단) — 가상 요소 ::after */
+body::after {
+  content: '';
+  position: absolute;
+  bottom: -150px;
+  right: -100px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.07);
+  pointer-events: none;
+}
+
+
+/* ── 4. 카드 ─────────────────────────────────────────────────
+   Box Model: padding, border-radius, box-shadow
+   Transition: hover 시 카드가 부드럽게 위로 올라옵니다.
+   overflow: hidden → 카드 상단 그라데이션이 border-radius 안으로 잘립니다.
+──────────────────────────────────────────────────────────── */
+.card {
+  width: 360px;
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;                /* 자식 요소가 border-radius 밖으로 나가지 않게 */
+  position: relative;              /* ::before 가상 요소의 기준점 */
+
+  /* Transition: transform과 box-shadow를 0.35s ease-out으로 전환 */
+  transition: transform 0.35s ease-out, box-shadow 0.35s ease-out;
+}
+
+/* 카드 hover 효과 */
+.card:hover {
+  transform: translateY(-8px);     /* Y축으로 -8px 이동 (위로 뜨는 효과) */
+  box-shadow: var(--shadow-hover); /* 그림자 강해짐 */
+}
+
+
+/* ── 5. 카드 상단 배경 영역 ─────────────────────────────────
+   height 고정 + 그라데이션 배경
+   position: relative → 자식 .avatar(position: absolute)의 기준점
+──────────────────────────────────────────────────────────── */
+.card-top {
+  height: 150px;
+  background: var(--grad-top);
+  position: relative;             /* .avatar 절대 위치의 기준 */
+}
+
+/* 물결 모양 장식 (::after) — 카드 상단과 본문의 경계 */
+.card-top::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 60px;
+  /* clip-path으로 물결 모양 하단 장식 */
+  background: var(--color-card);
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+
+
+/* ── 6. 아바타 ───────────────────────────────────────────────
+   position: absolute → .card-top 기준으로 하단 중앙에 배치
+   transform: translate(-50%, 50%) → 정확히 경계선 위에 걸치도록
+   border: white 테두리로 카드 배경과 분리합니다.
+──────────────────────────────────────────────────────────── */
+.avatar {
+  position: absolute;             /* .card-top 기준 절대 위치 */
+  bottom: 0;                      /* .card-top 하단 기준 */
+  left: 50%;                      /* 가로 50% 지점 */
+  transform: translate(-50%, 50%); /* 좌로 절반, 아래로 절반 이동 → 중앙에 걸침 */
+
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;             /* 완전한 원형 */
+  background: linear-gradient(135deg, #f59e0b, #ef4444); /* 아바타 그라데이션 */
+  border: 4px solid white;        /* 흰 테두리로 아바타 강조 */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  /* 이니셜 텍스트 중앙 정렬 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.05em;
+}
+
+
+/* ── 7. 카드 본문 ────────────────────────────────────────────
+   아바타가 절반 걸쳐 있어 padding-top을 크게 줍니다 (아바타 높이 절반 + 여백).
+──────────────────────────────────────────────────────────── */
+.card-body {
+  padding: 60px 28px 28px; /* 위: 아바타 공간 확보, 좌우·아래: 일반 여백 */
+  text-align: center;
+}
+
+
+/* ── 8. 텍스트 스타일 ────────────────────────────────────────
+   font-size, font-weight, letter-spacing, line-height, color
+──────────────────────────────────────────────────────────── */
+.name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.02em;        /* 한국어 이름: 자간 살짝 좁힘 */
+  margin-bottom: 4px;
+}
+
+.job-title {
+  font-size: 0.88rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  letter-spacing: 0.04em;         /* 영문 직함: 자간 살짝 넓힘 */
+  text-transform: uppercase;       /* 소문자 → 대문자 변환 */
+  margin-bottom: 16px;
+}
+
+
+/* ── 9. 구분선 — ::before 가상 요소 ─────────────────────────
+   HTML에 태그 없이 CSS로만 장식 요소를 만듭니다.
+   .divider 자체는 display: flex로 중앙 정렬 역할만 하고,
+   실제 선은 ::before로 그립니다.
+──────────────────────────────────────────────────────────── */
+.divider {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.divider::before {
+  content: '';                    /* 가상 요소: content 없이도 display 가능 */
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), #8b5cf6);
+  border-radius: 2px;
+}
+
+
+/* ── 10. 소개글 ─────────────────────────────────────────────
+   line-height: 읽기 편한 줄간격
+   color: 보조 색상
+──────────────────────────────────────────────────────────── */
+.bio {
+  font-size: 0.88rem;
+  color: var(--color-sub);
+  line-height: 1.7;               /* 줄간격: font-size × 1.7 */
+  margin-bottom: 24px;
+}
+
+
+/* ── 11. 통계 행 — Flexbox ───────────────────────────────────
+   3개의 .stat 항목을 justify-content: space-around로 균등 배치
+──────────────────────────────────────────────────────────── */
+.stats {
+  display: flex;
+  justify-content: space-around;  /* 항목들을 균등 간격으로 배치 */
+  align-items: center;
+  padding: 16px 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 20px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;         /* 숫자와 라벨을 세로로 쌓음 */
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-num {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--color-sub);
+}
+
+/* 세로 구분선 */
+.stat-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--color-border);
+}
+
+
+/* ── 12. 스킬 태그 — :nth-child 색상 구분 ───────────────────
+   각 태그에 순서별로 다른 배경색을 지정합니다.
+   :nth-child(n)은 부모 안에서 n번째 요소를 선택합니다.
+──────────────────────────────────────────────────────────── */
+.skills {
+  display: flex;
+  flex-wrap: wrap;                /* 태그가 넘치면 줄 바꿈 */
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.skill-tag {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* :nth-child로 태그마다 다른 색상 적용 */
+.skill-tag:nth-child(1) { background: #ede9fe; color: #6d28d9; } /* 보라 */
+.skill-tag:nth-child(2) { background: #dbeafe; color: #1d4ed8; } /* 파랑 */
+.skill-tag:nth-child(3) { background: #fef3c7; color: #b45309; } /* 노랑 */
+.skill-tag:nth-child(4) { background: #dcfce7; color: #166534; } /* 초록 */
+.skill-tag:nth-child(5) { background: #fee2e2; color: #b91c1c; } /* 빨강 */
+
+
+/* ── 13. 버튼 그룹 — Flexbox + :hover 효과 ──────────────────
+   두 버튼을 flex로 나란히 배치합니다.
+   각 버튼은 flex: 1 로 동일한 너비를 차지합니다.
+──────────────────────────────────────────────────────────── */
+.btn-group {
+  display: flex;
+  gap: 12px;
+}
+
+/* 공통 버튼 스타일 */
+.btn {
+  flex: 1;                        /* 남은 공간을 동등하게 나눔 */
+  padding: 11px 0;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: 2px solid transparent;
+
+  /* Transition: 색상, 그림자, 이동 효과를 0.2s ease로 전환 */
+  transition: background 0.2s ease,
+              color 0.2s ease,
+              transform 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+/* 채워진 버튼 */
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-d);
+  transform: translateY(-2px);    /* hover 시 살짝 위로 */
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+}
+
+.btn-primary:active {
+  transform: translateY(0);       /* 클릭(active) 시 원위치 */
+}
+
+/* 테두리만 있는 버튼 */
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn-outline:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.25);
+}
+
+.btn-outline:active {
+  transform: translateY(0);
+}
