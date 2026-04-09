@@ -1,0 +1,368 @@
+/* ============================================================
+   BOM & Window 완벽 가이드 — 스타일시트
+   ch01(인디고) · ch02(에메랄드)와 구분하여
+   이 챕터는 하늘색(Sky, #0ea5e9)을 포인트 컬러로 사용합니다.
+============================================================ */
+
+/* ── 공통 변수 ── */
+:root {
+  --bg-page:    #f0f9ff;   /* 하늘빛 페이지 배경 */
+  --bg-card:    #ffffff;
+  --bg-demo:    #f8fafc;
+  --bg-log:     #0f172a;
+  --text-main:  #0f172a;
+  --text-sub:   #64748b;
+  --accent:     #0ea5e9;   /* 하늘색 포인트 */
+  --accent-dark:#0284c7;
+  --border:     #e0f2fe;
+  --radius:     10px;
+
+  /* 로그 색상 */
+  --log-text:    #94a3b8;
+  --log-success: #34d399;
+  --log-info:    #60a5fa;
+  --log-warn:    #fbbf24;
+  --log-error:   #f87171;
+}
+
+/* ── 기본 초기화 ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+/* ── 페이지 헤더 ── */
+.page-header {
+  background: linear-gradient(135deg, #0369a1, #0ea5e9);
+  color: white;
+  padding: 40px 32px;
+  text-align: center;
+}
+.page-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+.page-header p  { font-size: 0.95rem; opacity: 0.85; }
+
+/* ── 메인 컨텐츠 ── */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── 섹션 카드 ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.06);
+}
+.card h2 {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.badge {
+  background: var(--accent);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.03em;
+}
+.desc {
+  font-size: 0.88rem;
+  color: var(--text-sub);
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+.desc code { background: #f0f9ff; color: #0369a1; padding: 1px 5px; border-radius: 4px; font-size: 0.82rem; }
+.desc strong { font-weight: 600; color: var(--text-main); }
+.sub-label { font-size: 0.82rem; color: var(--text-sub); margin-bottom: 8px; }
+
+/* ── 데모 영역 ── */
+.demo-area {
+  background: var(--bg-demo);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.demo-area--row { flex-direction: row; flex-wrap: wrap; gap: 14px; align-items: stretch; }
+
+/* ── 버튼 그룹 ── */
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  align-items: center;
+}
+.btn-group button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 14px;
+  font-size: 0.83rem;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-group button:hover  { background: var(--accent-dark); transform: translateY(-1px); }
+.btn-group button:active { transform: translateY(0); }
+.btn-group button:disabled { background: #94a3b8; cursor: not-allowed; transform: none; opacity: 0.6; }
+.btn-cancel { background: #ef4444 !important; }
+.btn-cancel:hover { background: #dc2626 !important; }
+.btn-reset  { background: #94a3b8 !important; }
+.btn-reset:hover { background: #64748b !important; }
+
+/* ── 로그 영역 ── */
+.log {
+  background: var(--bg-log);
+  border-radius: 8px;
+  padding: 12px 16px;
+  min-height: 52px;
+  font-family: 'Menlo', 'Consolas', monospace;
+  font-size: 0.8rem;
+  color: var(--log-text);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.log-line { display: flex; align-items: baseline; gap: 8px; line-height: 1.5; }
+.log-line::before { content: '▶'; font-size: 0.65rem; color: #334155; flex-shrink: 0; }
+.log-success { color: var(--log-success); }
+.log-info    { color: var(--log-info); }
+.log-warn    { color: var(--log-warn); }
+.log-error   { color: var(--log-error); }
+
+
+/* ============================================================
+   Section 1: BOM 정보 그리드
+============================================================ */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.info-item {
+  background: var(--bg-demo);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.info-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: monospace;
+  letter-spacing: 0.02em;
+}
+.info-value {
+  font-size: 0.82rem;
+  color: var(--text-main);
+  word-break: break-all;
+  line-height: 1.4;
+}
+.info-value.mono { font-family: 'Menlo', monospace; }
+
+
+/* ============================================================
+   Section 2: 대화 상자 카드
+============================================================ */
+.dialog-card {
+  flex: 1;
+  min-width: 160px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dialog-card h4 {
+  font-size: 0.9rem;
+  color: var(--accent);
+  font-family: monospace;
+}
+.dialog-card p { font-size: 0.82rem; color: var(--text-sub); flex: 1; }
+.dialog-card button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dialog-card button:hover { background: var(--accent-dark); }
+
+/* 대화 상자 결과 박스 */
+.result-box {
+  background: #f0f9ff;
+  border: 1.5px solid var(--accent);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  margin-bottom: 14px;
+  color: var(--text-main);
+}
+
+
+/* ============================================================
+   Section 3: Location & History
+============================================================ */
+.url-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.url-item {
+  background: var(--bg-demo);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 10px 12px;
+}
+.url-key {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: monospace;
+}
+.url-val {
+  font-size: 0.8rem;
+  color: var(--text-main);
+  word-break: break-all;
+  font-family: monospace;
+  margin-top: 3px;
+}
+.url-val.empty { color: var(--text-sub); font-style: italic; }
+
+/* history 길이 칩 */
+.info-chip {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  padding: 4px 10px;
+  background: var(--bg-demo);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+
+/* ============================================================
+   Section 4: 타이머
+============================================================ */
+.timer-panel {
+  flex: 1;
+  min-width: 240px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.timer-panel h4 { font-size: 0.9rem; color: var(--accent); font-family: monospace; }
+.timer-panel p  { font-size: 0.82rem; color: var(--text-sub); }
+
+/* 카운트다운 표시 */
+.countdown-display {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  padding: 8px;
+  background: var(--bg-demo);
+  border-radius: 6px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+.countdown-display.running { color: var(--accent); }
+.countdown-display.done    { color: #22c55e; }
+
+/* 스톱워치 표시 */
+.stopwatch-display {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  font-family: 'Menlo', monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  text-align: center;
+  padding: 10px;
+  background: var(--bg-demo);
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+.stopwatch-display.running { color: var(--accent); }
+
+
+/* ============================================================
+   Section 5: 점심 메뉴 뽑기 (원본 예제)
+============================================================ */
+.lunch-area {
+  align-items: center;
+  gap: 12px;
+}
+.menu-display {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+  padding: 20px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  width: 100%;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s, color 0.3s;
+}
+.menu-display.picked {
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+  color: var(--accent-dark);
+}
+
+/* 타이머 배지 (5초 카운트다운 표시) */
+.timer-badge {
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  text-align: center;
+  padding: 6px 14px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 20px;
+  color: #c2410c;
+  font-weight: 500;
+  animation: pulse 1s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}

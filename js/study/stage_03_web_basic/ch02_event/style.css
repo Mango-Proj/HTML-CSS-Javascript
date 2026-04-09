@@ -1,0 +1,477 @@
+/* ============================================================
+   이벤트 완벽 가이드 — 스타일시트
+   ch01_dom과 동일한 설계 언어를 사용합니다.
+   포인트 색상: 에메랄드(#10b981)로 챕터를 구분합니다.
+============================================================ */
+
+/* ── 공통 변수 ── */
+:root {
+  --bg-page:    #f1f5f9;
+  --bg-card:    #ffffff;
+  --bg-demo:    #f8fafc;
+  --bg-log:     #1e293b;
+  --text-main:  #1e293b;
+  --text-sub:   #64748b;
+  --accent:     #10b981;   /* 에메랄드 포인트 */
+  --accent-dark:#059669;
+  --border:     #e2e8f0;
+  --radius:     10px;
+
+  /* 마우스 이벤트 hover 카드 색상 */
+  --purple: #8b5cf6;
+  --teal:   #14b8a6;
+  --orange: #f97316;
+
+  /* 로그 색상 */
+  --log-text:    #94a3b8;
+  --log-success: #34d399;
+  --log-info:    #60a5fa;
+  --log-warn:    #fbbf24;
+  --log-error:   #f87171;
+}
+
+/* ── 기본 초기화 ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+/* ── 페이지 헤더 ── */
+.page-header {
+  background: linear-gradient(135deg, #047857, #10b981);
+  color: white;
+  padding: 40px 32px;
+  text-align: center;
+}
+.page-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+.page-header p  { font-size: 0.95rem; opacity: 0.85; }
+
+/* ── 메인 컨텐츠 ── */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── 섹션 카드 ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.card h2 {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.badge {
+  background: var(--accent);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.03em;
+}
+.desc {
+  font-size: 0.88rem;
+  color: var(--text-sub);
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+.desc code, .desc strong {
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+.desc strong { background: none; font-weight: 600; }
+.sub-label {
+  font-size: 0.82rem;
+  color: var(--text-sub);
+  margin: 12px 0 8px;
+}
+
+/* ── 데모 영역 ── */
+.demo-area {
+  background: var(--bg-demo);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.demo-area--row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── 로그 영역 ── */
+.log {
+  background: var(--bg-log);
+  border-radius: 8px;
+  padding: 12px 16px;
+  min-height: 52px;
+  font-family: 'Menlo', 'Consolas', monospace;
+  font-size: 0.8rem;
+  color: var(--log-text);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.log-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  line-height: 1.5;
+}
+.log-line::before {
+  content: '▶';
+  font-size: 0.65rem;
+  color: #475569;
+  flex-shrink: 0;
+}
+.log-success { color: var(--log-success); }
+.log-info    { color: var(--log-info); }
+.log-warn    { color: var(--log-warn); }
+.log-error   { color: var(--log-error); }
+
+
+/* ============================================================
+   Section 1: 이벤트 핸들러 등록 방식
+============================================================ */
+.demo-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, transform 0.1s;
+  min-width: 120px;
+}
+.demo-btn:hover  { background: var(--accent-dark); transform: translateY(-1px); }
+.demo-btn:active { transform: translateY(0); }
+.demo-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.6;
+}
+.demo-btn small {
+  display: block;
+  opacity: 0.75;
+  font-size: 0.73rem;
+  margin-top: 2px;
+}
+
+
+/* ============================================================
+   Section 2: 이벤트 객체
+============================================================ */
+.event-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+/* 자식 박스 — 클릭 대상 */
+.evt-box {
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  user-select: none;
+}
+.evt-box:nth-child(1) { background: #fee2e2; color: #991b1b; }
+.evt-box:nth-child(2) { background: #dbeafe; color: #1e40af; }
+.evt-box:nth-child(3) { background: #dcfce7; color: #166534; }
+.evt-box:hover { opacity: 0.8; }
+/* 부모 영역 클릭 박스 */
+.evt-box--parent {
+  background: #f3f4f6;
+  color: #6b7280;
+  font-style: italic;
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+/* 이벤트 객체 정보 그리드 */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.info-item {
+  background: var(--bg-demo);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.info-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: monospace;
+  letter-spacing: 0.02em;
+}
+.info-value {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  font-family: 'Menlo', monospace;
+  word-break: break-all;
+}
+
+
+/* ============================================================
+   Section 3: 마우스 이벤트
+============================================================ */
+
+/* 마우스 추적 패드 */
+.trackpad {
+  position: relative;
+  width: 200px;
+  height: 150px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: crosshair;
+  flex-shrink: 0;
+}
+.trackpad-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+}
+.trackpad.active .trackpad-dot { opacity: 1; }
+.trackpad-info {
+  position: absolute;
+  bottom: 8px;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  pointer-events: none;
+}
+
+/* 클릭/더블클릭 카운터 */
+.click-box {
+  flex: 1;
+  min-width: 180px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.click-box:hover { border-color: var(--accent); }
+.click-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+}
+.click-num {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.click-box small { color: var(--text-sub); font-size: 0.78rem; }
+
+/* hover 카드들 */
+.hover-cards {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.hover-card {
+  flex: 1;
+  min-width: 120px;
+  padding: 18px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: #f1f5f9;
+  border: 1.5px solid var(--border);
+  color: var(--text-sub);
+  transition: background 0.2s, color 0.2s, transform 0.15s, border-color 0.2s;
+}
+.hover-card[data-color="purple"]:hover { background: #ede9fe; color: var(--purple); border-color: var(--purple); transform: translateY(-2px); }
+.hover-card[data-color="teal"]:hover   { background: #ccfbf1; color: var(--teal);   border-color: var(--teal);   transform: translateY(-2px); }
+.hover-card[data-color="orange"]:hover { background: #ffedd5; color: var(--orange); border-color: var(--orange); transform: translateY(-2px); }
+
+
+/* ============================================================
+   Section 4: 키보드 이벤트
+============================================================ */
+.key-info-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.key-info-item {
+  flex: 1;
+  min-width: 130px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.key-info-item small { color: var(--text-sub); font-size: 0.75rem; }
+
+/* 눌린 키를 크게 표시 */
+.key-display {
+  font-family: 'Menlo', 'Consolas', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main);
+  min-height: 2rem;
+  word-break: break-all;
+}
+
+/* 수식키 뱃지들 */
+.modifier-badges { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.mod-badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #94a3b8;
+  border: 1.5px solid #e2e8f0;
+  transition: background 0.1s, color 0.1s;
+}
+.mod-badge.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+/* 입력 textarea */
+.input-wrapper { position: relative; }
+.key-textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  background: white;
+  transition: border-color 0.2s;
+}
+.key-textarea:focus { border-color: var(--accent); }
+.char-counter {
+  text-align: right;
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  margin-top: 4px;
+}
+
+
+/* ============================================================
+   Section 5: 폼 이벤트
+============================================================ */
+.login-form {
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-size: 0.9rem;
+  outline: none;
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+/* focus 상태 — JS에서 classList로 토글 */
+.form-group input.focused {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+/* 에러 상태 */
+.form-group input.error { border-color: #ef4444; }
+
+.field-hint  { font-size: 0.78rem; color: var(--text-sub); }
+.field-error { font-size: 0.78rem; color: #ef4444; font-weight: 500; }
+.success-msg { font-size: 0.85rem; color: var(--accent); font-weight: 600; }
+
+.submit-btn {
+  padding: 11px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.submit-btn:hover  { background: var(--accent-dark); }
+.submit-btn:active { transform: scale(0.98); }

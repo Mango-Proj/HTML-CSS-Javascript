@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚡ 이벤트 완벽 가이드</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="page-header">
+    <h1>⚡ 이벤트 (Event) 완벽 가이드</h1>
+    <p>클릭, 마우스, 키보드, 폼 이벤트를 직접 다뤄보는 인터랙티브 학습</p>
+  </header>
+
+  <main>
+
+    <!-- ============================================================
+         Section 1. 이벤트 핸들러 등록 방식 비교
+         인라인 / 프로퍼티 / addEventListener / removeEventListener
+    ============================================================ -->
+    <section class="card" id="sec-handler">
+      <h2><span class="badge">01</span> 이벤트 핸들러 등록 방식</h2>
+      <p class="desc">
+        같은 이벤트를 등록하는 방법이 3가지 있습니다.
+        현업에서는 <code>addEventListener</code>를 사용합니다.
+      </p>
+
+      <div class="demo-area demo-area--row">
+
+        <!-- 방법 1: 인라인 — HTML 태그에 onclick 직접 작성 -->
+        <button class="demo-btn" onclick="inlineHandler(this)">
+          인라인 방식<br><small>onclick="..."</small>
+        </button>
+
+        <!-- 방법 2: 프로퍼티 — JS에서 btn.onclick = 함수 -->
+        <button class="demo-btn" id="prop-btn">
+          프로퍼티 방식<br><small>btn.onclick = func</small>
+        </button>
+
+        <!-- 방법 3: addEventListener — 여러 핸들러 등록 가능 -->
+        <button class="demo-btn" id="multi-btn">
+          addEventListener<br><small>2개 핸들러 등록됨</small>
+        </button>
+
+        <!-- removeEventListener 데모 — 3번 클릭 후 자동 제거 -->
+        <button class="demo-btn" id="limited-btn">
+          3번만 동작<br><small>removeEventListener</small>
+        </button>
+
+        <!-- once 옵션 데모 — 딱 1번만 실행 후 자동 제거 -->
+        <button class="demo-btn" id="once-btn">
+          1번만 동작<br><small>{ once: true }</small>
+        </button>
+
+      </div>
+      <div id="handler-log" class="log"></div>
+    </section>
+
+
+    <!-- ============================================================
+         Section 2. 이벤트 객체 (event)
+         e.target / e.currentTarget / e.type / 좌표
+    ============================================================ -->
+    <section class="card" id="sec-eventobj">
+      <h2><span class="badge">02</span> 이벤트 객체 (event)</h2>
+      <p class="desc">
+        이벤트가 발생하면 브라우저가 자동으로 <strong>이벤트 객체(e)</strong>를 만들어
+        핸들러에 넘겨줍니다. <code>e.target</code>과 <code>e.currentTarget</code>의 차이를 확인해보세요.
+      </p>
+
+      <div class="demo-area">
+        <!--
+          이벤트 리스너는 부모(#event-area)에만 등록됩니다.
+          자식 박스 중 어디를 클릭해도 핸들러가 실행됩니다. (이벤트 버블링)
+          e.target        = 실제로 클릭된 요소 (자식 박스)
+          e.currentTarget = 리스너가 등록된 요소 (부모 #event-area)
+        -->
+        <div id="event-area" class="event-area">
+          <div class="evt-box" data-name="빨간 박스">빨간 박스</div>
+          <div class="evt-box" data-name="파란 박스">파란 박스</div>
+          <div class="evt-box" data-name="초록 박스">초록 박스</div>
+          <div class="evt-box evt-box--parent">← 부모 영역 클릭</div>
+        </div>
+      </div>
+
+      <!-- 이벤트 객체 정보 표시 -->
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">e.type</span>
+          <span id="ei-type" class="info-value">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">e.target</span>
+          <span id="ei-target" class="info-value">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">e.currentTarget</span>
+          <span id="ei-current" class="info-value">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">e.clientX / Y</span>
+          <span id="ei-coords" class="info-value">—</span>
+        </div>
+      </div>
+
+      <div id="eventobj-log" class="log"></div>
+    </section>
+
+
+    <!-- ============================================================
+         Section 3. 마우스 이벤트
+         mousemove / click / dblclick / mouseover / mouseout
+    ============================================================ -->
+    <section class="card" id="sec-mouse">
+      <h2><span class="badge">03</span> 마우스 이벤트</h2>
+      <p class="desc">
+        마우스 움직임, 클릭, 호버에 반응하는 이벤트들입니다.
+      </p>
+
+      <div class="demo-area demo-area--row">
+
+        <!-- 마우스 추적 패드 (mousemove, mouseenter, mouseleave) -->
+        <div id="trackpad" class="trackpad">
+          <div id="trackpad-dot" class="trackpad-dot"></div>
+          <div id="trackpad-info" class="trackpad-info">마우스를 올려보세요</div>
+        </div>
+
+        <!-- 클릭 / 더블클릭 카운터 -->
+        <div id="click-box" class="click-box">
+          <div class="click-row">
+            <span>클릭 (click)</span>
+            <span id="click-count" class="click-num">0</span>
+          </div>
+          <div class="click-row">
+            <span>더블클릭 (dblclick)</span>
+            <span id="dbl-count" class="click-num">0</span>
+          </div>
+          <small>위 박스를 클릭해보세요</small>
+        </div>
+
+      </div>
+
+      <!-- mouseover / mouseout 카드 -->
+      <p class="sub-label">mouseover / mouseout — 마우스를 카드 위에 올려보세요</p>
+      <div class="hover-cards">
+        <div class="hover-card" data-color="purple">카드 1</div>
+        <div class="hover-card" data-color="teal">카드 2</div>
+        <div class="hover-card" data-color="orange">카드 3</div>
+      </div>
+
+      <div id="mouse-log" class="log"></div>
+    </section>
+
+
+    <!-- ============================================================
+         Section 4. 키보드 이벤트
+         keydown / keyup — e.key / e.code / 수식키
+    ============================================================ -->
+    <section class="card" id="sec-keyboard">
+      <h2><span class="badge">04</span> 키보드 이벤트</h2>
+      <p class="desc">
+        <code>keydown</code>은 키를 누르는 순간, <code>keyup</code>은 키를 떼는 순간 발생합니다.
+        아래 입력창에 키보드를 눌러보세요.
+      </p>
+
+      <div class="demo-area">
+
+        <!-- 키 정보 표시 카드 -->
+        <div class="key-info-grid">
+          <div class="key-info-item">
+            <span class="info-label">e.key</span>
+            <span id="ki-key" class="key-display">—</span>
+            <small>눌린 문자</small>
+          </div>
+          <div class="key-info-item">
+            <span class="info-label">e.code</span>
+            <span id="ki-code" class="key-display">—</span>
+            <small>물리적 키 위치</small>
+          </div>
+          <div class="key-info-item">
+            <span class="info-label">수식키</span>
+            <div id="ki-modifiers" class="modifier-badges">
+              <span id="mod-ctrl"  class="mod-badge">Ctrl</span>
+              <span id="mod-shift" class="mod-badge">Shift</span>
+              <span id="mod-alt"   class="mod-badge">Alt</span>
+            </div>
+            <small>Ctrl / Shift / Alt</small>
+          </div>
+        </div>
+
+        <!-- 실시간 입력 영역 + 글자 수 -->
+        <div class="input-wrapper">
+          <textarea
+            id="key-input"
+            class="key-textarea"
+            placeholder="여기에 입력해보세요..."
+            rows="3"
+          ></textarea>
+          <div class="char-counter">
+            글자 수: <span id="char-count">0</span>자
+          </div>
+        </div>
+
+      </div>
+      <div id="keyboard-log" class="log"></div>
+    </section>
+
+
+    <!-- ============================================================
+         Section 5. 폼 이벤트
+         focus / blur / submit (preventDefault) / change
+         ★ 원본 app.js 코드 기반
+    ============================================================ -->
+    <section class="card" id="sec-form">
+      <h2><span class="badge">05</span> 폼 이벤트 (Form Events)</h2>
+      <p class="desc">
+        <code>focus / blur</code>로 입력창 상태를 시각화하고,
+        <code>submit</code> + <code>preventDefault()</code>로
+        서버 전송 없이 유효성 검사를 처리합니다.
+      </p>
+
+      <div class="demo-area">
+        <form id="login-form" class="login-form" novalidate>
+
+          <!-- 아이디 입력 — focus/blur 이벤트 대상 -->
+          <div class="form-group">
+            <label for="username">아이디</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="클릭해서 focus/blur를 확인하세요"
+              autocomplete="off"
+            >
+            <span id="username-hint" class="field-hint"></span>
+          </div>
+
+          <!-- 비밀번호 — submit 유효성 검사 (4자 이상) -->
+          <div class="form-group">
+            <label for="password">비밀번호</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="4자 이상 입력"
+            >
+            <span id="error-msg" class="field-error"></span>
+          </div>
+
+          <!-- 역할 선택 — change 이벤트 대상 -->
+          <div class="form-group">
+            <label for="role-select">역할 선택</label>
+            <select id="role-select" name="role">
+              <option value="">-- 선택하세요 --</option>
+              <option value="admin">관리자</option>
+              <option value="user">일반 사용자</option>
+              <option value="guest">게스트</option>
+            </select>
+            <span id="role-hint" class="field-hint"></span>
+          </div>
+
+          <button type="submit" class="submit-btn">로그인</button>
+          <p id="success-msg" class="success-msg"></p>
+        </form>
+      </div>
+
+      <div id="form-log" class="log"></div>
+    </section>
+
+  </main>
+
+  <!-- app.js는 body 맨 아래 — DOM이 모두 로드된 뒤 실행 -->
+  <script src="app.js"></script>
+</body>
+</html>
