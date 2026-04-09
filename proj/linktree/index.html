@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@dev.mango — Links</title>
+
+  <!--
+    Google Fonts: Inter(영문) + Noto Sans KR(한글)
+    display=swap: 폰트 로드 전까지 시스템 폰트를 보여줘 레이아웃 이동을 줄임
+  -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ── 프로필 섹션 ──────────────────────────────── -->
+    <div class="profile">
+
+      <!--
+        [수정] <div class="profile-img"> → <img> 태그로 변경
+        이유: object-fit: cover 는 img/video 같은 replaced element에만 적용됨.
+             div에는 적용되지 않아 이미지 비율 제어가 불가능했음.
+
+        picsum.photos: 무작위 고품질 플레이스홀더 이미지 제공 서비스
+        seed 값(shannon)을 고정하면 항상 같은 이미지가 나옴
+        alt: 스크린리더를 위한 대체 텍스트 (접근성)
+      -->
+      <img
+        src="https://picsum.photos/seed/shannon/150/150"
+        alt="프로필 사진"
+        class="profile-img"
+      >
+
+      <h1 class="profile-name">@dev.shannon</h1>
+      <p class="profile-bio">프론트엔드를 공부하는 개발자 🌱<br>HTML · CSS · JavaScript</p>
+    </div>
+
+    <!-- ── 링크 버튼 목록 ──────────────────────────────
+      [수정] <button> → <a> 태그로 변경
+      이유: 클릭 시 다른 페이지로 이동하는 것은 링크(<a>)의 역할.
+           <button>은 "동작을 수행"할 때, <a>는 "페이지를 이동"할 때 사용.
+           의미(시멘틱)에 맞는 태그를 써야 접근성·SEO에 유리함.
+
+      target="_blank": 새 탭에서 열기
+      rel="noopener noreferrer": 보안 설정
+        - noopener: 열린 탭에서 window.opener 로 원본 탭 접근 차단
+        - noreferrer: 이전 페이지 URL 정보를 전달하지 않음
+    ──────────────────────────────────────────────── -->
+    <nav class="links" aria-label="소셜 링크 목록">
+
+      <a class="link-btn" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+        <span class="btn-icon">📸</span>
+        <span class="btn-label">Instagram</span>
+      </a>
+
+      <a class="link-btn" href="https://github.com/" target="_blank" rel="noopener noreferrer">
+        <span class="btn-icon">🐙</span>
+        <span class="btn-label">GitHub</span>
+      </a>
+
+      <a class="link-btn" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">
+        <span class="btn-icon">▶️</span>
+        <span class="btn-label">YouTube</span>
+      </a>
+
+      <a class="link-btn" href="https://velog.io/" target="_blank" rel="noopener noreferrer">
+        <span class="btn-icon">✍️</span>
+        <span class="btn-label">블로그</span>
+      </a>
+
+      <a class="link-btn" href="mailto:hello@example.com">
+        <span class="btn-icon">✉️</span>
+        <span class="btn-label">이메일 문의</span>
+      </a>
+
+    </nav>
+
+    <!-- ── 푸터 ──────────────────────────────────────── -->
+    <footer class="footer">
+      <p>© 2025 @dev.mango</p>
+    </footer>
+
+  </div>
+  <!-- /.container -->
+
+</body>
+</html>

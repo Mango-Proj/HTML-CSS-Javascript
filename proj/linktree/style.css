@@ -1,0 +1,252 @@
+/* ============================================================
+   linktree — style.css
+
+   [이번 수정에서 개선한 내역]
+
+   ① <button> → <a> 태그로 변경에 따른 셀렉터 보완
+      .link-btn 이 이제 <a> 태그이므로 text-decoration, color 등 리셋 필요
+
+   ② object-fit 적용 대상 수정
+      div 에는 object-fit 이 적용되지 않음.
+      profile-img 를 <img> 태그로 교체하면서 관련 스타일 정상 동작
+
+   ③ nth-child 애니메이션 딜레이 버그 수정
+      기존: .container 직계 자식 기준이라 profile-img(1번째)가 끼어있어
+            .link-btn:nth-child(1) 은 아무 버튼도 매칭되지 않았음
+      수정: 버튼을 <nav class="links"> 안으로 분리
+            → nth-child(1)~(5)가 정확히 1~5번째 버튼을 가리킴
+
+   ④ min-height: 100vh 복원
+      직전 작업에서 주석 처리되어 있던 것을 복원.
+      이 값이 없으면 콘텐츠가 짧을 때 body 높이가 부족해
+      align-items: center 가 세로 중앙 정렬을 제대로 못 함
+
+   ⑤ CSS 변수 추가
+      색상·크기 값이 코드 곳곳에 하드코딩되어 있었음.
+      :root 변수로 통일해 유지보수를 쉽게 함
+
+   ⑥ will-change: transform 추가 (성능 최적화)
+      hover 시 transform 이 예상되는 요소에 미리 브라우저에 힌트를 줘
+      애니메이션 합성 레이어를 사전에 만들어 부드러운 전환을 유도
+
+   ⑦ font-family 누락 보완
+      기존 body 에 font-family 가 없어 브라우저 기본 폰트로 표시됨
+============================================================ */
+
+
+/* ── 1. CSS 변수 ─────────────────────────────────────────────
+   [수정 ⑤] 하드코딩된 색상값들을 변수로 추출
+   테마를 바꾸려면 이 블록만 수정하면 됨
+──────────────────────────────────────────────────────────── */
+:root {
+  --bg-page:        #764ba2;                       /* 페이지 배경 (보라) */
+  --bg-card:        whitesmoke;                    /* 카드 배경 */
+  --color-btn-from: #667eea;                       /* 버튼 그라데이션 시작 */
+  --color-btn-to:   #764ba2;                       /* 버튼 그라데이션 끝 */
+  --color-text:     #2d2d2d;                       /* 기본 텍스트 */
+  --color-sub:      #888888;                       /* 보조 텍스트 */
+  --shadow-card:    0 24px 64px rgba(0, 0, 0, 0.4);
+  --shadow-btn:     0 4px 15px rgba(102, 126, 234, 0.4);
+  --shadow-btn-hover: 0 8px 25px rgba(102, 126, 234, 0.55);
+  --radius-card:    20px;
+  --radius-btn:     12px;
+}
+
+
+/* ── 2. 기본 초기화 ──────────────────────────────────────────*/
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ── 3. body — 다크 배경 + 화면 정중앙 정렬 ─────────────────
+   [수정 ④] min-height: 100vh 복원
+   justify-content + align-items 만으로는 body에 높이가 없으면
+   세로 중앙이 동작하지 않음. min-height: 100vh 가 필수.
+──────────────────────────────────────────────────────────── */
+body {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif; /* [수정 ⑦] font-family 추가 */
+  background-color: var(--bg-page);                 /* [수정 ⑤] 변수 참조 */
+  min-height: 100vh;        /* [수정 ④] body가 뷰포트 전체 높이를 차지하게 복원 */
+  display: flex;
+  justify-content: center;  /* 가로 중앙 */
+  align-items: center;      /* 세로 중앙 — min-height 없으면 이 줄이 소용없음 */
+  padding: 40px 16px;       /* 좁은 화면에서 카드가 화면 끝에 붙지 않도록 */
+}
+
+
+/* ── 4. 카드 컨테이너 ────────────────────────────────────────*/
+.container {
+  background: var(--bg-card);        /* [수정 ⑤] 변수 참조 */
+  border-radius: var(--radius-card); /* [수정 ⑤] 변수 참조 */
+  box-shadow: var(--shadow-card);    /* [수정 ⑤] 변수 참조 */
+  width: 100%;
+  max-width: 480px;
+  padding: 48px 32px;
+
+  /* 내부 요소를 세로로 쌓고 가로 중앙 정렬 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+
+/* ── 5. 프로필 섹션 ──────────────────────────────────────────*/
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+/*
+  [수정 ②] <div> → <img> 태그 변경으로 object-fit 정상 동작
+  object-fit: cover 는 img, video 같은 '대체 콘텐츠 요소'에만 적용됨.
+  div 는 대체 요소가 아니므로 object-fit 이 무시되었음.
+  <img> 태그로 바꾸면서 이미지 비율 유지 + 원형 클리핑이 정상 동작.
+*/
+.profile-img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;              /* 원형 클리핑 */
+  object-fit: cover;               /* 이미지 비율 유지하며 영역 꽉 채움 — img여야 동작 */
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 20px rgba(118, 75, 162, 0.35);
+  display: block;                  /* img 기본값인 inline 제거 (하단 여백 방지) */
+}
+
+.profile-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.profile-bio {
+  font-size: 0.88rem;
+  color: var(--color-sub);
+  line-height: 1.65;
+}
+
+
+/* ── 6. 링크 버튼 목록 ───────────────────────────────────────
+   <nav class="links"> 안에 <a> 태그로 구성
+   links 컨테이너가 생기면서 nth-child 버그도 해결됨 [수정 ③]
+──────────────────────────────────────────────────────────── */
+.links {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;                       /* margin-bottom 대신 gap으로 통일 */
+  list-style: none;
+}
+
+/*
+  [수정 ①] <a> 태그 기본 스타일 리셋
+  <a> 는 기본적으로 color: blue, text-decoration: underline 이 있음.
+  링크처럼 보이지 않고 버튼처럼 보이려면 이 값들을 리셋해야 함.
+
+  [수정 ⑥] will-change: transform 추가
+  hover 시 transform 이 적용될 것을 브라우저에 미리 알려줌.
+  브라우저가 사전에 GPU 합성 레이어를 만들어 애니메이션이 더 부드러워짐.
+  (남용하면 메모리 낭비가 되므로 transform/opacity 사용 요소에만 적용)
+*/
+.link-btn {
+  display: flex;                   /* 아이콘 + 텍스트 가로 정렬 */
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 24px;
+  height: 58px;
+
+  background: linear-gradient(135deg, var(--color-btn-from), var(--color-btn-to)); /* [수정 ⑤] */
+  color: white;                    /* [수정 ①] <a> 기본 색상 덮어씌우기 */
+  text-decoration: none;           /* [수정 ①] <a> 기본 밑줄 제거 */
+  font-family: inherit;            /* [수정 ①] <a> 는 font-family 상속 안 하는 브라우저 있음 */
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  border: none;
+  border-radius: var(--radius-btn); /* [수정 ⑤] */
+  box-shadow: var(--shadow-btn);    /* [수정 ⑤] */
+  cursor: pointer;
+
+  will-change: transform;          /* [수정 ⑥] 성능 최적화 힌트 */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  /* 등장 애니메이션 */
+  animation: slideUp 0.5s ease forwards;
+  opacity: 0;                      /* 초기 투명 — forwards로 끝 상태 유지 */
+}
+
+.link-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-btn-hover); /* [수정 ⑤] */
+}
+
+.link-btn:active {
+  transform: translateY(0);
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;                  /* 창이 좁아져도 아이콘이 줄어들지 않게 */
+}
+
+.btn-label {
+  flex: 1;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+
+/* ── 7. 슬라이드업 애니메이션 ────────────────────────────────
+   [수정 ③] nth-child 딜레이 버그 수정
+   기존 구조: .container 의 직계 자식 기준
+     → profile-img 가 1번째 자식 → .link-btn:nth-child(1) 은 아무것도 안 매칭
+     → 모든 딜레이가 한 칸씩 밀려 있었음
+
+   수정된 구조: <nav class="links"> 안에 <a> 태그만 있음
+     → nth-child(1)이 정확히 첫 번째 링크 버튼을 가리킴
+──────────────────────────────────────────────────────────── */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* .links 안의 자식 기준으로 딜레이 적용 — nth-child 정확히 매칭 */
+.links .link-btn:nth-child(1) { animation-delay: 0.10s; }
+.links .link-btn:nth-child(2) { animation-delay: 0.20s; }
+.links .link-btn:nth-child(3) { animation-delay: 0.30s; }
+.links .link-btn:nth-child(4) { animation-delay: 0.40s; }
+.links .link-btn:nth-child(5) { animation-delay: 0.50s; }
+
+
+/* ── 8. 푸터 ─────────────────────────────────────────────────*/
+.footer {
+  font-size: 0.75rem;
+  color: var(--color-sub);
+  text-align: center;
+}
+
+
+/* ── 9. 반응형 — 모바일 ──────────────────────────────────────
+   480px 이하: 카드가 화면 전체 너비를 채우도록
+──────────────────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .container {
+    padding: 40px 20px;
+  }
+}

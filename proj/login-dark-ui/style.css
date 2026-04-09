@@ -1,0 +1,311 @@
+/* ============================================================
+   login-dark-ui — style.css
+   다크 모드 로그인 UI
+
+   [수정 내역 — CSS가 적용되지 않던 원인과 해결]
+
+   ① body에 background 없음 (가장 큰 원인)
+      → --bg-page 변수가 선언되어 있었지만 body에 적용하는 줄이 없었음
+      → 흰 배경 위에서는 glassmorphism(반투명 카드)이 보이지 않음
+      → 해결: body { background: var(--bg-page); } 추가
+
+   ② CSS 변수가 선언만 되고 실제 규칙에 쓰이지 않음
+      → --bg-card, --color-text 등이 :root에 있었지만
+         아무 셀렉터에도 var()로 참조되지 않았음
+      → 해결: 각 규칙에서 변수 참조로 통일
+
+   ③ 카드(.login-card) 핵심 스타일 누락
+      → width, padding, 정렬(flex) 없어서 크기/레이아웃이 잡히지 않음
+      → 해결: width, padding, display:flex, gap 등 추가
+
+   ④ input 스타일 누락
+      → background, color, padding, width 없어서
+         기본 브라우저 스타일(흰 배경, 검정 글자)로만 표시됨
+      → 해결: 다크 테마에 맞는 background/color/padding 추가
+
+   ⑤ .btn-login 스타일 누락
+      → background, color, padding, cursor 없어서 빈 버튼으로 표시됨
+      → 해결: 배경색, 텍스트색, 크기, 커서 등 완성
+
+   ⑥ index.html의 input에 type/placeholder 없음
+      → type="email", type="password"와 placeholder 텍스트 추가
+      → button에 텍스트 없어서 렌더링 요소가 없었음 → 텍스트 추가
+============================================================ */
+
+
+/* ── 1. CSS 변수 ─────────────────────────────────────────────*/
+:root {
+  --bg-page:       #0f172a;                    /* 페이지 전체 다크 배경 */
+  --bg-card:       rgba(255, 255, 255, 0.05);  /* 카드 반투명 배경 */
+  --bg-input:      rgba(255, 255, 255, 0.07);  /* input 반투명 배경 */
+  --color-text:    #e2e8f0;                    /* 기본 텍스트 (밝은 회색) */
+  --color-sub:     #94a3b8;                    /* 보조 텍스트 */
+  --color-accent:  #6366f1;                    /* 포인트 색상 (인디고) */
+  --color-accent-d: #4f46e5;                   /* 포인트 색상 진하게 */
+  --color-border:  rgba(255, 255, 255, 0.1);   /* 카드/input 테두리 */
+  --color-border-focus: #6366f1;               /* focus 상태 테두리 */
+}
+
+
+/* ── 2. 기본 초기화 ──────────────────────────────────────────*/
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ── 3. body — 다크 배경 + 중앙 정렬 ────────────────────────
+   [수정 ①] background: var(--bg-page) 추가
+   이 줄이 없으면 흰 배경 위에 반투명 카드가 올라가서
+   glassmorphism 효과가 전혀 보이지 않습니다.
+──────────────────────────────────────────────────────────── */
+body {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  background: var(--bg-page);    /* ← 수정 ①: 다크 배경색 적용 (핵심!) */
+  color: var(--color-text);      /* ← 수정 ②: 변수로 기본 텍스트색 적용 */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+
+/* ── 4. 배경 장식 원 ─────────────────────────────────────────
+   페이지에 깊이감을 주는 반투명 색상 원 두 개
+   position: fixed 로 스크롤해도 항상 배경에 고정됩니다.
+──────────────────────────────────────────────────────────── */
+.bg-blob {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;         /* 마우스 이벤트 무시 */
+  z-index: 0;
+}
+
+.bg-blob--1 {
+  width: 500px;
+  height: 500px;
+  top: -150px;
+  left: -150px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.18), transparent 70%);
+}
+
+.bg-blob--2 {
+  width: 600px;
+  height: 600px;
+  bottom: -200px;
+  right: -150px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.14), transparent 70%);
+}
+
+
+/* ── 5. 로그인 카드 ──────────────────────────────────────────
+   [수정 ③] width, padding, flex 레이아웃 추가
+   이전에는 크기를 잡아주는 속성이 없어서 내용에 따라 찌그러졌음
+
+   glassmorphism 효과:
+   - backdrop-filter: blur() → 뒤 배경을 흐릿하게
+   - background: 반투명 흰색 → 유리 느낌
+   - border: 반투명 흰 테두리 → 유리 테두리 느낌
+   → 다크 배경이 있어야(수정 ①) 효과가 보입니다
+──────────────────────────────────────────────────────────── */
+.login-card {
+  position: relative;
+  z-index: 1;                              /* bg-blob 위에 표시 */
+  width: 400px;                            /* ← 수정 ③: 고정 너비 추가 */
+  padding: 44px 40px;                      /* ← 수정 ③: 내부 여백 추가 */
+
+  /* glassmorphism */
+  background: var(--bg-card);             /* ← 수정 ②: 변수 참조 */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);    /* Safari 지원 */
+  border: 1px solid var(--color-border);  /* ← 수정 ②: 변수 참조 */
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+
+  /* 내부 요소를 세로로 쌓음 */
+  display: flex;                           /* ← 수정 ③: flex 레이아웃 추가 */
+  flex-direction: column;
+  gap: 24px;
+}
+
+
+/* ── 6. 카드 헤더 ────────────────────────────────────────────*/
+.card-header {
+  text-align: center;
+}
+
+.logo {
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text);               /* ← 수정 ②: 변수 참조 */
+  letter-spacing: -0.02em;
+  margin-bottom: 15px;
+}
+
+.card-sub {
+  font-size: 0.88rem;
+  color: var(--color-sub);
+}
+
+
+/* ── 7. 폼 레이아웃 ──────────────────────────────────────────*/
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-sub);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forgot-link {
+  font-size: 0.78rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.forgot-link:hover {
+  color: var(--color-accent-d);
+}
+
+
+/* ── 8. input 스타일 ─────────────────────────────────────────
+   [수정 ④] background, color, padding, width 추가
+   이전에는 background/color가 없어서 브라우저 기본값(흰 배경, 검정 글자)이
+   다크 카드 위에 그대로 표시되었음
+──────────────────────────────────────────────────────────── */
+.field-input {
+  width: 100%;                             /* ← 수정 ④: 부모 너비에 꽉 채움 */
+  padding: 12px 16px;                      /* ← 수정 ④: 클릭 영역 확보 */
+  background: var(--bg-input);            /* ← 수정 ④: 반투명 다크 배경 */
+  color: var(--color-text);               /* ← 수정 ④: 밝은 텍스트색 */
+  font-family: inherit;
+  font-size: 0.92rem;
+
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* placeholder 텍스트 색상 */
+.field-input::placeholder {
+  color: #475569;
+}
+
+/* focus 상태: 테두리 포인트 색 + 발광 효과 */
+.field-input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+
+/* ── 9. 로그인 버튼 ──────────────────────────────────────────
+   [수정 ⑤] background, color, padding, cursor 추가
+   이전에는 이 속성들이 없어서 빈 박스로 보였음
+──────────────────────────────────────────────────────────── */
+.btn-login {
+  width: 100%;                              /* ← 수정 ⑤: 폼 너비에 꽉 채움 */
+  padding: 13px 0;                          /* ← 수정 ⑤: 버튼 높이 확보 */
+  background: var(--color-accent);         /* ← 수정 ⑤: 포인트 배경색 */
+  color: #ffffff;                           /* ← 수정 ⑤: 흰 텍스트 */
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;                          /* ← 수정 ⑤: 손 커서 */
+  margin-top: 4px;
+
+  transition: transform 0.15s ease,
+              filter 0.15s ease,
+              background 0.15s ease;
+}
+
+/* hover: 살짝 확대 + 밝아짐 */
+.btn-login:hover {
+  background: var(--color-accent-d);
+  transform: scale(1.02);
+  filter: brightness(1.08);
+}
+
+/* active: 클릭 시 살짝 축소 */
+.btn-login:active {
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+
+/* ── 10. 구분선 ──────────────────────────────────────────────
+   ::before / ::after 로 양쪽 가로선을 만듭니다.
+   HTML에 추가 태그 없이 CSS만으로 구현합니다.
+──────────────────────────────────────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.divider-text {
+  font-size: 0.78rem;
+  color: var(--color-sub);
+  white-space: nowrap;
+}
+
+
+/* ── 11. 하단 회원가입 텍스트 ────────────────────────────────*/
+.signup-text {
+  text-align: center;
+  font-size: 0.84rem;
+  color: var(--color-sub);
+}
+
+.signup-link {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.signup-link:hover {
+  color: var(--color-accent-d);
+}
+
+
+/* ── 12. 반응형 — 모바일 ─────────────────────────────────────*/
+@media (max-width: 480px) {
+  .login-card {
+    width: 100%;
+    margin: 16px;
+    padding: 32px 24px;
+  }
+}
