@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <!-- viewport: 모바일 화면에서도 올바르게 보이도록 뷰포트를 설정합니다 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS 연결 실습 — Ch01. 자바스크립트란?</title>
+    <style>
+        /* 학습 내용을 한눈에 보기 위한 간단한 스타일 */
+        body   { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        h1     { color: #333; }
+        h2     { color: #555; border-bottom: 2px solid #f7df1e; padding-bottom: 4px; }
+        button { padding: 8px 16px; font-size: 1rem; cursor: pointer; background: #f7df1e; border: none; border-radius: 4px; }
+        #js-output { margin-top: 12px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-height: 36px; }
+        .feature-list { line-height: 2; }
+        .feature-item { color: #444; }
+        code  { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+
+        /* ─────────────────────────────────────────────
+           인라인 스크립트 예시 블록 스타일
+        ───────────────────────────────────────────── */
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.9em;
+            white-space: pre;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====================================================
+         1. 페이지 구조 — 자바스크립트가 조작할 HTML 요소들
+    ===================================================== -->
+
+    <h1>Ch01. 자바스크립트(JavaScript)란?</h1>
+
+    <!-- id="js-title": script.js 에서 getElementById('js-title') 로 접근합니다 -->
+    <h2 id="js-title">Hello, 자바스크립트!</h2>
+
+    <!-- id="js-description": script.js 에서 querySelector 로 접근합니다 -->
+    <p id="js-description">웹 페이지에 동적인 기능을 추가하는 언어입니다.</p>
+
+    <hr>
+
+    <!-- ====================================================
+         2. 자바스크립트의 특징 목록 — querySelectorAll 실습
+    ===================================================== -->
+    <h2>자바스크립트의 특징</h2>
+    <ul class="feature-list">
+        <!-- class="feature-item": script.js 에서 querySelectorAll('.feature-item')으로 전체 선택 -->
+        <li class="feature-item">인터프리터 언어 (한 줄씩 즉시 실행)</li>
+        <li class="feature-item">동적 타입 (변수 타입이 실행 중에 결정)</li>
+        <li class="feature-item">프론트엔드 + 백엔드 모두 사용 가능</li>
+        <li class="feature-item">HTML / CSS 와 함께 웹 개발의 3대 핵심 언어</li>
+    </ul>
+
+    <hr>
+
+    <!-- ====================================================
+         3. 이벤트 실습 — 버튼 클릭 → JS 동작 확인
+    ===================================================== -->
+    <h2>이벤트 실습</h2>
+    <p>아래 버튼을 클릭하면 자바스크립트가 DOM 을 변경합니다.</p>
+
+    <!-- id="js-btn": script.js 에서 addEventListener 로 클릭 이벤트를 등록합니다 -->
+    <button id="js-btn">클릭해보세요!</button>
+
+    <!-- id="js-output": 클릭 이벤트 발생 시 이 영역의 내용이 바뀝니다 -->
+    <div id="js-output">버튼을 클릭하면 여기가 바뀝니다.</div>
+
+    <hr>
+
+    <!-- ====================================================
+         4. HTML 에 자바스크립트를 연결하는 3가지 방법 (설명용)
+    ===================================================== -->
+    <h2>자바스크립트 연결 방법</h2>
+
+    <!-- 방법 1: 인라인(Inline) — HTML 속성에 직접 작성 -->
+    <h3>방법 1. 인라인 이벤트 핸들러</h3>
+    <p>HTML 태그의 이벤트 속성에 직접 JS 코드를 작성합니다. 간단하지만 유지보수가 어려워 권장하지 않습니다.</p>
+    <button onclick="console.log('인라인 이벤트 실행!')">인라인 방식 (onclick)</button>
+
+    <!-- 방법 2: 내부 스크립트 — <script> 태그 내부에 작성 -->
+    <h3>방법 2. 내부 스크립트 &lt;script&gt;</h3>
+    <p>HTML 파일 안에 <code>&lt;script&gt;</code> 태그를 사용해 JS 코드를 작성합니다.</p>
+    <div class="code-block">&lt;script&gt;
+  console.log('내부 스크립트 실행');
+&lt;/script&gt;</div>
+
+    <!-- 방법 3: 외부 파일 연결 — 현재 이 페이지가 사용하는 방식 -->
+    <h3>방법 3. 외부 파일 연결 (권장) ✅</h3>
+    <p>별도의 <code>.js</code> 파일을 만들고 <code>src</code> 속성으로 불러옵니다.
+       가독성이 높고 캐싱·재사용이 가능해 권장하는 방식입니다.</p>
+    <div class="code-block">&lt;script src="script.js"&gt;&lt;/script&gt;</div>
+
+    <!-- 방법 4: async / defer 속성 (로딩 최적화) -->
+    <h3>async / defer 속성 (로딩 최적화)</h3>
+    <p><code>&lt;head&gt;</code> 에서 스크립트를 로드할 때 HTML 파싱을 차단하지 않도록 합니다.</p>
+    <div class="code-block">&lt;!-- defer: HTML 파싱 완료 후 순서대로 실행 (가장 권장) --&gt;
+&lt;script src="script.js" defer&gt;&lt;/script&gt;
+
+&lt;!-- async: 다운로드 완료 즉시 실행 (실행 순서 보장 안 됨) --&gt;
+&lt;script src="script.js" async&gt;&lt;/script&gt;</div>
+
+    <hr>
+
+    <!-- ====================================================
+         5. 내부 스크립트 예시 — <script> 태그 직접 작성
+            body 하단에 위치해 HTML 요소가 모두 로드된 후 실행됩니다.
+    ===================================================== -->
+    <script>
+        // ── 내부 스크립트 (Inline Script) 예시 ──────────────────
+        // 이 코드는 HTML 파일 안에 직접 작성된 자바스크립트입니다.
+        // 외부 파일 없이 바로 동작하지만, 파일이 길어지면 유지보수가 어렵습니다.
+
+        console.log('=== 내부 스크립트 실행 ===');
+
+        // document.title: 현재 페이지의 제목(탭 이름)을 읽거나 변경할 수 있습니다.
+        console.log('페이지 제목:', document.title);
+
+        // 페이지 로드 완료 시점을 알 수 있습니다.
+        console.log('내부 스크립트 — DOM 준비 완료 후 실행됨');
+    </script>
+
+    <!-- ====================================================
+         외부 스크립트 연결 — body 최하단에 위치 (권장)
+         이유: HTML 요소가 모두 생성된 후 script.js 가 실행되므로
+               getElementById, querySelector 등이 null 을 반환하지 않습니다.
+    ===================================================== -->
+    <script src="script.js"></script>
+
+</body>
+</html>
