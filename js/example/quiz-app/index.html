@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!--
+  index.html — JS 퀴즈 미니 프로젝트
+  =====================================
+  학습한 JS 개념을 복습하는 10문제 객관식 퀴즈 앱입니다.
+
+  적용 개념:
+    ch01 — DocumentFragment (선택지 렌더링), 이벤트 위임 (선택지 클릭)
+    ch02 — setInterval / clearInterval (타이머), try/catch (스토리지 읽기)
+    ch03 — localStorage (최고 기록·테마 저장), 불변성 (상태 업데이트)
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS 퀴즈</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== 헤더 ===== -->
+  <header class="header">
+    <h1>🧩 JS 퀴즈</h1>
+    <!-- 클릭 시 app.js의 applyTheme()이 body.className을 바꾸고 localStorage에 저장 -->
+    <button id="btn-theme">🌙 다크</button>
+  </header>
+
+  <!-- ===== 시작 화면 ===== -->
+  <!--
+    3개의 화면(.screen) 중 하나만 .active 클래스를 가집니다.
+    app.js의 showScreen() 함수가 .active를 이동시키며 화면을 전환합니다.
+  -->
+  <div id="screen-intro" class="screen active">
+    <div class="card intro-card">
+      <p class="intro-icon">🧩</p>
+      <h2 class="intro-title">JavaScript 퀴즈</h2>
+      <p class="intro-desc">JS 핵심 개념 10문제 · 문제당 제한 시간 15초</p>
+
+      <!-- localStorage에 저장된 최고 기록을 app.js가 채워 줍니다 -->
+      <div class="high-score-box">
+        <span>🏆 최고 기록</span>
+        <span id="display-high-score" class="high-score-value">—</span>
+      </div>
+
+      <button id="btn-start" class="btn btn-primary btn-large">퀴즈 시작</button>
+    </div>
+  </div>
+
+  <!-- ===== 퀴즈 화면 ===== -->
+  <div id="screen-quiz" class="screen">
+
+    <!-- 문제 번호 · 타이머 바 · 타이머 숫자 -->
+    <div class="quiz-header">
+      <span id="question-num" class="question-num">1 / 10</span>
+
+      <!-- 타이머 바: CSS transition으로 너비가 줄어들며 시간을 시각화합니다 -->
+      <div class="timer-wrap">
+        <div id="timer-bar" class="timer-bar"></div>
+      </div>
+
+      <span id="timer-text" class="timer-text">15</span>
+    </div>
+
+    <div class="card question-card">
+      <!-- app.js의 loadQuestion()이 문제 텍스트를 여기 삽입합니다 -->
+      <p id="question-text" class="question-text"></p>
+
+      <!--
+        이벤트 위임(ch01): 선택지 버튼 4개마다 리스너를 달지 않고
+        부모인 #choices 하나에만 클릭 리스너를 등록합니다.
+        DocumentFragment(ch01): 선택지 4개를 한 번에 삽입합니다.
+      -->
+      <div id="choices" class="choices"></div>
+    </div>
+  </div>
+
+  <!-- ===== 결과 화면 ===== -->
+  <div id="screen-result" class="screen">
+    <div class="card result-card">
+
+      <!-- 점수에 따라 이모지가 바뀝니다 (app.js 참고) -->
+      <p id="result-emoji" class="result-emoji">🎉</p>
+      <h2 id="result-title" class="result-title"></h2>
+      <p id="result-score" class="result-score"></p>
+
+      <!-- 최고 기록 갱신 시에만 표시됩니다 (.hidden 클래스 토글) -->
+      <p id="new-record" class="new-record hidden">🏆 새 최고 기록!</p>
+
+      <!-- 각 문제의 정답·오답 여부 요약 목록 -->
+      <div id="result-list" class="result-list"></div>
+
+      <button id="btn-retry" class="btn btn-primary btn-large">다시 도전</button>
+    </div>
+  </div>
+
+  <!--
+    defer: HTML 파싱이 끝난 후 실행 → DOM 요소를 안전하게 참조할 수 있습니다.
+    file://로 바로 열어도 동작합니다 (ES 모듈 미사용).
+  -->
+  <script defer src="app.js"></script>
+</body>
+</html>
