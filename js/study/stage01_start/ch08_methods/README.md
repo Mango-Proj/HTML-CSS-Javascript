@@ -17,6 +17,12 @@
 
 함수는 특정 작업을 수행하는 **재사용 가능한 코드 블록**입니다.
 
+요리 레시피를 생각해 보세요. "카레 만들기"라는 레시피는 한 번 작성해두면 몇 번이든 꺼내 쓸 수 있습니다.  
+함수도 마찬가지입니다. 코드를 한 번 작성해 두고, 필요할 때마다 이름으로 호출하면 됩니다.
+
+함수가 없다면 같은 계산 로직을 100곳에 붙여 넣어야 하고, 그 로직이 바뀌면 100곳을 모두 수정해야 합니다.  
+함수를 쓰면 한 곳에서만 수정하면 됩니다.
+
 ```
 입력(매개변수) → [함수 본문: 처리] → 출력(반환값)
 ```
@@ -24,6 +30,8 @@
 ---
 
 ## 1. 함수 선언식
+
+`function` 키워드를 사용해 이름을 붙인 함수를 만드는 가장 기본적인 방법입니다.
 
 ```js
 function 함수명(매개변수1, 매개변수2) {
@@ -33,7 +41,7 @@ function 함수명(매개변수1, 매개변수2) {
 ```
 
 ```js
-// 매개변수 없는 함수
+// 매개변수 없는 함수 — 항상 같은 동작
 function printGreeting() {
     console.log('안녕하세요!');
 }
@@ -48,14 +56,16 @@ const result = add(5, 7); // 12 — 반환값을 변수에 저장
 
 ### 매개변수 vs 인수
 
+헷갈리기 쉬운 두 용어의 차이입니다.
+
 | 용어 | 위치 | 설명 |
 |------|------|------|
 | 매개변수 (Parameter) | 함수 선언부 | 값을 받을 변수명 |
 | 인수 (Argument) | 함수 호출부 | 실제로 전달하는 값 |
 
 ```js
-function greet(name) { ... }  // name → 매개변수
-greet('홍길동');               // '홍길동' → 인수
+function greet(name) { ... }  // name → 매개변수 (틀에 붙은 이름)
+greet('홍길동');               // '홍길동' → 인수 (실제 전달 값)
 ```
 
 ---
@@ -64,15 +74,15 @@ greet('홍길동');               // '홍길동' → 인수
 
 `return` 은 두 가지 역할을 합니다.
 
-1. **값 반환** — 결과를 호출한 쪽으로 돌려줌
-2. **함수 즉시 종료** — 이후 코드는 실행되지 않음
+1. **값 반환** — 계산 결과를 호출한 쪽으로 돌려줌
+2. **함수 즉시 종료** — `return` 이후 코드는 실행되지 않음
 
 ```js
 function checkAge(age) {
     if (age >= 20) {
-        return '성인입니다.'; // 반환 후 함수 종료
+        return '성인입니다.'; // 이 줄에서 함수 종료
     }
-    return '보호자 동의 필요'; // 위 조건 불만족 시 실행
+    return '보호자 동의 필요'; // 위 조건 불만족 시만 실행
 }
 
 // return 없으면 undefined 반환
@@ -84,11 +94,21 @@ console.log(noReturn()); // undefined
 
 ### 가드 패턴 (Guard Clause)
 
+유효하지 않은 입력을 먼저 처리하고 일찍 종료하는 패턴입니다.  
+`if` 중첩을 줄이고 핵심 로직을 평평하게 드러낼 수 있습니다.
+
 ```js
-// 조기 return 으로 중첩 if 를 줄임
+// ❌ 중첩 if — 핵심 로직이 안쪽에 묻힘
 function divide(a, b) {
-    if (b === 0) return; // 잘못된 입력 → 즉시 종료
-    return a / b;
+    if (b !== 0) {
+        return a / b;
+    }
+}
+
+// ✅ 조기 return — 잘못된 경우를 먼저 처리
+function divide(a, b) {
+    if (b === 0) return; // 0으로 나누면 즉시 종료
+    return a / b;        // 검증 통과 후 핵심 로직
 }
 ```
 
@@ -98,22 +118,24 @@ function divide(a, b) {
 
 ### 기본값 매개변수 (Default Parameters, ES6)
 
-인수가 전달되지 않거나 `undefined` 일 때 기본값이 사용됩니다.
+인수가 전달되지 않거나 `undefined` 일 때 사용할 기본값을 지정합니다.  
+"아무것도 선택하지 않으면 기본 옵션"이 자동으로 적용되는 것과 같습니다.
 
 ```js
 function orderCoffee(type = '아메리카노', size = 'Tall') {
     console.log(`${type}, ${size} 사이즈`);
 }
 
-orderCoffee();                    // 아메리카노, Tall
+orderCoffee();                    // 아메리카노, Tall (기본값 사용)
 orderCoffee('라떼');              // 라떼, Tall
 orderCoffee('카푸치노', 'Grande'); // 카푸치노, Grande
-orderCoffee(undefined, 'Venti'); // 아메리카노, Venti
+orderCoffee(undefined, 'Venti'); // 아메리카노, Venti (첫 번째 undefined → 기본값)
 ```
 
 ### 나머지 매개변수 (Rest Parameters, ES6)
 
-정해지지 않은 수의 인수를 **배열**로 받습니다. 항상 마지막에 위치해야 합니다.
+정해지지 않은 수의 인수를 **배열**로 받습니다.  
+"몇 개를 보내더라도 다 받겠다"는 의미입니다. 항상 마지막에 위치해야 합니다.
 
 ```js
 function sumAll(...numbers) { // 모든 인수 → 배열
@@ -134,15 +156,17 @@ introduce('홍길동', 28, '독서', '여행'); // 홍길동(28세), 취미: 독
 
 ## 4. 함수 표현식
 
-함수를 **값처럼 변수에 저장**하는 방식입니다.
+함수를 **값처럼 변수에 저장**하는 방식입니다.  
+자바스크립트에서 함수는 숫자나 문자열처럼 변수에 담거나, 다른 함수에 인수로 넘길 수 있는 **일급 객체**입니다.
 
 ```js
-// 익명 함수 표현식
+// 익명 함수 표현식 — 이름 없이 변수에 저장
 const square = function (n) {
     return n * n;
 };
 
 // 기명 함수 표현식 — 재귀에 내부 이름 활용
+// 외부에서는 변수명(factorial)으로만 호출 가능
 const factorial = function fact(n) {
     if (n <= 1) return 1;
     return n * fact(n - 1); // 내부에서만 'fact' 사용 가능
@@ -155,10 +179,11 @@ console.log(factorial(5)); // 120
 
 ## 5. 화살표 함수 (Arrow Function, ES6)
 
-`=>` 를 사용한 간결한 함수 표현입니다.
+`=>` 를 사용한 간결한 함수 표현입니다.  
+특히 배열 메서드(`map`, `filter` 등)에 콜백으로 쓸 때 코드가 매우 간결해집니다.
 
 ```js
-// 기본 형태
+// 기본 형태 — 중괄호 + return
 const multiply = (a, b) => {
     return a * b;
 };
@@ -208,9 +233,11 @@ const      greet3 = name => `안녕, ${name}!`;
 
 ## 7. 호이스팅
 
+**호이스팅(Hoisting)**: 코드가 실행되기 전에 함수·변수 선언이 코드 맨 위로 "끌어올려지는" 동작입니다.
+
 ```js
 // ✅ 함수 선언식 — 선언 전에 호출 가능
-console.log(greetDecl('철수')); // 정상 작동
+console.log(greetDecl('철수')); // 정상 작동!
 function greetDecl(name) { return `안녕, ${name}!`; }
 
 // ❌ 함수 표현식 — 선언 전 호출 시 에러
@@ -218,13 +245,15 @@ function greetDecl(name) { return `안녕, ${name}!`; }
 const greetExpr = name => `안녕, ${name}!`;
 ```
 
-> 호이스팅에 의존하는 코드는 가독성이 낮아집니다. **선언 후 호출**하는 습관을 권장합니다.
+> 호이스팅이 되니까 함수 선언을 마음대로 뒤에 써도 되겠지 싶지만, 그보다 **선언 후 호출하는 습관**이 코드를 읽기 쉽게 만듭니다.
 
 ---
 
 ## 8. 스코프 (Scope)
 
-변수에 접근할 수 있는 **유효 범위**입니다.
+**스코프**: 변수에 접근할 수 있는 유효 범위입니다.
+
+방에 비유하면, 거실에 있는 물건은 누구든 쓸 수 있지만(전역 스코프), 방 안의 물건은 그 방에 있는 사람만 쓸 수 있습니다(지역 스코프). 서랍 안의 물건은 서랍을 열어야만 볼 수 있고요(블록 스코프).
 
 ```
 전역 스코프  ────────────────────────────────────
@@ -244,14 +273,17 @@ const global = '전역';
 
 function demo() {
     const local = '지역';
-    console.log(global); // 접근 가능
-    console.log(local);  // 접근 가능
+    console.log(global); // 접근 가능 (전역)
+    console.log(local);  // 접근 가능 (지역)
 }
 
-// console.log(local); // ❌ ReferenceError
+// console.log(local); // ❌ ReferenceError — 지역 변수는 외부에서 접근 불가
 ```
 
 ### 변수 쉐도잉
+
+안쪽 스코프에서 바깥쪽과 같은 이름의 변수를 선언하면, 안쪽에서는 안쪽 변수가 우선합니다.  
+바깥 변수가 가려지는(shadowing) 현상이지만, **바깥 변수 자체는 변하지 않습니다.**
 
 ```js
 const x = '전역';
@@ -269,10 +301,13 @@ console.log(x); // '전역' — 전역 변수는 변하지 않음
 
 **다른 함수에 인수로 전달되어 나중에 호출되는 함수**입니다.
 
+식당에서 번호표를 받고, 준비되면 불러 달라고 하는 것과 비슷합니다.  
+"이 작업이 끝나면 이 함수를 실행해줘"라고 위임하는 방식입니다.
+
 ```js
 // 콜백을 받는 함수
 function process(data, callback) {
-    return callback(data);
+    return callback(data); // 전달받은 함수(callback) 실행
 }
 
 // 세 가지 방법으로 콜백 전달
@@ -293,7 +328,8 @@ nums.reduce((acc, n) => acc + n, 0); // 15
 
 ### 함수를 반환하는 함수 (팩토리 패턴)
 
-설정값을 미리 고정한 함수를 만들어 반환합니다.
+설정값을 미리 고정한 함수를 만들어 반환합니다.  
+공장(factory)처럼 비슷하지만 조금씩 다른 함수를 찍어낼 수 있습니다.
 
 ```js
 function makeMultiplier(factor) {
@@ -309,7 +345,8 @@ tenTimes(4);  // 40
 
 ### 데이터 처리 파이프라인
 
-배열 메서드를 체이닝하여 복잡한 처리를 단계별로 표현합니다.
+배열 메서드를 체이닝해서 복잡한 처리를 단계별로 표현합니다.  
+각 단계가 명확하게 드러나 코드 흐름을 읽기 쉽습니다.
 
 ```js
 const orders = [
@@ -318,12 +355,14 @@ const orders = [
 ];
 
 const total = orders
-    .map(o => ({ ...o, subtotal: o.price * o.qty })) // 소계 계산
-    .filter(o => o.subtotal >= 500000)               // 고액 주문만
-    .reduce((sum, o) => sum + o.subtotal, 0);         // 합산
+    .map(o => ({ ...o, subtotal: o.price * o.qty })) // [1단계] 소계 계산
+    .filter(o => o.subtotal >= 500000)               // [2단계] 고액 주문만
+    .reduce((sum, o) => sum + o.subtotal, 0);         // [3단계] 합산
 ```
 
 ### 함수 합성 (pipe)
+
+여러 함수를 순서대로 연결하는 패턴입니다. 각 함수는 작고 단순하지만, 조합하면 복잡한 기능을 만듭니다.
 
 ```js
 const trim   = str => str.trim();
@@ -358,13 +397,13 @@ node methods.js
 
 ```
 선언 방식:
-  function f(){}      — 선언식, 호이스팅 O
+  function f(){}      — 선언식, 호이스팅 O (선언 전 호출 가능)
   const f = function  — 표현식, 호이스팅 X
   const f = () =>     — 화살표, 호이스팅 X, this 없음
 
 매개변수:
-  (a, b = '기본값')  — 기본값 매개변수
-  (...rest)          — 나머지 매개변수 → 배열
+  (a, b = '기본값')  — 기본값 매개변수 (전달 안 하면 기본값 사용)
+  (...rest)          — 나머지 매개변수 → 배열 (몇 개든 받기)
 
 return:
   return 값;   — 값 반환 + 함수 종료
@@ -378,5 +417,5 @@ return:
 
 콜백:
   인수로 전달된 함수 → 나중에 호출
-  배열 메서드(map/filter/reduce)의 핵심
+  배열 메서드(map/filter/reduce)에 콜백을 전달해 데이터 처리
 ```
